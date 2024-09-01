@@ -1,0 +1,95 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  name  String
+  role  Role   @relation(fields: [roleId], references: [id])
+  roleId Int
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  products Product[]
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  sales       SaleDetail[]
+  orderDetails OrderDetail[] // Relación opuesta
+}
+
+model Order {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  email       String
+  phone       String
+  address     String
+  details     OrderDetail[] // Relación opuesta
+}
+
+model OrderDetail {
+  id          Int        @id @default(autoincrement())
+  quantity    Int
+  amount      Float
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   Int
+  sale        Sale     @relation(fields: [saleId], references: [id])
+  saleId      Int
+  order       Order     @relation(fields: [orderId], references: [id]) // Agrega esta línea para la relación opuesta
+  orderId     Int
+}
+
+model Sale {
+  id              Int           @id @default(autoincrement())
+  date            DateTime      @default(now())
+  time            DateTime      @default(now())
+  totalAmount     Float
+  paymentStatus   PaymentStatus
+  paymentPlan     PaymentPlan?  @relation(fields: [paymentPlanId], references: [id])
+  paymentPlanId   Int?
+  details         SaleDetail[]
+  orderDetails    OrderDetail[] // Relación opuesta
+}
+
+model SaleDetail {
+  id          Int        @id @default(autoincrement())
+  quantity    Int
+  amount      Float
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   Int
+  sale        Sale     @relation(fields: [saleId], references: [id])
+  saleId      Int
+}
+
+model PaymentPlan {
+  id          Int        @id @default(autoincrement())
+  installments Int
+  amount      Float
+  sales       Sale[]
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  PARTIAL
+}
