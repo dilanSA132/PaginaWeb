@@ -8,7 +8,7 @@ export async function getProducts() {
     return await response.json();
   }
   
-  export async function createProduct(data: { name: string; description?: string; price: number; categoryId: number }) {
+  export async function createProduct(data: { name: string; description?: string; price: number; categoryId: number; image?: string }) {
     const response = await fetch('http://localhost:3000/api/v1/products', {
       method: 'POST',
       headers: {
@@ -26,7 +26,7 @@ export async function getProducts() {
   
   export async function updateProduct(
     id: number,
-    data: { name: string; description?: string; price: number; categoryId: number }
+    data: { name: string; description?: string; price: number; categoryId: number; image?: string }
   ) {
     const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
       method: 'PUT',

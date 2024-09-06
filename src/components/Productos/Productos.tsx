@@ -9,6 +9,7 @@ interface Product {
   description?: string;
   price: number;
   categoryId: number;
+  image?: string; // Nuevo campo para la imagen
 }
 
 const MantenimientoProductos: React.FC = () => {
@@ -16,7 +17,7 @@ const MantenimientoProductos: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState<Product>({ id: 0, name: '', description: '', price: 0, categoryId: 0 });
+  const [newProduct, setNewProduct] = useState<Product>({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
   const [isEditing, setIsEditing] = useState(false); // Estado para controlar si estamos editando
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const MantenimientoProductos: React.FC = () => {
 
   const openModalForNewProduct = () => {
     setIsEditing(false); // Estamos creando un nuevo producto
-    setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0 }); // Limpia el formulario
+    setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia el formulario
     setModalIsOpen(true);
   };
 
@@ -57,12 +58,13 @@ const MantenimientoProductos: React.FC = () => {
           description: newProduct.description,
           price: newProduct.price,
           categoryId: newProduct.categoryId,
-        }); // Llama al servicio
+          image: newProduct.image, // Imagen
+        });
         setProducts((prevProducts) =>
           prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
         );
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0 }); // Limpia los campos después de guardar
+        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia los campos después de guardar
       } catch (err: any) {
         setError('Error al actualizar el producto');
       }
@@ -74,10 +76,11 @@ const MantenimientoProductos: React.FC = () => {
           description: newProduct.description,
           price: newProduct.price,
           categoryId: newProduct.categoryId,
+          image: newProduct.image, // Imagen
         });
         setProducts((prevProducts) => [...prevProducts, createdProduct]);
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0 }); // Limpia los campos después de crear
+        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia los campos después de crear
       } catch (err: any) {
         setError('Error al crear el producto');
       }
@@ -99,6 +102,7 @@ const MantenimientoProductos: React.FC = () => {
     { label: 'Descripción', accessor: 'description' },
     { label: 'Precio', accessor: 'price' },
     { label: 'Categoría', accessor: 'categoryId' },
+    { label: 'Imagen', accessor: 'image' }, // Columna para la imagen
   ];
 
   return (
@@ -174,6 +178,17 @@ const MantenimientoProductos: React.FC = () => {
             placeholder="Ingresa el ID de la categoría"
           />
         </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="image">Imagen</label>
+          <input
+            type="text"
+            id="image"
+            value={newProduct.image || ''}
+            onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+            className="w-full p-4 border border-gray-300 rounded-lg text-black"
+            placeholder="Ingresa la URL de la imagen del producto"
+          />
+        </div>
         <button
           onClick={handleSaveProduct}
           className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
@@ -192,3 +207,4 @@ const MantenimientoProductos: React.FC = () => {
 };
 
 export default MantenimientoProductos;
+

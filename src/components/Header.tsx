@@ -39,7 +39,6 @@ const Header: React.FC = () => {
           <a href="/about" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Acerca de</a>
           <a href="#contacto" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Contacto</a>
           <a href="/login" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Iniciar Sesión</a>
-          <a href="/register" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Registrarse</a>
         </nav>
       </div>
     </header>
