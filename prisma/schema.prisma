@@ -14,11 +14,12 @@ model Role {
 }
 
 model User {
-  id     Int    @id @default(autoincrement())
-  email  String @unique
-  name   String
-  role   Role   @relation(fields: [roleId], references: [id])
-  roleId Int
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  name     String
+  password String  // Contraseña, campo obligatorio
+  role     Role   @relation(fields: [roleId], references: [id]) // Relación obligatoria
+  roleId   Int    // roleId ya no puede ser nulo
 }
 
 

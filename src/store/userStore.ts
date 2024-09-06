@@ -13,7 +13,7 @@ interface UserState {
   loading: boolean;
   error: string | null;
   fetchUsers: () => Promise<void>;
-  addUser: (userData: User) => Promise<void>;
+  addUser: (userData: Omit<User, 'id'>) => Promise<void>;  // Se omite 'id' al crear un nuevo usuario
   removeUser: (id: number) => Promise<void>;
   editUser: (id: number, userData: User) => Promise<void>;
 }

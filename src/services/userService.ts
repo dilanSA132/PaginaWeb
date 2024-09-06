@@ -30,15 +30,44 @@ export const getUsers = async () => {
     return response.json();
   };
   
-  export const updateUser = async (id: number, userData: any) => {
-    const response = await fetch(`/api/v1/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-    if (!response.ok) {
-      throw new Error('Error updating user');
+
+export async function updateUser(id: number, data: { name: string; email: string }) {
+  const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Error actualizando el usuario');
+  }
+
+  const updatedUser = await response.json();
+  return updatedUser;
+}
+
+
+  export const authenticateUser = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/v1/users/byUsername', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || 'Error autenticando usuario');
+      }
+  
+      return await response.json(); // Devolver los datos del usuario autenticado
+    } catch (error: any) {
+      throw new Error(error.message || 'Error en el servicio de autenticación');
     }
-    return response.json();
   };
+  
   
