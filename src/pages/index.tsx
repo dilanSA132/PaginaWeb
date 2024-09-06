@@ -7,7 +7,6 @@ const Home: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 via-white to-teal-100">
       <Header />
       <main className="flex-grow">
-        {/* Sección de Héroe */}
         <section className="relative bg-cover bg-center h-screen" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=1500&q=80')" }}>
           <div className="absolute inset-0 bg-white opacity-50"></div>
           <div className="relative z-10 flex items-center justify-center h-full text-center">
@@ -19,7 +18,6 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Productos Destacados */}
         <section id="productos" className="py-16">
           <div className="container mx-auto px-8">
             <h2 className="text-3xl font-bold text-center mb-12 text-teal-600">Productos Destacados</h2>

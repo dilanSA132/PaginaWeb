@@ -6,26 +6,26 @@ import Pagination from '../components/Pagination';
 
 const Products: React.FC = () => {
   const initialProducts = [
-    { id: 1, name: 'Perfume de Lujo 1', price: '$99.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 2, name: 'Perfume de Lujo 2', price: '$129.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 3, name: 'Perfume de Lujo 3', price: '$79.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 4, name: 'Perfume de Lujo 4', price: '$109.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 5, name: 'Perfume de Lujo 5', price: '$99.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 6, name: 'Perfume de Lujo 6', price: '$129.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 7, name: 'Perfume de Lujo 7', price: '$79.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 8, name: 'Perfume de Lujo 8', price: '$109.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 9, name: 'Perfume de Lujo 9', price: '$99.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 10, name: 'Perfume de Lujo 10', price: '$129.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 11, name: 'Perfume de Lujo 11', price: '$79.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 12, name: 'Perfume de Lujo 12', price: '$109.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 13, name: 'Perfume de Lujo 13', price: '$99.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 14, name: 'Perfume de Lujo 14', price: '$129.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 15, name: 'Perfume de Lujo 15', price: '$79.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 16, name: 'Perfume de Lujo 16', price: '$109.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 17, name: 'Perfume de Lujo 17', price: '$99.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 18, name: 'Perfume de Lujo 18', price: '$129.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 19, name: 'Perfume de Lujo 19', price: '$79.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
-    { id: 20, name: 'Perfume de Lujo 20', price: '$109.99', imageUrl: 'https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80' },
+    { id: 1, name: 'Perfume de Lujo 1', price: '$99.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 2, name: 'Perfume de Lujo 2', price: '$129.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 3, name: 'Perfume de Lujo 3', price: '$79.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 4, name: 'Perfume de Lujo 4', price: '$109.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 5, name: 'Perfume de Lujo 5', price: '$99.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 6, name: 'Perfume de Lujo 6', price: '$129.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 7, name: 'Perfume de Lujo 7', price: '$79.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 8, name: 'Perfume de Lujo 8', price: '$109.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 9, name: 'Perfume de Lujo 9', price: '$99.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 10, name: 'Perfume de Lujo 10', price: '$129.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 11, name: 'Perfume de Lujo 11', price: '$79.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 12, name: 'Perfume de Lujo 12', price: '$109.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 13, name: 'Perfume de Lujo 13', price: '$99.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 14, name: 'Perfume de Lujo 14', price: '$129.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 15, name: 'Perfume de Lujo 15', price: '$79.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 16, name: 'Perfume de Lujo 16', price: '$109.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 17, name: 'Perfume de Lujo 17', price: '$99.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 18, name: 'Perfume de Lujo 18', price: '$129.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 19, name: 'Perfume de Lujo 19', price: '$79.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
+    { id: 20, name: 'Perfume de Lujo 20', price: '$109.99', imageUrl: 'https://media.revistagq.com/photos/62fb4299fb28d86a38828b26/4:3/w_1331,h_998,c_limit/perfume%20sauvage%20de%20dior.jpg' },
   ];
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,20 +41,20 @@ const Products: React.FC = () => {
       product.name.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredProducts(filtered);
-    setCurrentPage(1); // Reset to the first page on search
+    setCurrentPage(1); 
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prevPage) => prevPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }
   };
 
