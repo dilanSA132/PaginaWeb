@@ -89,7 +89,6 @@ const Roles: React.FC = () => {
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Roles</h1>
 
-      {/* Botón para abrir el modal de creación de rol */}
       <button
         onClick={openModalForNewRole}
         className="bg-teal-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-teal-600"
@@ -97,15 +96,13 @@ const Roles: React.FC = () => {
         Nuevo Rol
       </button>
 
-      {/* Mostrar errores */}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Mostrar tabla si no está cargando */}
       {!loading ? (
         <UniversalTable
           columns={columns}
           data={roles}
-          onEdit={openModalForEditRole} // Al editar, abre el modal con la info del rol
+          onEdit={openModalForEditRole} 
           onDelete={handleDelete}
         />
       ) : (

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaHome, FaStore, FaShoppingCart, FaInfoCircle, FaEnvelope, FaUser } from 'react-icons/fa';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,12 +34,22 @@ const Header: React.FC = () => {
           </button>
         </div>
         <nav className={`md:flex md:items-center md:space-x-6 ${isOpen ? 'block' : 'hidden'} md:block`}>
-          <a href="/" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Inicio</a>
-          <a href="/products" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Tienda</a>
-          <a href="#carrito" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Carrito</a>
-          <a href="/about" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Acerca de</a>
-          <a href="#contacto" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Contacto</a>
-          <a href="/login" className="block text-white hover:text-gray-100 transition-colors py-2 md:py-0">Iniciar Sesión</a>
+          <a href="/" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <FaHome className="text-2xl transition-transform transform hover:scale-125" />
+            <span className="hidden md:inline">Inicio</span>
+          </a>
+          <a href="/products" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <FaStore className="text-2xl transition-transform transform hover:scale-125" />
+            <span className="hidden md:inline">Tienda</span>
+          </a>
+          <a href="/about" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <FaInfoCircle className="text-2xl transition-transform transform hover:scale-125" />
+            <span className="hidden md:inline">Acerca de</span>
+          </a>
+          <a href="/login" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <FaUser className="text-2xl transition-transform transform hover:scale-125" />
+            <span className="hidden md:inline">Iniciar Sesión</span>
+          </a>
         </nav>
       </div>
     </header>

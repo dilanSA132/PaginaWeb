@@ -47,13 +47,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section id="suscribete" className="bg-gradient-to-r from-teal-400 to-green-400 text-white py-16">
-          <div className="container mx-auto px-8 text-center">
-            <h2 className="text-4xl font-bold mb-4">Únete a Nuestra Comunidad de Fragancias</h2>
-            <p className="text-lg mb-8">Regístrate para recibir ofertas exclusivas y novedades.</p>
-            <a href="#contacto" className="inline-block bg-white text-teal-600 px-6 py-3 font-semibold rounded-full shadow-lg hover:scale-105 transition-transform">Suscribirse Ahora</a>
-          </div>
-        </section>
+      
       </main>
       <Footer />
     </div>

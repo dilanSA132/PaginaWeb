@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
-import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService'; // Importa el servicio
+import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService'; 
+import { getCategories } from '@/services/CategoriesService'; 
 
 interface Product {
   id: number;
@@ -9,78 +10,83 @@ interface Product {
   description?: string;
   price: number;
   categoryId: number;
-  image?: string; // Nuevo campo para la imagen
+  image?: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
 }
 
 const MantenimientoProductos: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Product>({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
-  const [isEditing, setIsEditing] = useState(false); // Estado para controlar si estamos editando
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
       setLoading(true);
       setError(null);
       try {
-        const products = await getProducts();
-        setProducts(products);
+        const [productsResponse, categoriesResponse] = await Promise.all([getProducts(), getCategories()]);
+        setProducts(productsResponse);
+        setCategories(categoriesResponse);
       } catch (err: any) {
-        setError('Error al cargar los productos');
+        setError('Error al cargar los productos y categorías');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchProductsAndCategories();
   }, []);
 
   const openModalForNewProduct = () => {
-    setIsEditing(false); // Estamos creando un nuevo producto
-    setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia el formulario
+    setIsEditing(false);
+    setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
     setModalIsOpen(true);
   };
 
   const openModalForEditProduct = (product: Product) => {
-    setIsEditing(true); // Estamos editando un producto existente
-    setNewProduct({ ...product }); // Carga la info del producto en el formulario
+    setIsEditing(true);
+    setNewProduct({ ...product });
     setModalIsOpen(true);
   };
 
   const handleSaveProduct = async () => {
     if (isEditing) {
-      // Si estamos en modo edición, actualizamos el producto existente
       try {
         const updatedProduct = await updateProduct(newProduct.id, {
           name: newProduct.name,
           description: newProduct.description,
           price: newProduct.price,
           categoryId: newProduct.categoryId,
-          image: newProduct.image, // Imagen
+          image: newProduct.image,
         });
         setProducts((prevProducts) =>
           prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
         );
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia los campos después de guardar
+        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
       } catch (err: any) {
         setError('Error al actualizar el producto');
       }
     } else {
-      // Si no estamos en modo edición, estamos creando un nuevo producto
       try {
         const createdProduct = await createProduct({
           name: newProduct.name,
           description: newProduct.description,
           price: newProduct.price,
           categoryId: newProduct.categoryId,
-          image: newProduct.image, // Imagen
+          image: newProduct.image,
         });
         setProducts((prevProducts) => [...prevProducts, createdProduct]);
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' }); // Limpia los campos después de crear
+        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
       } catch (err: any) {
         setError('Error al crear el producto');
       }
@@ -101,15 +107,24 @@ const MantenimientoProductos: React.FC = () => {
     { label: 'Nombre', accessor: 'name' },
     { label: 'Descripción', accessor: 'description' },
     { label: 'Precio', accessor: 'price' },
-    { label: 'Categoría', accessor: 'categoryId' },
-    { label: 'Imagen', accessor: 'image' }, // Columna para la imagen
+    { label: 'Categoría', accessor: 'categoryName' }, // Cambia el accesor para mostrar el nombre de la categoría
+    { label: 'Imagen', accessor: 'image' },
   ];
+
+  const getCategoryName = (categoryId: number) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category ? category.name : 'No definida';
+  };
+
+  const productsWithCategoryName = products.map(product => ({
+    ...product,
+    categoryName: getCategoryName(product.categoryId),
+  }));
 
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Productos</h1>
 
-      {/* Botón para abrir el modal de creación de producto */}
       <button
         onClick={openModalForNewProduct}
         className="bg-teal-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-teal-600"
@@ -117,15 +132,13 @@ const MantenimientoProductos: React.FC = () => {
         Nuevo Producto
       </button>
 
-      {/* Mostrar errores */}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Mostrar tabla si no está cargando */}
       {!loading ? (
         <UniversalTable
           columns={columns}
-          data={products}
-          onEdit={openModalForEditProduct} // Al editar, abre el modal con la info del producto
+          data={productsWithCategoryName} // Usa los datos con el nombre de la categoría
+          onEdit={openModalForEditProduct}
           onDelete={handleDelete}
         />
       ) : (
@@ -169,14 +182,17 @@ const MantenimientoProductos: React.FC = () => {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="categoryId">Categoría</label>
-          <input
-            type="number"
+          <select
             id="categoryId"
             value={newProduct.categoryId}
             onChange={(e) => setNewProduct({ ...newProduct, categoryId: parseInt(e.target.value) })}
             className="w-full p-4 border border-gray-300 rounded-lg text-black"
-            placeholder="Ingresa el ID de la categoría"
-          />
+          >
+            <option value={0}>Selecciona una categoría</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </select>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="image">Imagen</label>
@@ -193,13 +209,7 @@ const MantenimientoProductos: React.FC = () => {
           onClick={handleSaveProduct}
           className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
         >
-          {isEditing ? 'Guardar Cambios' : 'Crear Producto'}
-        </button>
-        <button
-          onClick={() => setModalIsOpen(false)}
-          className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
-        >
-          Cancelar
+          {isEditing ? 'Actualizar Producto' : 'Guardar Producto'}
         </button>
       </CustomModal>
     </div>
@@ -207,4 +217,3 @@ const MantenimientoProductos: React.FC = () => {
 };
 
 export default MantenimientoProductos;
-

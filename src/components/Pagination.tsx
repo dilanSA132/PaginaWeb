@@ -16,7 +16,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onNext
       aria-label="Página anterior"
       aria-disabled={currentPage <= 1}
     >
-      Back
+      Anterior
     </button>
     <span className="text-white">{currentPage} / {totalPages}</span>
     <button
@@ -26,7 +26,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onNext
       aria-label="Página siguiente"
       aria-disabled={currentPage >= totalPages}
     >
-      Next
+      Siguiente
     </button>
   </div>
 );
