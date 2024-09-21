@@ -23,12 +23,46 @@ export async function createOrderDetail(orderDetails: OrderDetails[]) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderDetails), // Enviar un array de detalles
+      body: JSON.stringify(orderDetails), 
     });
     if (!response.ok) {
       throw new Error('Error creating order details');
     }
     return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function deleteOrderDetail(id: number) {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Error deleting order detail');
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function updateOrderDetail(id: number, updatedOrderDetail: OrderDetails) {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedOrderDetail),
+    });
+    if (!response.ok) {
+      throw new Error('Error updating order detail');
+    }
+    return await response.json(); 
   } catch (error) {
     console.error(error);
     throw error;

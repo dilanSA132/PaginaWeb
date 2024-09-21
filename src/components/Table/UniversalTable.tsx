@@ -3,8 +3,10 @@ import { FaEdit, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/f
 
 interface Column {
   label: string;
-  accessor: string;
+  accessor?: string;
+  render?: (order: any) => JSX.Element;
 }
+
 
 interface UniversalTableProps {
   columns: Column[];
@@ -59,42 +61,43 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data, onEdit, 
             </tr>
           </thead>
           <tbody className="bg-white">
-            {paginatedData.map((row, index) => (
-              <tr
-                key={index}
-                className="border-b transition duration-300 ease-in-out hover:bg-gray-100"
-              >
-                {columns.map((column) => (
-                  <td
-                    key={column.accessor}
-                    className="py-3 px-6 text-gray-700 whitespace-nowrap"
-                  >
-                    {row[column.accessor]}
-                  </td>
-                ))}
-                {(onEdit || onDelete) && (
-                  <td className="py-3 px-6 text-gray-700 flex items-center space-x-2">
-                    {onEdit && (
-                      <button
-                        onClick={() => onEdit(row)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <FaEdit />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(row)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
+  {paginatedData.map((row, index) => (
+    <tr
+      key={index}
+      className="border-b transition duration-300 ease-in-out hover:bg-gray-100"
+    >
+      {columns.map((column, colIndex) => (
+        <td
+          key={colIndex}
+          className="py-3 px-6 text-gray-700 whitespace-nowrap"
+        >
+          {column.render ? column.render(row) : row[column.accessor as keyof typeof row]}
+        </td>
+      ))}
+      {(onEdit || onDelete) && (
+        <td className="py-3 px-6 text-gray-700 flex items-center space-x-2">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(row)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(row)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <FaTrashAlt />
+            </button>
+          )}
+        </td>
+      )}
+    </tr>
+  ))}
+</tbody>
+
         </table>
 
         {/* Controles de paginación */}
