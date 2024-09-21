@@ -45,8 +45,9 @@ model Product {
 model Order {
   id        Int           @id @default(autoincrement())
   createdAt DateTime      @default(now())
+  name      String
   email     String
-  phone     String
+  phone     String 
   address   String
   details   OrderDetail[]
 }

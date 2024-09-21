@@ -1,70 +1,35 @@
+const baseUrl = 'http://localhost:3000/api/v1/orders';
+
 export async function getOrders() {
-    const response = await fetch('http://localhost:3000/api/v1/orders');
+  try {
+    const response = await fetch(baseUrl, {
+      method: 'GET',
+    });
     if (!response.ok) {
-      throw new Error('Error al obtener las órdenes');
+      throw new Error('Error fetching orders');
     }
     return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  
-  export async function getOrderById(id: number) {
-    const response = await fetch(`http://localhost:3000/api/v1/orders/${id}`);
-    if (!response.ok) {
-      throw new Error('Error al obtener la orden');
-    }
-    return await response.json();
-  }
-  
-  export async function createOrder(data: {
-    email: string;
-    phone: string;
-    address: string;
-    details: { productId: number; quantity: number; amount: number; saleId: number }[];
-  }) {
-    const response = await fetch('http://localhost:3000/api/v1/orders', {
+}
+
+export async function createOrder(order: any) {
+  try {
+    const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(order),
     });
-  
     if (!response.ok) {
-      throw new Error('Error al crear la orden');
+      throw new Error('Error creating order');
     }
-  
     return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  
-  export async function updateOrder(id: number, data: {
-    email?: string;
-    phone?: string;
-    address?: string;
-    details?: { productId: number; quantity: number; amount: number; saleId: number }[];
-  }) {
-    const response = await fetch(`http://localhost:3000/api/v1/orders/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (!response.ok) {
-      throw new Error('Error al actualizar la orden');
-    }
-  
-    return await response.json();
-  }
-  
-  export async function deleteOrder(id: number) {
-    const response = await fetch(`http://localhost:3000/api/v1/orders/${id}`, {
-      method: 'DELETE',
-    });
-  
-    if (!response.ok) {
-      throw new Error('Error al eliminar la orden');
-    }
-  
-    return await response.json();
-  }
-  
+}

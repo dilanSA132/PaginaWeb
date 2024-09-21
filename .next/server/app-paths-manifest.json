@@ -1,4 +1,4 @@
 {
-  "/api/v1/products/route": "app/api/v1/products/route.js",
-  "/_not-found/page": "app/_not-found/page.js"
+  "/api/v1/orders/route": "app/api/v1/orders/route.js",
+  "/api/v1/emails/route": "app/api/v1/emails/route.js"
 }
