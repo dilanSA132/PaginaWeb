@@ -118,10 +118,8 @@ const Products: React.FC = () => {
 
       };
 
-      // Crear el pedido en la base de datos
       const newOrder = await createOrder(orderRequest);
 
-      // Enviar correo de confirmación al usuario
       const subject = `Confirmación de Pedido para ${contactInfo.name}`;
       const html = `
         <div style="font-family: Arial, sans-serif; color: #333;">
@@ -197,7 +195,7 @@ const Products: React.FC = () => {
                       {product.name}
                     </h3>
                     <span className="block text-2xl font-bold mb-4 text-teal-700">
-                      ${product.price}
+                    ₡{product.price}
                     </span>
                     <button
                       onClick={() => addToCart({ ...product, quantity: 1 })}
@@ -271,7 +269,7 @@ const Products: React.FC = () => {
                             />
                           </td>
                           <td className="py-3 px-4 text-black">
-                            ${(item.price * item.quantity).toFixed(2)}
+                          ₡{(item.price * item.quantity).toFixed(2)}
                           </td>
                           <td className="py-3 px-4 text-black">
                             <button
@@ -359,7 +357,7 @@ const Products: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xl font-bold text-black">
-                        Total: ${calculateTotal().toFixed(2)}
+                        Total: ₡{calculateTotal().toFixed(2)}
                       </span>
                       <button
                         type="button"
