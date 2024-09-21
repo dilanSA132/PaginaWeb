@@ -2,8 +2,15 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/orders": "pages/orders.js",
-  "/productos": "pages/productos.js",
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
+  "/": "pages/index.js",
+  "/about": "pages/about.js",
+  "/login": "pages/login.js",
   "/menu": "pages/menu.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
+  "/mantenimiento-usuarios": "pages/mantenimiento-usuarios.js",
+  "/productos": "pages/productos.js",
+  "/roles": "pages/roles.js",
+  "/categories": "pages/categories.js",
+  "/orders": "pages/orders.js",
+  "/products": "pages/products.js"
 }

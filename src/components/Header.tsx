@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { FaHome, FaStore, FaInfoCircle, FaUser } from 'react-icons/fa';
+import { FaHome, FaStore, FaInfoCircle, FaUser, FaList } from 'react-icons/fa';
 import { signOut, useSession } from 'next-auth/react';
+
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession(); // Obtener el estado de la sesión
+  const { data: session } = useSession();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -39,14 +40,23 @@ const Header: React.FC = () => {
             <FaHome className="text-2xl transition-transform transform hover:scale-125" />
             <span className="hidden md:inline">Inicio</span>
           </a>
-          <a href="/products" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
-            <FaStore className="text-2xl transition-transform transform hover:scale-125" />
-            <span className="hidden md:inline">Tienda</span>
-          </a>
+          {session && (
+            <a href="/products" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+              <FaStore className="text-2xl transition-transform transform hover:scale-125" />
+              <span className="hidden md:inline">Tienda</span>
+            </a>
+          )}
           <a href="/about" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
             <FaInfoCircle className="text-2xl transition-transform transform hover:scale-125" />
             <span className="hidden md:inline">Acerca de</span>
           </a>
+          {/* Mostrar "Menú" solo si el usuario tiene roleId = 1 (admin) */}
+          {session?.user?.roleId === 1 && (
+            <a href="/menu" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+              <FaList className="text-2xl transition-transform transform hover:scale-125" />
+              <span className="hidden md:inline">Menú</span>
+            </a>
+          )}
           {session ? (
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
@@ -66,6 +76,5 @@ const Header: React.FC = () => {
     </header>
   );
 };
-
 
 export default Header;

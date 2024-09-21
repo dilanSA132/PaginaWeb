@@ -5,7 +5,6 @@ import Footer from '../components/Footer';
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 via-white to-teal-100">
-      <Header />
       <main className="flex-grow">
         <section className="relative bg-cover bg-center h-screen" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=1500&q=80')" }}>
           <div className="absolute inset-0 bg-white opacity-50"></div>

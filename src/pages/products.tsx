@@ -185,7 +185,7 @@ const Products: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header />
+      
       <main className="flex-grow">
         <section className="py-16">
           <div className="container mx-auto px-8">
