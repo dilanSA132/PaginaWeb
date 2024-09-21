@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { FaUserCog, FaBoxOpen, FaKey, FaTags, FaShoppingCart, FaChartLine } from 'react-icons/fa'; // Importar íconos adicionales
+import { FaUserCog, FaBoxOpen, FaKey, FaTags, FaShoppingCart, FaChartLine } from 'react-icons/fa';
 
 const Menu: React.FC = () => {
   const router = useRouter();

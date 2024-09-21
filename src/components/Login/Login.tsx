@@ -1,31 +1,40 @@
+// Login.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react'; // Importa el método signIn de next-auth
 import Header from '../Header';
 import Footer from '../Footer';
-import { authenticateUser } from '@/services/userService'; // Importa el servicio de autenticación
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const router = useRouter(); // Hook para redirigir
+  const router = useRouter();
+
+  // Captura el parámetro de la URL
+  const { p } = router.query;
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null);
 
-    try {
-      const user = await authenticateUser(email, password);
-      setLoading(false);
-      setSuccess(`Bienvenido, ${user.user.name}!`);
-      router.push('/menu'); // Redirigir a la página de menú
-    } catch (err: any) {
-      setLoading(false);
-      setError(err.message);
+    // Llamada al método signIn de next-auth
+    const result = await signIn('credentials', {
+      redirect: false, // Evitar redirección automática
+      email,
+      password
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      // Mostrar error si ocurre algún problema durante la autenticación
+      setError(result.error);
+    } else {
+      // Redirigir a la página solicitada o a /menu si no hay ninguna
+      router.push(p ? String(p) : '/menu');
     }
   };
 
@@ -68,7 +77,6 @@ const Login: React.FC = () => {
               {loading ? 'Autenticando...' : 'Iniciar Sesión'}
             </button>
             {error && <p className="text-red-500 mt-4">{error}</p>}
-            {success && <p className="text-green-500 mt-4">{success}</p>}
           </form>
           <p className="mt-6 text-center text-gray-700">
             ¿No tienes una cuenta? <a href="/register" className="text-teal-600 hover:underline">Regístrate aquí</a>

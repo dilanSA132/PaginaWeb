@@ -33,3 +33,37 @@ export async function createOrder(order: any) {
     throw error;
   }
 }
+export async function deleteOrder(id: number) {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Error deleting order');
+    }
+    return await response.json(); // Si deseas devolver alguna respuesta o confirmación
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
+export async function updateOrder(id: number, updatedOrder: any) {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedOrder),
+    });
+    if (!response.ok) {
+      throw new Error('Error updating order');
+    }
+    return await response.json(); // Devuelve la orden actualizada
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

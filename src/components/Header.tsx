@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { FaHome, FaStore, FaShoppingCart, FaInfoCircle, FaEnvelope, FaUser } from 'react-icons/fa';
-
+import { FaHome, FaStore, FaInfoCircle, FaUser } from 'react-icons/fa';
+import { signOut, useSession } from 'next-auth/react';
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession(); // Obtener el estado de la sesión
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -46,14 +47,25 @@ const Header: React.FC = () => {
             <FaInfoCircle className="text-2xl transition-transform transform hover:scale-125" />
             <span className="hidden md:inline">Acerca de</span>
           </a>
-          <a href="/login" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
-            <FaUser className="text-2xl transition-transform transform hover:scale-125" />
-            <span className="hidden md:inline">Iniciar Sesión</span>
-          </a>
+          {session ? (
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0"
+            >
+              <FaUser className="text-2xl transition-transform transform hover:scale-125" />
+              <span className="hidden md:inline">Cerrar Sesión</span>
+            </button>
+          ) : (
+            <a href="/login" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+              <FaUser className="text-2xl transition-transform transform hover:scale-125" />
+              <span className="hidden md:inline">Iniciar Sesión</span>
+            </a>
+          )}
         </nav>
       </div>
     </header>
   );
 };
+
 
 export default Header;
