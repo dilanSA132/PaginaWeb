@@ -2,8 +2,9 @@ export interface OrderDetails {
   productId: number;
   quantity: number;
   amount: number;
-  saleId: number;
-  name: string; 
+  saleId?: number;
+  name?: string; 
+  orderId?: number; 
 }
 
 

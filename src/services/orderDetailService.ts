@@ -1,4 +1,6 @@
-const baseUrl = 'http://localhost:3000/api/v1/orderDetail';
+import { OrderDetails } from "./types";
+
+const baseUrl = 'http://localhost:3000/api/v1/orderDetails';
 
 export async function getOrderDetails() {
   try {
@@ -14,18 +16,17 @@ export async function getOrderDetails() {
     throw error;
   }
 }
-
-export async function createOrderDetail(orderDetail: any) {
+export async function createOrderDetail(orderDetails: OrderDetails[]) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderDetail),
+      body: JSON.stringify(orderDetails), // Enviar un array de detalles
     });
     if (!response.ok) {
-      throw new Error('Error creating order detail');
+      throw new Error('Error creating order details');
     }
     return await response.json();
   } catch (error) {

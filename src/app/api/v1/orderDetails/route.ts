@@ -22,11 +22,22 @@ export async function POST(
 ) {
   try {
     const body = await req.json();
-    const newOrderDetail = await prisma.orderDetail.create({
-      data: { ...body },
-    });
-    return NextResponse.json(newOrderDetail, { status: 201 });
+
+    if (Array.isArray(body)) {
+      // Si es un array, guarda cada detalle
+      const newOrderDetails = await prisma.orderDetail.createMany({
+        data: body,
+      });
+      return NextResponse.json(newOrderDetails, { status: 201 });
+    } else {
+      // Si no es un array, manejar como un solo detalle
+      const newOrderDetail = await prisma.orderDetail.create({
+        data: body,
+      });
+      return NextResponse.json(newOrderDetail, { status: 201 });
+    }
   } catch (error) {
-    return NextResponse.json({ message: 'Error creating order detail' }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ message: 'Error creating order details' }, { status: 500 });
   }
 }

@@ -58,11 +58,12 @@ model OrderDetail {
   amount    Float
   product   Product   @relation(fields: [productId], references: [id])
   productId Int
-  sale      Sale      @relation(fields: [saleId], references: [id])
-  saleId    Int
+  sale      Sale?     @relation(fields: [saleId], references: [id]) // Relación opcional con Sale
+  saleId    Int?      // Campo saleId ahora es opcional
   order     Order     @relation(fields: [orderId], references: [id])
   orderId   Int
 }
+
 
 model Sale {
   id             Int           @id @default(autoincrement())

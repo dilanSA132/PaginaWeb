@@ -8,7 +8,9 @@ import { createOrder } from '@/services/orderService';
 import { useCartStore } from '@/store/useCartStore';
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { sendEmail } from '@/services/emailService';
-
+import { createOrderDetail,getOrderDetails } from '@/services/orderDetailService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 interface Product {
   id: number;
   name: string;
@@ -102,68 +104,84 @@ const Products: React.FC = () => {
 
   const handleOrder = async () => {
     try {
+      const orderRequest: CreateOrderRequest = {
+        name: contactInfo.name,
+        email: contactInfo.email,
+        phone: contactInfo.phone,
+        address: contactInfo.address,
+      
+      };
+  
+      const newOrder = await createOrder(orderRequest);
+  
+      const orderDetailsEmail: OrderDetails[] = cart.map((product) => ({
+        productId: product.id,
+        name: product.name, 
+        quantity: product.quantity,
+        amount: product.price * product.quantity,
+        orderId: newOrder.id,
+      }));
+
+      
       const orderDetails: OrderDetails[] = cart.map((product) => ({
         productId: product.id,
         quantity: product.quantity,
         amount: product.price * product.quantity,
-        saleId: 1, // Si es necesario, se puede cambiar esto.
-        name: product.name,
+        orderId: newOrder.id,
       }));
-
-      const orderRequest: CreateOrderRequest = {
-        name: contactInfo.name,
-        email: contactInfo.email, // Usar el correo proporcionado por el usuario
-        phone: contactInfo.phone,
-        address: contactInfo.address,
-
-      };
-
-      const newOrder = await createOrder(orderRequest);
-
+  
+  
+      const newOrderDetails = await createOrderDetail(orderDetails);
+  
+      toast.success('¡Pedido realizado con éxito! Te hemos enviado un correo con los detalles.');
+  
       const subject = `Confirmación de Pedido para ${contactInfo.name}`;
       const html = `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-          <h2 style="color: #007BFF;">Hola ${contactInfo.name},</h2>
-          <p>Gracias por tu pedido. Aquí están los detalles:</p>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <thead>
-              <tr style="background-color: #f8f8f8;">
-                <th style="padding: 10px; border: 1px solid #ddd;">Producto</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Cantidad</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Precio</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${orderDetails
-                .map(
-                  (item) => `
-                  <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">$${item.amount.toFixed(2)}</td>
-                  </tr>
-                `
-                )
-                .join('')}
-            </tbody>
-          </table>
-          <p style="font-size: 18px;">Total: <strong style="color: #28a745;">$${calculateTotal().toFixed(
-            2
-          )}</strong></p>
-          <p style="color: #555;">Tu pedido está siendo procesado y te informaremos cuando esté en camino.</p>
-          <p>Gracias por tu compra!</p>
-          <p style="color: #888;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
-        </div>
-      `;
+      <div style="font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #007BFF;">Hola ${contactInfo.name},</h2>
+        <p>Gracias por tu pedido. Aquí están los detalles:</p>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr style="background-color: #f8f8f8;">
+              <th style="padding: 10px; border: 1px solid #ddd;">Producto</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Cantidad</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orderDetailsEmail
+              .map(
+                (item) => `
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
+                  <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+                  <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">$${item.amount.toFixed(2)}</td>
+                </tr>
+              `
+              )
+              .join('')}
+          </tbody>
+        </table>
+        <p style="font-size: 18px;">Total: <strong style="color: #28a745;">$${calculateTotal().toFixed(
+          2
+        )}</strong></p>
+        <p style="color: #555;">Tu pedido está siendo procesado y te informaremos cuando esté en camino.</p>
+        <p>Gracias por tu compra!</p>
+        <p style="color: #888;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+      </div>
+    `;
 
+  
       await sendEmail(subject, html, contactInfo.email);
-
+  
       console.log('Pedido realizado con éxito y correo enviado');
       setIsCartOpen(false);
     } catch (err) {
       console.error('Error al realizar el pedido o enviar el correo:', err);
+      toast.error('Ocurrió un error al realizar el pedido. Por favor, inténtalo de nuevo.');
     }
   };
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
