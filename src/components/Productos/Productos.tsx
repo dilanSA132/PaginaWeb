@@ -146,7 +146,7 @@ const MantenimientoProductos: React.FC = () => {
       )}
 
       <CustomModal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">{isEditing ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="name">Nombre</label>
           <input

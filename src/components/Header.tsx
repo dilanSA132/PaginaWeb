@@ -46,10 +46,6 @@ const Header: React.FC = () => {
               <span className="hidden md:inline">Tienda</span>
             </a>
           )}
-          <a href="/about" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
-            <FaInfoCircle className="text-2xl transition-transform transform hover:scale-125" />
-            <span className="hidden md:inline">Acerca de</span>
-          </a>
           {/* Mostrar "Menú" solo si el usuario tiene roleId = 1 (admin) */}
           {session?.user?.roleId === 1 && (
             <a href="/menu" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
@@ -57,6 +53,11 @@ const Header: React.FC = () => {
               <span className="hidden md:inline">Menú</span>
             </a>
           )}
+          <a href="/about" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <FaInfoCircle className="text-2xl transition-transform transform hover:scale-125" />
+            <span className="hidden md:inline">Acerca de</span>
+          </a>
+
           {session ? (
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}

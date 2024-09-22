@@ -2,51 +2,64 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+// Colores para los círculos
+const colors = [
+  'bg-circle-color-1',
+  'bg-circle-color-2',
+  'bg-circle-color-3',
+  'bg-circle-color-4',
+  'bg-circle-color-5',
+];
+
+const positions = [
+  { top: '10%', left: '15%' },
+  { top: '20%', left: '60%' },
+  { top: '30%', left: '35%' },
+  { top: '40%', left: '75%' },
+  { top: '50%', left: '20%' },
+  { top: '60%', left: '50%' },
+  { top: '70%', left: '80%' },
+  { top: '80%', left: '30%' },
+  { top: '90%', left: '60%' },
+];
+
 const Home: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 via-white to-teal-100">
-      <main className="flex-grow">
+    <div className="relative flex flex-col min-h-screen bg-gradient-to-r from-teal-200 via-white to-green-200 bg-[length:200%_200%] animate-gradient overflow-hidden">
+      <main className="flex-grow relative z-10">
         <section className="relative bg-cover bg-center h-screen" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=1500&q=80')" }}>
+          {/* Fondo de círculos distribuidos uniformemente */}
+          <div className="absolute inset-0">
+            {/* Círculos distribuidos uniformemente */}
+            {positions.map((position, index) => {
+              const colorClass = colors[index % colors.length]; // Cicla a través de los colores
+              const size = `${Math.random() * 50 + 30}px`; // Tamaño aleatorio entre 30px y 80px
+
+              return (
+                <div
+                  key={index}
+                  className={`absolute rounded-full opacity-75 ${colorClass} animate-circle-float`}
+                  style={{
+                    width: size,
+                    height: size,
+                    top: position.top,
+                    left: position.left,
+                  }}
+                />
+              );
+            })}
+          </div>
           <div className="absolute inset-0 bg-white opacity-50"></div>
           <div className="relative z-10 flex items-center justify-center h-full text-center">
             <div className="text-teal-900 animate-fade-in">
               <h1 className="text-5xl font-bold tracking-wide">Encuentra Tu Fragancia Perfecta</h1>
               <p className="mt-4 text-lg">Colección exclusiva de perfumes de lujo.</p>
-              <a href="#productos" className="mt-8 inline-block bg-gradient-to-r from-teal-400 to-green-400 text-white px-6 py-3 font-semibold rounded-full shadow-lg hover:scale-105 transition-transform">Comprar Ahora</a>
+              <a href="/products" className="mt-8 inline-block bg-gradient-to-r from-teal-400 to-green-400 text-white px-6 py-3 font-semibold rounded-full shadow-lg hover:scale-105 transition-transform active:scale-95">
+                Comprar Ahora
+              </a>
             </div>
           </div>
         </section>
-
-        <section id="productos" className="py-16">
-          <div className="container mx-auto px-8">
-            <h2 className="text-3xl font-bold text-center mb-12 text-teal-600">Productos Destacados</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80" alt="Perfume 1" className="h-64 w-full object-cover mb-4 rounded-lg" />
-                <h3 className="text-xl font-semibold mb-2 text-teal-600">Perfume de Lujo 1</h3>
-                <p className="text-gray-600 mb-4">Una mezcla cautivadora de notas florales y almizcladas.</p>
-                <span className="block text-2xl font-bold mb-4 text-teal-700">$99.99</span>
-                <a href="#" className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors">Comprar</a>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80" alt="Perfume 2" className="h-64 w-full object-cover mb-4 rounded-lg" />
-                <h3 className="text-xl font-semibold mb-2 text-teal-600">Perfume de Lujo 2</h3>
-                <p className="text-gray-600 mb-4">Una mezcla sofisticada de aromas cítricos y madera.</p>
-                <span className="block text-2xl font-bold mb-4 text-teal-700">$129.99</span>
-                <a href="#" className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors">Comprar</a>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=600&q=80" alt="Perfume 3" className="h-64 w-full object-cover mb-4 rounded-lg" />
-                <h3 className="text-xl font-semibold mb-2 text-teal-600">Perfume de Lujo 3</h3>
-                <p className="text-gray-600 mb-4">Un aroma fresco y vibrante con toques de vainilla.</p>
-                <span className="block text-2xl font-bold mb-4 text-teal-700">$79.99</span>
-                <a href="#" className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors">Comprar</a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      
       </main>
       <Footer />
     </div>

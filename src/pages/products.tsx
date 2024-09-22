@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
@@ -8,9 +7,12 @@ import { createOrder } from '@/services/orderService';
 import { useCartStore } from '@/store/useCartStore';
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { sendEmail } from '@/services/emailService';
-import { createOrderDetail,getOrderDetails } from '@/services/orderDetailService';
+import { createOrderDetail, getOrderDetails } from '@/services/orderDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 interface Product {
   id: number;
   name: string;
@@ -102,6 +104,124 @@ const Products: React.FC = () => {
     );
   };
 
+
+  const handleDownloadPDF = async () => {
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let yPosition = 20; // Posición inicial en Y dentro del PDF
+  
+      // Establecer la fuente y el título de la página
+      pdf.setFontSize(18);
+      pdf.setTextColor(40);
+      pdf.setFont("helvetica", "bold");
+      pdf.text('Catálogo de Productos', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 10;
+  
+      for (const product of products) {
+        // Añadir un fondo al recuadro del producto para darle más estilo
+        pdf.setFillColor(245, 245, 245); // Color de fondo suave
+        pdf.rect(10, yPosition, pageWidth - 20, 55, 'F'); // Dibuja el rectángulo con el fondo reducido
+  
+        pdf.setDrawColor(180); // Color del borde del recuadro
+        pdf.rect(10, yPosition, pageWidth - 20, 55); // Dibuja el rectángulo para el borde reducido
+  
+        try {
+          // Cargar la imagen del producto
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';
+          img.src = product.image;
+  
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              const aspectRatio = img.width / img.height;
+              const imgWidth = 30; // Tamaño de la imagen más pequeño
+              const imgHeight = imgWidth / aspectRatio;
+  
+              // Añadir la imagen dentro del recuadro, centrada verticalmente
+              pdf.addImage(img, 'JPEG', 12, yPosition + (55 - imgHeight) / 2, imgWidth, imgHeight);
+  
+              // Añadir los detalles del producto
+              pdf.setFontSize(10);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(30);
+              pdf.text(`Nombre:`, 45, yPosition + 10);
+  
+              pdf.setFont("helvetica", "normal");
+              pdf.setFontSize(10);
+              pdf.setTextColor(80);
+              pdf.text(product.name, 70, yPosition + 10);
+  
+              pdf.setFontSize(10);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(30);
+              pdf.text(`Descripción:`, 45, yPosition + 18);
+  
+              pdf.setFont("helvetica", "normal");
+              pdf.setFontSize(9);
+              pdf.setTextColor(60);
+              pdf.text(product.description || 'Sin descripción', 70, yPosition + 18, { maxWidth: 110 });
+  
+              pdf.setFontSize(10);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(30);
+              pdf.text(`Precio:`, 45, yPosition + 26);
+  
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(12);
+              pdf.setTextColor(40);
+              pdf.text(`₡${product.price}`, 70, yPosition + 26);
+  
+              resolve(true);
+            };
+            img.onerror = () => {
+              console.warn(`Error al cargar la imagen para el producto: ${product.name}`);
+              reject(new Error(`No se pudo cargar la imagen para ${product.name}`));
+            };
+          });
+        } catch (imageError) {
+          console.error(imageError);
+          // En caso de que la imagen no se cargue, agregamos solo los detalles del producto
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(10);
+          pdf.setTextColor(30);
+          pdf.text(`Nombre: ${product.name}`, 45, yPosition + 10);
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(9);
+          pdf.setTextColor(60);
+          pdf.text(`Descripción: ${product.description || 'Sin descripción'}`, 45, yPosition + 18, { maxWidth: 110 });
+          pdf.setFontSize(10);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(30);
+          pdf.text(`Precio: ₡${product.price}`, 45, yPosition + 26);
+        }
+  
+        yPosition += 60; // Espacio para el siguiente producto (ajustado para el recuadro más pequeño)
+  
+        // Verificar si se necesita una nueva página
+        if (yPosition > pageHeight - 60) {
+          pdf.addPage();
+          yPosition = 20; // Reiniciar la posición en Y para la nueva página
+          pdf.setFontSize(18);
+          pdf.setTextColor(40);
+          pdf.setFont("helvetica", "bold");
+          pdf.text('Catálogo de Productos', pageWidth / 2, yPosition, { align: 'center' });
+          yPosition += 10;
+        }
+      }
+  
+      // Guardar el PDF
+      pdf.save('catalogo_productos.pdf');
+    } catch (error) {
+      console.error("Error generando el PDF:", error);
+      alert("Ocurrió un error al generar el PDF. Inténtalo de nuevo.");
+    }
+  };
+  
+  
+  
+
   const handleOrder = async () => {
     try {
       const orderRequest: CreateOrderRequest = {
@@ -109,32 +229,33 @@ const Products: React.FC = () => {
         email: contactInfo.email,
         phone: contactInfo.phone,
         address: contactInfo.address,
-      
+
       };
-  
+
       const newOrder = await createOrder(orderRequest);
-  
+
       const orderDetailsEmail: OrderDetails[] = cart.map((product) => ({
         productId: product.id,
-        name: product.name, 
+        name: product.name,
         quantity: product.quantity,
         amount: product.price * product.quantity,
         orderId: newOrder.id,
       }));
 
-      
+
       const orderDetails: OrderDetails[] = cart.map((product) => ({
         productId: product.id,
         quantity: product.quantity,
         amount: product.price * product.quantity,
         orderId: newOrder.id,
       }));
-  
-  
+     
+
+
       const newOrderDetails = await createOrderDetail(orderDetails);
-  
+
       toast.success('¡Pedido realizado con éxito! Te hemos enviado un correo con los detalles.');
-  
+
       const subject = `Confirmación de Pedido para ${contactInfo.name}`;
       const html = `
       <div style="font-family: Arial, sans-serif; color: #333;">
@@ -150,30 +271,30 @@ const Products: React.FC = () => {
           </thead>
           <tbody>
             ${orderDetailsEmail
-              .map(
-                (item) => `
+          .map(
+            (item) => `
                 <tr>
                   <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
                   <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
                   <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">$${item.amount.toFixed(2)}</td>
                 </tr>
               `
-              )
-              .join('')}
+          )
+          .join('')}
           </tbody>
         </table>
         <p style="font-size: 18px;">Total: <strong style="color: #28a745;">$${calculateTotal().toFixed(
-          2
-        )}</strong></p>
+            2
+          )}</strong></p>
         <p style="color: #555;">Tu pedido está siendo procesado y te informaremos cuando esté en camino.</p>
         <p>Gracias por tu compra!</p>
         <p style="color: #888;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
       </div>
     `;
 
-  
+
       await sendEmail(subject, html, contactInfo.email);
-  
+
       console.log('Pedido realizado con éxito y correo enviado');
       setIsCartOpen(false);
     } catch (err) {
@@ -181,11 +302,10 @@ const Products: React.FC = () => {
       toast.error('Ocurrió un error al realizar el pedido. Por favor, inténtalo de nuevo.');
     }
   };
-  
+
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-teal-200 via-white to-green-200 bg-[length:200%_200%] animate-gradient">
       <main className="flex-grow">
         <section className="py-16">
           <div className="container mx-auto px-8">
@@ -199,10 +319,15 @@ const Products: React.FC = () => {
               <p className="text-center text-red-600">{error}</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {currentProducts.map((product) => (
+                {currentProducts.map((product, index) => (
                   <div
                     key={product.id}
-                    className="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl"
+                    className={`bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl 
+                    opacity-0 animate-fade-in-up`}
+                    style={{
+                      animationDelay: `${index * 0.2}s`,
+                      animationFillMode: "forwards",
+                    }}
                   >
                     <img
                       src={product.image}
@@ -210,10 +335,10 @@ const Products: React.FC = () => {
                       className="h-64 w-full object-cover mb-4 rounded-lg"
                     />
                     <h3 className="text-xl font-semibold mb-2 text-teal-600">
-                      {product.name}
+                      {product.name} ({product.description})
                     </h3>
                     <span className="block text-2xl font-bold mb-4 text-teal-700">
-                    ₡{product.price}
+                      ₡{product.price}
                     </span>
                     <button
                       onClick={() => addToCart({ ...product, quantity: 1 })}
@@ -232,11 +357,16 @@ const Products: React.FC = () => {
               onPrevious={handlePreviousPage}
             />
           </div>
+          <button
+                onClick={handleDownloadPDF}
+                className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors"
+              >
+                Descargar Catálogo
+              </button>
         </section>
       </main>
       <Footer />
 
-      {/* Botón para abrir el carrito */}
       <button
         onClick={() => setIsCartOpen(true)}
         className="fixed bottom-4 right-4 bg-yellow-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-yellow-600 transition-colors"
@@ -244,7 +374,6 @@ const Products: React.FC = () => {
         Ver Carrito
       </button>
 
-      {/* Modal del Carrito */}
       {isCartOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-4xl">
@@ -287,7 +416,7 @@ const Products: React.FC = () => {
                             />
                           </td>
                           <td className="py-3 px-4 text-black">
-                          ₡{(item.price * item.quantity).toFixed(2)}
+                            ₡{(item.price * item.quantity).toFixed(2)}
                           </td>
                           <td className="py-3 px-4 text-black">
                             <button
@@ -324,7 +453,7 @@ const Products: React.FC = () => {
                         onChange={(e) =>
                           setContactInfo({ ...contactInfo, name: e.target.value })
                         }
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
                         required
                       />
                     </div>
@@ -339,12 +468,15 @@ const Products: React.FC = () => {
                         onChange={(e) =>
                           setContactInfo({ ...contactInfo, email: e.target.value })
                         }
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                        title="Por favor, introduce un correo electrónico válido (ejemplo@dominio.com)"
                         required
                       />
                     </div>
+
                     <div>
-                      <label htmlFor="phone" className="block text-black font-semibold">
+                      <label htmlFor="phone" className="block text-black font-semibold ">
                         Teléfono
                       </label>
                       <input
@@ -354,7 +486,7 @@ const Products: React.FC = () => {
                         onChange={(e) =>
                           setContactInfo({ ...contactInfo, phone: e.target.value })
                         }
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
                         required
                       />
                     </div>
@@ -369,7 +501,7 @@ const Products: React.FC = () => {
                         onChange={(e) =>
                           setContactInfo({ ...contactInfo, address: e.target.value })
                         }
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-black"
                         required
                       />
                     </div>

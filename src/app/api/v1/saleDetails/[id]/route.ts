@@ -1,12 +1,9 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function DELETE(
-  req: NextRequest,
-  _res: NextResponse
-) {
+export async function DELETE(req: NextRequest) {
   try {
-    const id = req.url.split('/').pop();
+    const id = req.url.split('/').pop(); // Obtiene el ID de la URL
     const deletedSaleDetail = await prisma.saleDetail.delete({
       where: { id: Number(id) },
     });

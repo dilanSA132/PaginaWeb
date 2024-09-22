@@ -89,7 +89,7 @@ const MantenimientoUsuarios: React.FC = () => {
 
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Usuarios</h1>
+      <h1 className="text-3xl font-bold mb-6 text-teal-600">Usuarios</h1>
 
       {/* Botón para abrir el modal de creación de usuario */}
       <button

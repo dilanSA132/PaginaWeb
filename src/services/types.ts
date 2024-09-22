@@ -14,3 +14,16 @@ export interface CreateOrderRequest {
   phone: string;
   address: string;
 }
+
+export interface SaleDetailResponse {
+  id: number;
+  quantity: number;
+  amount: number;
+  productId: number;
+  product: {
+    id: number;
+    name: string;
+    description: string | null;
+    price: number;
+  };
+}
