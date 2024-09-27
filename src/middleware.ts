@@ -5,7 +5,7 @@ import { env } from 'process';
 
 export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret: env.NEXTAUTH_SECRET });
-
+  console.log('session', session);  
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
@@ -17,10 +17,9 @@ export async function middleware(req: NextRequest) {
   const userRoleId = session.roleId; 
   const restrictedRoutesForUser = ['/menu']; 
 
-  // Verificamos si el usuario tiene roleId = 2 (Usuario) y si intenta acceder a rutas restringidas
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = '/products'; // Redirigir a la página de la tienda
+    url.pathname = '/products'; 
     return NextResponse.redirect(url);
   }
 

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
-import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService'; 
-import { getCategories } from '@/services/CategoriesService'; 
+import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService';
+import { getCategories } from '@/services/CategoriesService';
+import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 interface Product {
   id: number;
@@ -12,7 +18,6 @@ interface Product {
   categoryId: number;
   image?: string;
 }
-
 interface Category {
   id: number;
   name: string;
@@ -20,7 +25,7 @@ interface Category {
 
 const MantenimientoProductos: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]); 
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -107,7 +112,7 @@ const MantenimientoProductos: React.FC = () => {
     { label: 'Nombre', accessor: 'name' },
     { label: 'Descripción', accessor: 'description' },
     { label: 'Precio', accessor: 'price' },
-    { label: 'Categoría', accessor: 'categoryName' }, // Cambia el accesor para mostrar el nombre de la categoría
+    { label: 'Categoría', accessor: 'categoryName' },
     { label: 'Imagen', accessor: 'image' },
   ];
 
@@ -121,23 +126,186 @@ const MantenimientoProductos: React.FC = () => {
     categoryName: getCategoryName(product.categoryId),
   }));
 
+
+  const handleDownloadExcel = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Catálogo de Productos');
+
+      // Define columns
+      worksheet.columns = [
+        { header: 'ID', key: 'id', width: 10 },
+        { header: 'Nombre', key: 'name', width: 30 },
+        { header: 'Descripción', key: 'description', width: 50 },
+        { header: 'Precio', key: 'price', width: 15 },
+        { header: 'Categoría', key: 'category', width: 20 },
+        { header: 'Imagen', key: 'image', width: 30 },
+      ];
+
+      products.forEach(product => {
+        worksheet.addRow({
+          id: product.id,
+          name: product.name,
+          description: product.description || 'Sin descripción',
+          price: product.price,
+          category: getCategoryName(product.categoryId),
+          image: product.image || 'Sin imagen',
+        });
+      });
+
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).eachCell(cell => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFCC00' },
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      const analysisWorksheet = workbook.addWorksheet('Análisis de Precios');
+      analysisWorksheet.columns = [
+        { header: 'Producto', key: 'name', width: 30 },
+        { header: 'Precio', key: 'price', width: 15 }
+      ];
+
+      // Add rows to the analysis worksheet
+      products.forEach(product => {
+        analysisWorksheet.addRow({ name: product.name, price: product.price });
+      });
+
+      // Style the header of the analysis worksheet
+      analysisWorksheet.getRow(1).font = { bold: true };
+      analysisWorksheet.getRow(1).eachCell(cell => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFD700' },
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      const totalRow = analysisWorksheet.addRow([
+        'Total Valor del Inventario',
+        { formula: `SUM(B2:B${products.length + 1})` }
+      ]);
+
+      totalRow.font = { bold: true };
+      totalRow.eachCell((cell, colNumber) => {
+        if (colNumber === 1) {
+          cell.alignment = { horizontal: 'right' };
+        }
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'E0E0E0' },
+        };
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), 'catalogo_productos_con_datos.xlsx');
+      toast.success('Catálogo de productos descargado con éxito!');
+
+    } catch (error) {
+      toast.error('Error al generar el archivo de Excel');
+    }
+  };
+
+
+
+  const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const jsonData: Array<{ Nombre: string; Descripción: string; Precio: any; Categoría: string; Imagen?: string }> = XLSX.utils.sheet_to_json(worksheet);
+
+        for (const product of jsonData) {
+          try {
+            const price = parseFloat(product.Precio) || 0;
+            await createProduct({
+              name: product.Nombre,
+              description: product.Descripción || '',
+              price: price,
+              categoryId: categories.find(c => c.name === product.Categoría)?.id || 0,
+              image: product.Imagen || '',
+            });
+          } catch (error) {
+            toast.error(`Error al importar el producto: ${product.Nombre}`);
+          }
+        }
+
+        const productsResponse = await getProducts();
+        setProducts(productsResponse);
+      };
+
+      reader.readAsArrayBuffer(file);
+      toast.success('Archivo de Excel importado con éxito!');
+    } catch (error) {
+      toast.error('Error al importar el archivo de Excel');
+      console.error("Error al importar el archivo de Excel:", error);
+    }
+  };
+
+
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Productos</h1>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={openModalForNewProduct}
+          className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
+        >
+          Nuevo Producto
+        </button>
 
-      <button
-        onClick={openModalForNewProduct}
-        className="bg-teal-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-teal-600"
-      >
-        Nuevo Producto
-      </button>
+        <div className="flex space-x-4">
+          <button
+            onClick={handleDownloadExcel}
+            className="bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600"
+          >
+            Descargar Catálogo
+          </button>
+
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleImportExcel}
+            className="text-black border border-gray-300 p-2 rounded-lg"
+          />
+        </div>
+      </div>
+
 
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading ? (
         <UniversalTable
           columns={columns}
-          data={productsWithCategoryName} // Usa los datos con el nombre de la categoría
+          data={productsWithCategoryName}
           onEdit={openModalForEditProduct}
           onDelete={handleDelete}
         />

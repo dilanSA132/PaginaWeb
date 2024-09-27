@@ -17,11 +17,10 @@ model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   name     String
-  password String  // Contraseña, campo obligatorio
+  password String // Contraseña, campo obligatorio
   role     Role   @relation(fields: [roleId], references: [id]) // Relación obligatoria
   roleId   Int    // roleId ya no puede ser nulo
 }
-
 
 model Category {
   id       Int       @id @default(autoincrement())
@@ -36,11 +35,10 @@ model Product {
   price        Float
   category     Category    @relation(fields: [categoryId], references: [id])
   categoryId   Int
-  image        String?     // Nuevo campo para almacenar la imagen
+  image        String?     // Campo para almacenar la imagen
   sales        SaleDetail[]
   orderDetails OrderDetail[]
 }
-
 
 model Order {
   id        Int           @id @default(autoincrement())
@@ -50,6 +48,13 @@ model Order {
   phone     String 
   address   String
   details   OrderDetail[]
+  status    OrderStatus   @default(PENDING) // Estado de la orden
+  sale      Sale?         // Relación con Sale si la orden se convierte en una venta
+}
+
+enum OrderStatus {
+  PENDING
+  SOLD
 }
 
 model OrderDetail {
@@ -64,7 +69,6 @@ model OrderDetail {
   orderId   Int
 }
 
-
 model Sale {
   id             Int           @id @default(autoincrement())
   date           DateTime      @default(now())
@@ -74,6 +78,15 @@ model Sale {
   paymentPlanId  Int?
   details        SaleDetail[]
   orderDetails   OrderDetail[]
+  paymentDetails PaymentDetail[] // Detalles de pago asociados a la venta
+  originOrder    Order?         @relation(fields: [originOrderId], references: [id]) // Relación con la orden de origen
+  originOrderId  Int?           @unique // ID de la orden original si aplica
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  PARTIAL
 }
 
 model SaleDetail {
@@ -86,15 +99,23 @@ model SaleDetail {
   saleId    Int
 }
 
+model PaymentDetail {
+  id             Int          @id @default(autoincrement())
+  sale           Sale         @relation(fields: [saleId], references: [id])
+  saleId         Int
+  paymentMethod  PaymentMethod // Método de pago utilizado
+  amountPaid     Float        // Monto pagado
+  paymentDate    DateTime     @default(now()) // Fecha del pago
+}
+
+enum PaymentMethod {
+  CASH        // Efectivo
+  TRANSFER    // Transferencia
+}
+
 model PaymentPlan {
   id          Int    @id @default(autoincrement())
   installments Int
   amount      Float
   sales       Sale[]
-}
-
-enum PaymentStatus {
-  PAID
-  PENDING
-  PARTIAL
 }

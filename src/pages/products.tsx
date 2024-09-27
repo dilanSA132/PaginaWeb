@@ -10,8 +10,9 @@ import { sendEmail } from '@/services/emailService';
 import { createOrderDetail, getOrderDetails } from '@/services/orderDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
+import * as XLSX from 'xlsx';
+
 
 interface Product {
   id: number;
@@ -104,121 +105,78 @@ const Products: React.FC = () => {
     );
   };
 
-
-  const handleDownloadPDF = async () => {
+  const handleDownloadExcel = () => {
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      let yPosition = 20; // Posición inicial en Y dentro del PDF
+      // Crear los datos para el Excel
+      const worksheetData = products.map(product => ({
+        Nombre: product.name,
+        Descripción: product.description || 'Sin descripción',
+        Precio: `₡${product.price}`
+      }));
   
-      // Establecer la fuente y el título de la página
-      pdf.setFontSize(18);
-      pdf.setTextColor(40);
-      pdf.setFont("helvetica", "bold");
-      pdf.text('Catálogo de Productos', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
+      // Crear el libro de Excel
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
   
-      for (const product of products) {
-        // Añadir un fondo al recuadro del producto para darle más estilo
-        pdf.setFillColor(245, 245, 245); // Color de fondo suave
-        pdf.rect(10, yPosition, pageWidth - 20, 55, 'F'); // Dibuja el rectángulo con el fondo reducido
+      // Añadir un título
+      XLSX.utils.sheet_add_aoa(worksheet, [["Catálogo de Productos"]], { origin: 'A1' });
   
-        pdf.setDrawColor(180); // Color del borde del recuadro
-        pdf.rect(10, yPosition, pageWidth - 20, 55); // Dibuja el rectángulo para el borde reducido
+      // Aplicar estilos al título
+      worksheet['A1'].s = {
+        font: { bold: true, sz: 16, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "4CAF50" } }, // Fondo verde
+        alignment: { horizontal: "center" }
+      };
   
-        try {
-          // Cargar la imagen del producto
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.src = product.image;
+      // Ajustar el ancho de las columnas
+      const wscols = [{ wch: 30 }, { wch: 50 }, { wch: 20 }];
+      worksheet['!cols'] = wscols;
   
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              const aspectRatio = img.width / img.height;
-              const imgWidth = 30; // Tamaño de la imagen más pequeño
-              const imgHeight = imgWidth / aspectRatio;
+      // Añadir estilos de encabezado a las columnas
+      const headerStyle = {
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "000080" } }, // Fondo azul
+        alignment: { horizontal: "center" }
+      };
   
-              // Añadir la imagen dentro del recuadro, centrada verticalmente
-              pdf.addImage(img, 'JPEG', 12, yPosition + (55 - imgHeight) / 2, imgWidth, imgHeight);
-  
-              // Añadir los detalles del producto
-              pdf.setFontSize(10);
-              pdf.setFont("helvetica", "bold");
-              pdf.setTextColor(30);
-              pdf.text(`Nombre:`, 45, yPosition + 10);
-  
-              pdf.setFont("helvetica", "normal");
-              pdf.setFontSize(10);
-              pdf.setTextColor(80);
-              pdf.text(product.name, 70, yPosition + 10);
-  
-              pdf.setFontSize(10);
-              pdf.setFont("helvetica", "bold");
-              pdf.setTextColor(30);
-              pdf.text(`Descripción:`, 45, yPosition + 18);
-  
-              pdf.setFont("helvetica", "normal");
-              pdf.setFontSize(9);
-              pdf.setTextColor(60);
-              pdf.text(product.description || 'Sin descripción', 70, yPosition + 18, { maxWidth: 110 });
-  
-              pdf.setFontSize(10);
-              pdf.setFont("helvetica", "bold");
-              pdf.setTextColor(30);
-              pdf.text(`Precio:`, 45, yPosition + 26);
-  
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(12);
-              pdf.setTextColor(40);
-              pdf.text(`₡${product.price}`, 70, yPosition + 26);
-  
-              resolve(true);
-            };
-            img.onerror = () => {
-              console.warn(`Error al cargar la imagen para el producto: ${product.name}`);
-              reject(new Error(`No se pudo cargar la imagen para ${product.name}`));
-            };
-          });
-        } catch (imageError) {
-          console.error(imageError);
-          // En caso de que la imagen no se cargue, agregamos solo los detalles del producto
-          pdf.setFont("helvetica", "bold");
-          pdf.setFontSize(10);
-          pdf.setTextColor(30);
-          pdf.text(`Nombre: ${product.name}`, 45, yPosition + 10);
-          pdf.setFont("helvetica", "normal");
-          pdf.setFontSize(9);
-          pdf.setTextColor(60);
-          pdf.text(`Descripción: ${product.description || 'Sin descripción'}`, 45, yPosition + 18, { maxWidth: 110 });
-          pdf.setFontSize(10);
-          pdf.setFont("helvetica", "bold");
-          pdf.setTextColor(30);
-          pdf.text(`Precio: ₡${product.price}`, 45, yPosition + 26);
+      // Aplicar estilo a los encabezados de la tabla
+      const headers = ['A2', 'B2', 'C2'];
+      headers.forEach(header => {
+        if (worksheet[header]) {
+          worksheet[header].s = headerStyle;
         }
+      });
   
-        yPosition += 60; // Espacio para el siguiente producto (ajustado para el recuadro más pequeño)
+      // Aplicar bordes a todas las celdas
+      const borderStyle = {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      };
   
-        // Verificar si se necesita una nueva página
-        if (yPosition > pageHeight - 60) {
-          pdf.addPage();
-          yPosition = 20; // Reiniciar la posición en Y para la nueva página
-          pdf.setFontSize(18);
-          pdf.setTextColor(40);
-          pdf.setFont("helvetica", "bold");
-          pdf.text('Catálogo de Productos', pageWidth / 2, yPosition, { align: 'center' });
-          yPosition += 10;
+      for (let R = 1; R <= products.length + 1; R++) {
+        for (let C = 0; C < 3; C++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          if (worksheet[cellAddress]) {
+            worksheet[cellAddress].s = {
+              ...worksheet[cellAddress].s,
+              border: borderStyle,
+            };
+          }
         }
       }
   
-      // Guardar el PDF
-      pdf.save('catalogo_productos.pdf');
+      // Añadir la hoja al libro
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
+  
+      XLSX.writeFile(workbook, 'catalogo_productos.xlsx');
+      toast.success('Catálogo de productos descargado con éxito!'); 
+
     } catch (error) {
-      console.error("Error generando el PDF:", error);
-      alert("Ocurrió un error al generar el PDF. Inténtalo de nuevo.");
+      console.error("Error al generar el archivo de Excel:", error);
     }
   };
-  
   
   
 
@@ -358,7 +316,7 @@ const Products: React.FC = () => {
             />
           </div>
           <button
-                onClick={handleDownloadPDF}
+                onClick={handleDownloadExcel}
                 className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors"
               >
                 Descargar Catálogo

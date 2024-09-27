@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3000/api/v1/sales';
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1/sales';
 
 export async function getSales() {
   try {
@@ -6,11 +6,12 @@ export async function getSales() {
       method: 'GET',
     });
     if (!response.ok) {
-      throw new Error('Error fetching sales');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error fetching sales');
     }
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching sales:', error);
     throw error;
   }
 }
@@ -25,11 +26,12 @@ export async function createSale(sale: any) {
       body: JSON.stringify(sale),
     });
     if (!response.ok) {
-      throw new Error('Error creating sale');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error creating sale');
     }
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error creating sale:', error);
     throw error;
   }
 }
@@ -41,11 +43,12 @@ export async function deleteSale(saleId: number) {
       method: 'DELETE',
     });
     if (!response.ok) {
-      throw new Error('Error deleting sale');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error deleting sale');
     }
     return true; // o cualquier mensaje de éxito
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting sale:', error);
     throw error;
   }
 }
@@ -61,11 +64,12 @@ export async function updateSale(saleId: number, saleData: any) {
       body: JSON.stringify(saleData),
     });
     if (!response.ok) {
-      throw new Error('Error updating sale');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error updating sale');
     }
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error updating sale:', error);
     throw error;
   }
 }
