@@ -10,9 +10,9 @@ import { sendEmail } from '@/services/emailService';
 import { createOrderDetail, getOrderDetails } from '@/services/orderDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getCategories } from '@/services/CategoriesService';
 
 import * as XLSX from 'xlsx';
-
 
 interface Product {
   id: number;
@@ -20,7 +20,15 @@ interface Product {
   description?: string;
   price: number;
   image: string;
+  category: {
+    name: string;
+  };
 }
+interface Category {
+  id: number;
+  name: string;
+}
+
 
 const Products: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,12 +45,19 @@ const Products: React.FC = () => {
     address: '',
   });
 
+
+
   const cart = useCartStore((state) => state.cart);
   const addToCart = useCartStore((state) => state.addToCart);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
-
+  const [categories, setCategories] = useState([]); // Estado para las categorías
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 120000 });
   const productsPerPage = 9;
+  const [showFilters, setShowFilters] = useState(false);
+
+
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   useEffect(() => {
@@ -64,6 +79,56 @@ const Products: React.FC = () => {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const fetchProductsAndCategories = async () => {
+      setLoading(true);
+      try {
+        const [fetchedProducts, fetchedCategories] = await Promise.all([
+          getProducts(),
+          getCategories(),
+        ]);
+        if (!fetchedProducts) {
+          throw new Error('No se encontraron productos');
+        }
+        setProducts(fetchedProducts);
+        setFilteredProducts(fetchedProducts);
+        setCategories(fetchedCategories);
+      } catch (err) {
+        setError('Error al cargar los productos y/o categorías');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductsAndCategories();
+  }, []);
+
+  const filterProducts = (searchTerm: string, category: string | null, range: { min: number, max: number }) => {
+    const filtered = products.filter((product) => {
+      const matchesTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = category ? product.category.name === category : true;
+      const matchesPriceRange = product.price >= range.min && product.price <= range.max;
+      return matchesTerm && matchesCategory && matchesPriceRange;
+    });
+    setFilteredProducts(filtered);
+    setCurrentPage(1);
+  };
+
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.value;
+    setSelectedCategory(selected);
+    filterProducts(searchTerm, selected, priceRange);
+  };
+
+  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>, type: 'min' | 'max') => {
+    const value = parseInt(event.target.value, 10) || 0;
+    const updatedRange = { ...priceRange, [type]: value };
+    setPriceRange(updatedRange);
+    filterProducts(searchTerm, selectedCategory, updatedRange);
+  };
+
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -113,32 +178,32 @@ const Products: React.FC = () => {
         Descripción: product.description || 'Sin descripción',
         Precio: `₡${product.price}`
       }));
-  
+
       // Crear el libro de Excel
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-  
+
       // Añadir un título
       XLSX.utils.sheet_add_aoa(worksheet, [["Catálogo de Productos"]], { origin: 'A1' });
-  
+
       // Aplicar estilos al título
       worksheet['A1'].s = {
         font: { bold: true, sz: 16, color: { rgb: "FFFFFF" } },
         fill: { fgColor: { rgb: "4CAF50" } }, // Fondo verde
         alignment: { horizontal: "center" }
       };
-  
+
       // Ajustar el ancho de las columnas
       const wscols = [{ wch: 30 }, { wch: 50 }, { wch: 20 }];
       worksheet['!cols'] = wscols;
-  
+
       // Añadir estilos de encabezado a las columnas
       const headerStyle = {
         font: { bold: true, color: { rgb: "FFFFFF" } },
         fill: { fgColor: { rgb: "000080" } }, // Fondo azul
         alignment: { horizontal: "center" }
       };
-  
+
       // Aplicar estilo a los encabezados de la tabla
       const headers = ['A2', 'B2', 'C2'];
       headers.forEach(header => {
@@ -146,7 +211,7 @@ const Products: React.FC = () => {
           worksheet[header].s = headerStyle;
         }
       });
-  
+
       // Aplicar bordes a todas las celdas
       const borderStyle = {
         top: { style: "thin", color: { rgb: "000000" } },
@@ -154,7 +219,7 @@ const Products: React.FC = () => {
         left: { style: "thin", color: { rgb: "000000" } },
         right: { style: "thin", color: { rgb: "000000" } }
       };
-  
+
       for (let R = 1; R <= products.length + 1; R++) {
         for (let C = 0; C < 3; C++) {
           const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
@@ -166,19 +231,19 @@ const Products: React.FC = () => {
           }
         }
       }
-  
+
       // Añadir la hoja al libro
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
-  
+
       XLSX.writeFile(workbook, 'catalogo_productos.xlsx');
-      toast.success('Catálogo de productos descargado con éxito!'); 
+      toast.success('Catálogo de productos descargado con éxito!');
 
     } catch (error) {
       console.error("Error al generar el archivo de Excel:", error);
     }
   };
-  
-  
+
+
 
   const handleOrder = async () => {
     try {
@@ -207,7 +272,7 @@ const Products: React.FC = () => {
         amount: product.price * product.quantity,
         orderId: newOrder.id,
       }));
-     
+
 
 
       const newOrderDetails = await createOrderDetail(orderDetails);
@@ -234,14 +299,14 @@ const Products: React.FC = () => {
                 <tr>
                   <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
                   <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
-                  <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">$${item.amount.toFixed(2)}</td>
+                  <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₡${item.amount.toFixed(2)}</td>
                 </tr>
               `
           )
           .join('')}
           </tbody>
         </table>
-        <p style="font-size: 18px;">Total: <strong style="color: #28a745;">$${calculateTotal().toFixed(
+        <p style="font-size: 18px;">Total: <strong style="color: #28a745;">₡${calculateTotal().toFixed(
             2
           )}</strong></p>
         <p style="color: #555;">Tu pedido está siendo procesado y te informaremos cuando esté en camino.</p>
@@ -271,6 +336,57 @@ const Products: React.FC = () => {
               Nuestros Productos
             </h2>
             <SearchBar onSearch={handleSearch} />
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors mb-4"
+            >
+              {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
+            </button>
+
+            {showFilters && (
+  <div>
+    {/* Filtro por categoría */}
+    <div className="mb-4">
+      <label htmlFor="categoryFilter" className="block text-black font-semibold">Filtrar por Categoría</label>
+      <select
+        id="categoryFilter"
+        value={selectedCategory || ''}
+        onChange={handleCategoryChange}
+        className="w-full border border-gray-300 rounded-md px-3 py-2  text-black"
+      >
+        <option value="">Todas las Categorías</option>
+        {categories.map((category: Category) => (
+          <option key={category.id} value={category.name}>
+            {category.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Filtro por rango de precios */}
+    <div className="mb-4">
+      <label className="block text-black font-semibold">Filtrar por Precio</label>
+      <div className="flex space-x-4">
+        <input
+          type="number"
+          placeholder="Precio Mínimo"
+          value={priceRange.min}
+          onChange={(e) => handlePriceChange(e, 'min')}
+          className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-black" 
+        />
+        <input
+          type="number"
+          placeholder="Precio Máximo"
+          value={priceRange.max}
+          onChange={(e) => handlePriceChange(e, 'max')}
+          className="w-1/2 border border-gray-300 rounded-md px-3 py-2  text-black"
+        />
+      </div>
+    </div>
+  </div>
+)}
+
             {loading ? (
               <p className="text-center text-teal-600">Cargando productos...</p>
             ) : error ? (
@@ -316,11 +432,11 @@ const Products: React.FC = () => {
             />
           </div>
           <button
-                onClick={handleDownloadExcel}
-                className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors"
-              >
-                Descargar Catálogo
-              </button>
+            onClick={handleDownloadExcel}
+            className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors"
+          >
+            Descargar Catálogo
+          </button>
         </section>
       </main>
       <Footer />
