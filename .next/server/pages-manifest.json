@@ -2,8 +2,10 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/login": "pages/login.js",
+  "/mainMenu": "pages/mainMenu.js",
+  "/category": "pages/category.js",
   "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/register": "pages/register.js"
+  "/inventory": "pages/inventory.js",
+  "/users": "pages/users.js",
+  "/role": "pages/role.js"
 }

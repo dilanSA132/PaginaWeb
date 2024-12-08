@@ -48,7 +48,7 @@ const Header: React.FC = () => {
           )}
           {/* Mostrar "Menú" solo si el usuario tiene roleId = 1 (admin) */}
           {session?.user?.roleId === 1 && (
-            <a href="/menu" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+            <a href="/mainMenu" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
               <FaList className="text-2xl transition-transform transform hover:scale-125" />
               <span className="hidden md:inline">Menú</span>
             </a>

@@ -1,4 +1,6 @@
 {
-  "/api/v1/user/route": "app/api/v1/user/route.js",
-  "/api/v1/client/route": "app/api/v1/client/route.js"
+  "/api/v1/category/route": "app/api/v1/category/route.js",
+  "/api/v1/role/route": "app/api/v1/role/route.js",
+  "/api/v1/inventory/route": "app/api/v1/inventory/route.js",
+  "/api/v1/user/route": "app/api/v1/user/route.js"
 }

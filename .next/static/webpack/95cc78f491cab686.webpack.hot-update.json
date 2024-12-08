@@ -1,0 +1,1 @@
+{"c":["webpack"],"r":["pages/inventory"],"m":["./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?absolutePagePath=E%3A%5CProyectos%5CGary%5CPaginaWeb%5Csrc%5Cpages%5Cinventory.tsx&page=%2Finventory!","./src/components/InventoryMaintenance/InventoryMaintenance.tsx","./src/pages/inventory.tsx","./src/services/inventoryService.ts"]}

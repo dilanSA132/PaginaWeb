@@ -15,11 +15,6 @@
     "static/chunks/main-app.js"
   ],
   "pages": {
-    "/": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/index.js"
-    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -30,15 +25,30 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/login": [
+    "/category": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/login.js"
+      "static/chunks/pages/category.js"
     ],
-    "/register": [
+    "/inventory": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/register.js"
+      "static/chunks/pages/inventory.js"
+    ],
+    "/mainMenu": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/mainMenu.js"
+    ],
+    "/role": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/role.js"
+    ],
+    "/users": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/users.js"
     ]
   },
   "ampFirstPages": []

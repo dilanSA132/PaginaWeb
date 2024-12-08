@@ -1,67 +1,63 @@
 import React from 'react';
+import Slider from 'react-slick';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-
-// Colores para los círculos
-const colors = [
-  'bg-circle-color-1',
-  'bg-circle-color-2',
-  'bg-circle-color-3',
-  'bg-circle-color-4',
-  'bg-circle-color-5',
-];
-
-const positions = [
-  { top: '10%', left: '15%' },
-  { top: '20%', left: '60%' },
-  { top: '30%', left: '35%' },
-  { top: '40%', left: '75%' },
-  { top: '50%', left: '20%' },
-  { top: '60%', left: '50%' },
-  { top: '70%', left: '80%' },
-  { top: '80%', left: '30%' },
-  { top: '90%', left: '60%' },
-];
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const Home: React.FC = () => {
-  return (
-    <div className="relative flex flex-col min-h-screen bg-gradient-to-r from-teal-200 via-white to-green-200 bg-[length:200%_200%] animate-gradient overflow-hidden">
-      <main className="flex-grow relative z-10">
-        <section className="relative bg-cover bg-center h-screen" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598032896233-8f8d137cf7af?fit=crop&w=1500&q=80')" }}>
-          {/* Fondo de círculos distribuidos uniformemente */}
-          <div className="absolute inset-0">
-            {/* Círculos distribuidos uniformemente */}
-            {positions.map((position, index) => {
-              const colorClass = colors[index % colors.length]; // Cicla a través de los colores
-              const size = `${Math.random() * 50 + 30}px`; // Tamaño aleatorio entre 30px y 80px
+  // Configuración del carrusel
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: false,
+  };
 
-              return (
-                <div
-                  key={index}
-                  className={`absolute rounded-full opacity-75 ${colorClass} animate-circle-float`}
-                  style={{
-                    width: size,
-                    height: size,
-                    top: position.top,
-                    left: position.left,
-                  }}
-                />
-              );
-            })}
-          </div>
-          <div className="absolute inset-0 bg-white opacity-50"></div>
-          <div className="relative z-10 flex items-center justify-center h-full text-center">
-            <div className="text-teal-900 animate-fade-in">
-              <h1 className="text-5xl font-bold tracking-wide">Encuentra Tu Fragancia Perfecta</h1>
-              <p className="mt-4 text-lg">Colección exclusiva de perfumes de lujo.</p>
-              <a href="/products" className="mt-8 inline-block bg-gradient-to-r from-teal-400 to-green-400 text-white px-6 py-3 font-semibold rounded-full shadow-lg hover:scale-105 transition-transform active:scale-95">
-                Comprar Ahora
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
+  return (
+    <div className="relative flex flex-col min-h-screen">
+      {/* Carrusel de imágenes */}
+      <Slider {...settings} className="relative w-full h-80 md:h-[500px]">
+        <div className="flex items-center justify-center">
+          <img
+            src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg"
+            alt="Imagen de perfume 1"
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+        <div className="flex items-center justify-center">
+          <img
+            src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg"
+            alt="Imagen de perfume 2"
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+        <div className="flex items-center justify-center">
+          <img
+            src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg"
+            alt="Imagen de perfume 3"
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+      </Slider>
+
+      {/* Contenido principal */}
+      <div className="absolute inset-0 bg-white opacity-50"></div>
+      <div className="relative z-10 flex items-center justify-center h-full text-center">
+        <div className="text-teal-900 animate-fade-in">
+          <h1 className="text-5xl font-bold tracking-wide">Encuentra Tu Fragancia Perfecta</h1>
+          <p className="mt-4 text-lg">Colección exclusiva de perfumes de lujo.</p>
+          <a
+            href="/products"
+            className="mt-8 inline-block bg-gradient-to-r from-teal-400 to-green-400 text-white px-6 py-3 font-semibold rounded-full shadow-lg hover:scale-105 transition-transform active:scale-95"
+          >
+            Comprar Ahora
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

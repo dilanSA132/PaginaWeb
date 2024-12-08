@@ -1,0 +1,1 @@
+{"c":["pages/users","pages/inventory","webpack"],"r":["pages/users"],"m":["./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?absolutePagePath=E%3A%5CProyectos%5CGary%5CPaginaWeb%5Csrc%5Cpages%5Cusers.tsx&page=%2Fusers!","./src/components/UserMaintenance/UserMaintenance.tsx","./src/pages/users.tsx","./src/services/userService.ts"]}
