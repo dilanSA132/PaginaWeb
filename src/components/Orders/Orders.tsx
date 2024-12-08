@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
 import { getOrders, createOrder, deleteOrder, updateOrder } from '@/services/orderService';
-import { getProducts } from '@/services/productService';
+import { getProducts } from '@/services/inventoryService';
 import { createOrderDetail, deleteOrderDetail, updateOrderDetail } from '@/services/orderDetailService';
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { ToastContainer, toast } from 'react-toastify';

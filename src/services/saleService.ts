@@ -1,75 +1,72 @@
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1/sales';
+export const getSales = async () => {
+  const response = await fetch('http://localhost:3000/api/v1/sales', {
+    method: 'GET',
+  });
 
-export async function getSales() {
-  try {
-    const response = await fetch(baseUrl, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error fetching sales');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching sales:', error);
-    throw error;
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al obtener las ventas');
   }
-}
 
-export async function createSale(sale: any) {
-  try {
-    const response = await fetch(baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(sale),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error creating sale');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error creating sale:', error);
-    throw error;
-  }
-}
+  return response.json();
+};
 
-// Función para eliminar una venta
-export async function deleteSale(saleId: number) {
-  try {
-    const response = await fetch(`${baseUrl}/${saleId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error deleting sale');
-    }
-    return true; // o cualquier mensaje de éxito
-  } catch (error) {
-    console.error('Error deleting sale:', error);
-    throw error;
-  }
-}
+export const getSaleById = async (id: number) => {
+  const response = await fetch(`http://localhost:3000/api/v1/sales/${id}`, {
+    method: 'GET',
+  });
 
-// Función para actualizar una venta
-export async function updateSale(saleId: number, saleData: any) {
-  try {
-    const response = await fetch(`${baseUrl}/${saleId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(saleData),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error updating sale');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error updating sale:', error);
-    throw error;
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al obtener la venta');
   }
-}
+
+  return response.json();
+};
+
+export const createSale = async (data: { sale_date: Date, total_amount: number, id_client: number, id_user: number }) => {
+  const response = await fetch('http://localhost:3000/api/v1/sales', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al crear la venta');
+  }
+
+  return response.json();
+};
+
+export const updateSale = async (id: number, data: { sale_date?: Date, total_amount?: number, id_client?: number, id_user?: number }) => {
+  const response = await fetch(`http://localhost:3000/api/v1/sales/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al actualizar la venta');
+  }
+
+  return response.json();
+};
+
+export const deleteSale = async (id: number) => {
+  const response = await fetch(`http://localhost:3000/api/v1/sales/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al eliminar la venta');
+  }
+
+  return response.json();
+};

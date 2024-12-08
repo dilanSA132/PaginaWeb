@@ -1,85 +1,73 @@
-const baseUrl = 'http://localhost:3000/api/v1/saleDetails';
-
-export async function getSaleDetails() {
-  try {
-    const response = await fetch(baseUrl, {
+export const getSaleDetails = async () => {
+    const response = await fetch('http://localhost:3000/api/v1/saleDetails', {
       method: 'GET',
     });
+  
     if (!response.ok) {
-      throw new Error('Error fetching sale details');
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || 'Error al obtener los detalles de la venta');
     }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export async function createSaleDetail(saleDetail: any) {
-  try {
-    const response = await fetch(baseUrl, {
+  
+    return response.json();
+  };
+  
+  export const getSaleDetailById = async (id: number) => {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
+      method: 'GET',
+    });
+  
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || 'Error al obtener el detalle de la venta');
+    }
+  
+    return response.json();
+  };
+  
+  export const createSaleDetail = async (data: { quantity: number, unit_price: number, id_product: number, id_sale: number }) => {
+    const response = await fetch('http://localhost:3000/api/v1/saleDetails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(saleDetail),
+      body: JSON.stringify(data),
     });
+  
     if (!response.ok) {
-      throw new Error('Error creating sale detail');
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || 'Error al crear el detalle de la venta');
     }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-// Función para eliminar un detalle de venta
-export async function deleteSaleDetail(saleDetailId: number) {
-  try {
-    const response = await fetch(`${baseUrl}/${saleDetailId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Error deleting sale detail');
-    }
-    return true; // o cualquier mensaje de éxito
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-// Función para actualizar un detalle de venta
-export async function updateSaleDetail(saleDetailId: number, saleDetailData: any) {
-  try {
-    const response = await fetch(`${baseUrl}/${saleDetailId}`, {
+  
+    return response.json();
+  };
+  
+  export const updateSaleDetail = async (id: number, data: { quantity?: number, unit_price?: number, id_product?: number, id_sale?: number }) => {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(saleDetailData),
+      body: JSON.stringify(data),
     });
+  
     if (!response.ok) {
-      throw new Error('Error updating sale detail');
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || 'Error al actualizar el detalle de la venta');
     }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } 
-}
-// src/services/saleDetailService.ts
-
-export async function getSaleDetailsBySaleId(saleId: number) {
-  const response = await fetch(`/api/v1/saleDetails/${saleId}`, {
-    method: 'GET',
-  });
-
-  if (!response.ok) {
-    throw new Error('Error al obtener los detalles de la venta');
-  }
-
-  return await response.json();
-}
-
+  
+    return response.json();
+  };
+  
+  export const deleteSaleDetail = async (id: number) => {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
+      method: 'DELETE',
+    });
+  
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || 'Error al eliminar el detalle de la venta');
+    }
+  
+    return response.json();
+  };
+  

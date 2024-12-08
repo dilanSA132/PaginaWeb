@@ -4,7 +4,7 @@ import { getToken } from 'next-auth/jwt';
 import { env } from 'process';
 
 export async function middleware(req: NextRequest) {
-  const session = await getToken({ req, secret: env.NEXTAUTH_SECRET });
+/*  const session = await getToken({ req, secret: env.NEXTAUTH_SECRET });
   console.log('session', session);  
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  return NextResponse.next();*/
 }
 
 export const config = {

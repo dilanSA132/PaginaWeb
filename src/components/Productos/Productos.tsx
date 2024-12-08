@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
-import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService';
-import { getCategories } from '@/services/CategoriesService';
+import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/inventoryService';
+import { getCategories } from '@/services/categoryService';
 import * as XLSX from 'xlsx';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';

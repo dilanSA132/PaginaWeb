@@ -1,54 +1,72 @@
-// src/services/roleService.ts
+export const getRoles = async () => {
+  const response = await fetch('http://localhost:3000/api/v1/roles', {
+    method: 'GET',
+  });
 
-export async function getRoles() {
-    const response = await fetch('http://localhost:3000/api/v1/roles');
-    if (!response.ok) {
-      throw new Error('Error al obtener los roles');
-    }
-    return await response.json();
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al obtener los roles');
   }
-  
-  export async function createRole(data: { name: string }) {
-    const response = await fetch('http://localhost:3000/api/v1/roles', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (!response.ok) {
-      throw new Error('Error al crear el rol');
-    }
-  
-    return await response.json();
+
+  return response.json();
+};
+
+export const getRoleById = async (id: number) => {
+  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al obtener el rol');
   }
-  
-  export async function updateRole(id: number, data: { name: string }) {
-    const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (!response.ok) {
-      throw new Error('Error al actualizar el rol');
-    }
-  
-    return await response.json();
+
+  return response.json();
+};
+
+export const createRole = async (data: { role_name: string, permissions?: string[] }) => {
+  const response = await fetch('http://localhost:3000/api/v1/roles', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al crear el rol');
   }
-  
-  export async function deleteRole(id: number) {
-    const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
-      method: 'DELETE',
-    });
-  
-    if (!response.ok) {
-      throw new Error('Error al eliminar el rol');
-    }
-  
-    return await response.json();
+
+  return response.json();
+};
+
+export const updateRole = async (id: number, data: { role_name?: string, permissions?: string[] }) => {
+  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al actualizar el rol');
   }
-  
+
+  return response.json();
+};
+
+export const deleteRole = async (id: number) => {
+  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(errorResponse.message || 'Error al eliminar el rol');
+  }
+
+  return response.json();
+};

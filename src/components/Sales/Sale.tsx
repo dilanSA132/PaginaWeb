@@ -4,7 +4,7 @@ import CustomModal from '../modal/CustomModal';
 import { getSales, createSale, deleteSale, updateSale } from '@/services/saleService';
 import { createSaleDetail } from '@/services/saleDetailService';
 import { getPaymentPlans } from '@/services/paymentPlanService';
-import { getProducts } from '@/services/productService';
+import { getProducts } from '@/services/inventoryService';
 import { Sale, SaleDetail, PaymentPlan,Product } from '@/services/types';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

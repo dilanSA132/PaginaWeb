@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
-import { getCategories, createCategory, deleteCategory, updateCategory } from '@/services/CategoriesService'; 
+import { getCategories, createCategory, deleteCategory, updateCategory } from '@/services/categoryService'; 
 
 interface Category {
   id: number;

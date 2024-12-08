@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
-import { getProducts } from '@/services/productService';
+import { getProducts } from '@/services/inventoryService';
 import { createOrder } from '@/services/orderService';
 import { useCartStore } from '@/store/useCartStore';
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
@@ -10,7 +10,7 @@ import { sendEmail } from '@/services/emailService';
 import { createOrderDetail, getOrderDetails } from '@/services/orderDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getCategories } from '@/services/CategoriesService';
+import { getCategories } from '@/services/categoryService';
 
 import * as XLSX from 'xlsx';
 
