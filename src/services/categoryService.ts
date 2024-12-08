@@ -1,5 +1,5 @@
 export const getCategories = async () => {
-    const response = await fetch('http://localhost:3000/api/v1/categories', {
+    const response = await fetch('http://localhost:3000/api/v1/category', {
       method: 'GET',
     });
   
@@ -12,7 +12,7 @@ export const getCategories = async () => {
   };
   
   export const getCategoryById = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/categories/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/category/${id}`, {
       method: 'GET',
     });
   
@@ -25,7 +25,7 @@ export const getCategories = async () => {
   };
   
   export const createCategory = async (data: { name: string, description?: string }) => {
-    const response = await fetch('http://localhost:3000/api/v1/categories', {
+    const response = await fetch('http://localhost:3000/api/v1/category', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const getCategories = async () => {
   };
   
   export const updateCategory = async (id: number, data: { name?: string, description?: string }) => {
-    const response = await fetch(`http://localhost:3000/api/v1/categories/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/category/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const getCategories = async () => {
   };
   
   export const deleteCategory = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/categories/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/category/${id}`, {
       method: 'DELETE',
     });
   
