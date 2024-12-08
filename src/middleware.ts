@@ -4,7 +4,7 @@ import { getToken } from 'next-auth/jwt';
 import { env } from 'process';
 
 export async function middleware(req: NextRequest) {
-/*  const session = await getToken({ req, secret: env.NEXTAUTH_SECRET });
+ const session = await getToken({ req, secret: env.NEXTAUTH_SECRET });
   console.log('session', session);  
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
@@ -19,13 +19,13 @@ export async function middleware(req: NextRequest) {
 
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = '/products'; 
+    url.pathname = '/'; 
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();*/
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/menu', '/sales', '/orders', '/orderDetails', '/emails', '/products', '/users', '/categories', '/roles', '/permissions', '/api/v1/sale', '/api/v1/orders', '/api/v1/email', '/api/v1/product', '/api/v1/user', '/api/v1/category', '/api/v1/role', '/api/v1/permission'],
+  matcher: ['/api/v1/client', '/api/v1/accountsReceivable', '/api/v1/category', '/api/v1/credit', '/api/v1/creditDetail','/api/v1/inventory','/api/v1/purchase','/api/v1/purchaseDetail','/api/v1/role','/api/v1/sale','/api/v1/saleDetail','/api/v1/salesAnalizy',],
 };

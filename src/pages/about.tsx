@@ -5,30 +5,43 @@ import Footer from '../components/Footer';
 const About: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+
       <main className="flex-grow">
-        <section className="bg-white py-16">
-          <div className="container mx-auto px-8 text-center">
-            <h2 className="text-3xl font-bold text-teal-600 mb-8">Acerca de Nosotros</h2>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              En MiTiendaDeColonias, nos especializamos en ofrecer las mejores fragancias del mercado. Nuestro compromiso es
-              brindarte una experiencia olfativa inigualable, con productos seleccionados cuidadosamente para garantizar la
-              máxima calidad y satisfacción.
+        <section className="bg-white py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-8 text-center">
+            <h2 className="text-4xl font-extrabold text-teal-700 mb-6 md:mb-10">Quiénes Somos</h2>
+            <p className="text-gray-700 leading-relaxed mb-6 md:mb-10 text-lg md:text-xl">
+              En MiTienda, nos dedicamos a ofrecer una experiencia de compra excepcional, brindando productos de alta calidad
+              que van desde fragancias elegantes hasta artículos de uso diario. Nuestro compromiso es seleccionar solo lo mejor
+              para ti, garantizando satisfacción y estilo en cada compra.
             </p>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              Desde nuestras primeras ventas, hemos crecido y expandido nuestra selección de productos, asegurando que cada
-              cliente encuentre la fragancia que más le guste. Nos enorgullece ofrecer perfumes y colonias de marcas
-              reconocidas y exclusivas, que reflejan tanto la elegancia como la sofisticación.
+            <p className="text-gray-700 leading-relaxed mb-6 md:mb-10 text-lg md:text-xl">
+              Desde nuestros comienzos, hemos ampliado nuestra oferta de productos, incluyendo marcas de renombre y exclusivas
+              que reflejan tanto la sofisticación como la accesibilidad. Queremos que cada cliente encuentre algo especial que
+              resuene con su estilo personal.
             </p>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              Nuestra misión es ayudarte a descubrir tu esencia personal, aquella que resalta tu identidad y te hace único.
-              Creemos que el perfume adecuado puede transformar tu día y elevar tu confianza, y estamos aquí para ayudarte a
-              encontrar el que más te representa.
+            <p className="text-gray-700 leading-relaxed mb-6 md:mb-10 text-lg md:text-xl">
+              Nuestra misión es ayudarte a descubrir productos que complementen tu vida, desde fragancias y cosméticos hasta
+              accesorios únicos. Creemos que un producto adecuado puede transformar tu día y mejorar tu bienestar, y estamos
+              aquí para asegurarnos de que encuentres lo que más te representa.
             </p>
-            <img
-              src="https://images.unsplash.com/photo-1532634726-8b9fb998fb24?fit=crop&w=800&q=80"
-              alt="Imagen de tienda de colonias"
-              className="mx-auto rounded-lg shadow-lg mt-8"
-            />
+
+          </div>
+        </section>
+
+        <section className="bg-white py-16 md:py-1">
+          <div className="container mx-auto px-4 md:px-8 text-center">
+            <h3 className="text-3xl font-bold text-teal-700 mb-6">Nuestra Misión</h3>
+            <p className="text-gray-700 leading-relaxed mb-6 md:mb-10 text-lg md:text-xl">
+              Nuestra misión es brindar productos de alta calidad que enriquezcan la vida de nuestros clientes. Nos esforzamos por
+              ofrecer una experiencia de compra única, enfocándonos en la excelencia, la atención al cliente y la innovación.
+            </p>
+            <h3 className="text-3xl font-bold text-teal-700 mb-6">Nuestra Visión</h3>
+            <p className="text-gray-700 leading-relaxed mb-6 md:mb-10 text-lg md:text-xl">
+              Nuestra visión es convertirnos en la tienda de confianza y preferida, reconocida por ofrecer productos de alta
+              calidad y un servicio excepcional. Queremos que nuestros clientes encuentren siempre lo que buscan y que cada
+              compra les deje una experiencia memorable.
+            </p>
           </div>
         </section>
       </main>

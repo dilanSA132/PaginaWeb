@@ -1,40 +1,51 @@
 // Login.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { signIn } from 'next-auth/react'; // Importa el método signIn de next-auth
+import { signIn } from 'next-auth/react';
 import Header from '../Header';
 import Footer from '../Footer';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   // Captura el parámetro de la URL
   const { p } = router.query;
 
+  // Mapeo de errores para personalizar mensajes
+  const errorMessages: { [key: string]: string } = {
+    'CredentialsSignin': 'Correo o contraseña incorrectos. Por favor, verifica tus datos e inténtalo de nuevo.',
+    'default': 'Error al iniciar sesión. Por favor, intenta nuevamente más tarde.',
+  };
+
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
-
-    // Llamada al método signIn de next-auth
-    const result = await signIn('credentials', {
-      redirect: false, // Evitar redirección automática
-      email,
-      password
-    });
-
-    setLoading(false);
-
-    if (result?.error) {
-      // Mostrar error si ocurre algún problema durante la autenticación
-      setError(result.error);
-    } else {
-      // Redirigir a la página solicitada o a /menu si no hay ninguna
-      router.push(p ? String(p) : '/menu');
+  
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      });
+  
+      if (result?.error) {
+        // Usa el mapeo de errores para proporcionar un mensaje personalizado
+        setError(errorMessages[result.error] || errorMessages['default']);
+        return;
+      }
+  
+      // Verifica si 'p' es un string antes de pasar a router.push
+      const redirectTo = typeof p === 'string' ? p : '/';
+      router.push(redirectTo);
+    } catch (error: any) {
+      setError('Error inesperado al iniciar sesión. Inténtalo de nuevo más tarde.');
+    } finally {
+      setLoading(false);
     }
   };
 

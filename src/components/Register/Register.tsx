@@ -10,7 +10,7 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false); 
+  const [success, setSuccess] = useState(false);
 
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -32,8 +32,8 @@ const Register: React.FC = () => {
     try {
       const newUser = await createUser(userData);
       setLoading(false);
-      setSuccess(true); 
-      setName(''); 
+      setSuccess(true);
+      setName('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
@@ -45,58 +45,61 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 to-green-100 animate-fade-in">
-      
       <main className="flex-grow flex items-center justify-center py-16">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full transform transition-transform duration-500 hover:scale-105">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full transform transition-transform duration-500 hover:scale-105">
           <h2 className="text-4xl font-bold text-center mb-6 text-teal-600">Registrarse</h2>
           <form onSubmit={handleRegister}>
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="name">Nombre</label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
-                placeholder="Ingresa tu nombre"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="text-left">
+                <label className="block text-gray-700 mb-2" htmlFor="name">Nombre</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
+                  placeholder="Ingresa tu nombre"
+                  required
+                />
+              </div>
+              <div className="text-left">
+                <label className="block text-gray-700 mb-2" htmlFor="email">Correo Electrónico</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
+                  placeholder="Ingresa tu correo electrónico"
+                  required
+                />
+              </div>
             </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="email">Correo Electrónico</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
-                placeholder="Ingresa tu correo electrónico"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="password">Contraseña</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
-                placeholder="Ingresa tu contraseña"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="confirmPassword">Confirmar Contraseña</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
-                placeholder="Repite tu contraseña"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="text-left">
+                <label className="block text-gray-700 mb-2" htmlFor="password">Contraseña</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
+                  placeholder="Ingresa tu contraseña"
+                  required
+                />
+              </div>
+              <div className="text-left">
+                <label className="block text-gray-700 mb-2" htmlFor="confirmPassword">Confirmar Contraseña</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900"
+                  placeholder="Repite tu contraseña"
+                  required
+                />
+              </div>
             </div>
             <button
               type="submit"
