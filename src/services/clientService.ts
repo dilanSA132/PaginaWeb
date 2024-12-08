@@ -1,5 +1,5 @@
 export const getClients = async () => {
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch('http://localhost:3000/api/v1/client', {
       method: 'GET',
     });
   
@@ -12,7 +12,7 @@ export const getClients = async () => {
   };
   
   export const getClientById = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/clients/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/client/${id}`, {
       method: 'GET',
     });
   
@@ -25,7 +25,7 @@ export const getClients = async () => {
   };
   
   export const createClient = async (data: { name: string, email: string, phone?: string, address?: string }) => {
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch('http://localhost:3000/api/v1/client', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const getClients = async () => {
   };
   
   export const updateClient = async (id: number, data: { name?: string, email?: string, phone?: string, address?: string }) => {
-    const response = await fetch(`http://localhost:3000/api/v1/clients/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/client/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const getClients = async () => {
   };
   
   export const deleteClient = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/clients/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/client/${id}`, {
       method: 'DELETE',
     });
   

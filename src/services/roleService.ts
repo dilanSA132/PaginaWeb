@@ -1,5 +1,5 @@
 export const getRoles = async () => {
-  const response = await fetch('http://localhost:3000/api/v1/roles', {
+  const response = await fetch('http://localhost:3000/api/v1/role', {
     method: 'GET',
   });
 
@@ -12,7 +12,7 @@ export const getRoles = async () => {
 };
 
 export const getRoleById = async (id: number) => {
-  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+  const response = await fetch(`http://localhost:3000/api/v1/role/${id}`, {
     method: 'GET',
   });
 
@@ -25,7 +25,7 @@ export const getRoleById = async (id: number) => {
 };
 
 export const createRole = async (data: { role_name: string, permissions?: string[] }) => {
-  const response = await fetch('http://localhost:3000/api/v1/roles', {
+  const response = await fetch('http://localhost:3000/api/v1/role', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const createRole = async (data: { role_name: string, permissions?: string
 };
 
 export const updateRole = async (id: number, data: { role_name?: string, permissions?: string[] }) => {
-  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+  const response = await fetch(`http://localhost:3000/api/v1/role/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const updateRole = async (id: number, data: { role_name?: string, permiss
 };
 
 export const deleteRole = async (id: number) => {
-  const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+  const response = await fetch(`http://localhost:3000/api/v1/role/${id}`, {
     method: 'DELETE',
   });
 

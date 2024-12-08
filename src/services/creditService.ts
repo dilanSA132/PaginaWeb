@@ -1,5 +1,5 @@
 export const getCredits = async () => {
-    const response = await fetch('http://localhost:3000/api/v1/credits', {
+    const response = await fetch('http://localhost:3000/api/v1/credit', {
       method: 'GET',
     });
   
@@ -12,7 +12,7 @@ export const getCredits = async () => {
   };
   
   export const getCreditById = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/credits/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/credit/${id}`, {
       method: 'GET',
     });
   
@@ -25,7 +25,7 @@ export const getCredits = async () => {
   };
   
   export const createCredit = async (data: { credit_amount: number, credit_balance: number, due_date?: Date, id_customer: number }) => {
-    const response = await fetch('http://localhost:3000/api/v1/credits', {
+    const response = await fetch('http://localhost:3000/api/v1/credit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const getCredits = async () => {
   };
   
   export const updateCredit = async (id: number, data: { credit_amount?: number, credit_balance?: number, due_date?: Date, credit_status?: string }) => {
-    const response = await fetch(`http://localhost:3000/api/v1/credits/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/credit/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const getCredits = async () => {
   };
   
   export const deleteCredit = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/credits/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/credit/${id}`, {
       method: 'DELETE',
     });
   

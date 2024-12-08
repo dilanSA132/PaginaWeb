@@ -1,5 +1,5 @@
 export const getPurchaseDetails = async () => {
-    const response = await fetch('http://localhost:3000/api/v1/purchase-details', {
+    const response = await fetch('http://localhost:3000/api/v1/purchaseDetail', {
       method: 'GET',
     });
   
@@ -12,7 +12,7 @@ export const getPurchaseDetails = async () => {
   };
   
   export const getPurchaseDetailById = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/purchase-details/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/purchaseDetail/${id}`, {
       method: 'GET',
     });
   
@@ -25,7 +25,7 @@ export const getPurchaseDetails = async () => {
   };
   
   export const createPurchaseDetail = async (data: { purchase_price: number, purchase_quantity: number, id_purchase: number, id_product: number }) => {
-    const response = await fetch('http://localhost:3000/api/v1/purchase-details', {
+    const response = await fetch('http://localhost:3000/api/v1/purchaseDetail', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const getPurchaseDetails = async () => {
   };
   
   export const updatePurchaseDetail = async (id: number, data: { purchase_price?: number, purchase_quantity?: number, id_purchase?: number, id_product?: number }) => {
-    const response = await fetch(`http://localhost:3000/api/v1/purchase-details/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/purchaseDetail/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const getPurchaseDetails = async () => {
   };
   
   export const deletePurchaseDetail = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/purchase-details/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/purchaseDetail/${id}`, {
       method: 'DELETE',
     });
   

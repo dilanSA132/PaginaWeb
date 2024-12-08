@@ -1,5 +1,5 @@
 export const getSaleDetails = async () => {
-    const response = await fetch('http://localhost:3000/api/v1/saleDetails', {
+    const response = await fetch('http://localhost:3000/api/v1/saleDetail', {
       method: 'GET',
     });
   
@@ -12,7 +12,7 @@ export const getSaleDetails = async () => {
   };
   
   export const getSaleDetailById = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetail/${id}`, {
       method: 'GET',
     });
   
@@ -25,7 +25,7 @@ export const getSaleDetails = async () => {
   };
   
   export const createSaleDetail = async (data: { quantity: number, unit_price: number, id_product: number, id_sale: number }) => {
-    const response = await fetch('http://localhost:3000/api/v1/saleDetails', {
+    const response = await fetch('http://localhost:3000/api/v1/saleDetail', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const getSaleDetails = async () => {
   };
   
   export const updateSaleDetail = async (id: number, data: { quantity?: number, unit_price?: number, id_product?: number, id_sale?: number }) => {
-    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetail/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const getSaleDetails = async () => {
   };
   
   export const deleteSaleDetail = async (id: number) => {
-    const response = await fetch(`http://localhost:3000/api/v1/saleDetails/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/saleDetail/${id}`, {
       method: 'DELETE',
     });
   
