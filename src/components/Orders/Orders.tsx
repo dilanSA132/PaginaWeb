@@ -7,6 +7,7 @@ import { createOrderDetail, deleteOrderDetail, updateOrderDetail } from '@/servi
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { signOut, useSession } from 'next-auth/react';
 
 interface ProductDetail {
   id: number;
@@ -46,6 +47,8 @@ const Orders: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [deletedDetails, setDeletedDetails] = useState<number[]>([]);
+    const { data: session } = useSession();
+  
   const [newOrder, setNewOrder] = useState<Order>({
     id: 0,
     name: '',
@@ -165,6 +168,7 @@ const Orders: React.FC = () => {
         email: newOrder.email,
         phone: newOrder.phone,
         address: newOrder.address,
+        userId:session?.user?.id,
       });
 
       const details: OrderDetails[] = newOrder.details.map((detail) => ({
@@ -214,6 +218,8 @@ const Orders: React.FC = () => {
     { label: 'Teléfono', accessor: 'phone' },
     { label: 'Dirección', accessor: 'address' },
     { label: 'Fecha de Creación', accessor: 'createdAt' },
+    { label: 'Estado', accessor: 'status' },
+    {label : 'Usuario', accessor: 'userId'},
     {
       label: 'Acciones',
       render: (order: Order) => (

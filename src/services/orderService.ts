@@ -15,6 +15,28 @@ export async function getOrders() {
   }
 }
 
+export async function getOrdersByUserId(userId: number) {
+  try {
+    const response = await fetch("http://localhost:3000/api/v1/orders/id", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }), // Enviar el userId en el cuerpo de la solicitud
+    });
+
+    if (!response.ok) {
+      throw new Error('Error fetching orders');
+    }
+   const re= await response.json();
+    console.log("Aquiiiiii ", re)
+    return  re ;
+  } catch (error) {
+    console.error('Error obteniendo órdenes:', error);
+    throw error;
+  }
+}
+
 export async function createOrder(order: any) {
   try {
     const response = await fetch(baseUrl, {

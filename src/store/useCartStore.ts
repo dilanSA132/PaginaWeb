@@ -3,9 +3,9 @@ import create from 'zustand';
 interface CartItem {
   id: number;
   name: string;
-  price: number;
+  salePrice: number;
   image: string;
-  quantity: number; // Agregamos la propiedad cantidad
+  quantity: number; 
 }
 
 interface CartState {
@@ -45,6 +45,6 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   calculateTotal: () => {
     const state = get();
-    return state.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return state.cart.reduce((total, item) => total + (item.salePrice * item.quantity), 0);
   },
 }));

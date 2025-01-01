@@ -14,7 +14,9 @@ interface Product {
   id: number;
   name: string;
   description?: string;
-  price: number;
+  purchasePrice: number; // Precio de compra  
+  salePrice: number;     // Precio de venta
+  stock: number;         // Cantidad en inventario
   categoryId: number;
   image?: string;
 }
@@ -29,7 +31,7 @@ const MantenimientoProductos: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState<Product>({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
+  const [newProduct, setNewProduct] = useState<Product>({ id: 0, name: '', description: '', purchasePrice:0, salePrice:0 , stock:0, categoryId: 0, image: '' });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const MantenimientoProductos: React.FC = () => {
 
   const openModalForNewProduct = () => {
     setIsEditing(false);
-    setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
+    setNewProduct({ id: 0, name: '', description: '', purchasePrice:0, salePrice:0, stock:0, categoryId: 0, image: '' });
     setModalIsOpen(true);
   };
 
@@ -68,7 +70,9 @@ const MantenimientoProductos: React.FC = () => {
         const updatedProduct = await updateProduct(newProduct.id, {
           name: newProduct.name,
           description: newProduct.description,
-          price: newProduct.price,
+          purchasePrice: newProduct.purchasePrice,
+          salePrice: newProduct.salePrice,
+          stock: newProduct.stock,  
           categoryId: newProduct.categoryId,
           image: newProduct.image,
         });
@@ -76,7 +80,7 @@ const MantenimientoProductos: React.FC = () => {
           prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
         );
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
+        setNewProduct({ id: 0, name: '', description: '', purchasePrice:0, salePrice:0, stock:0, categoryId: 0, image: '' });
       } catch (err: any) {
         setError('Error al actualizar el producto');
       }
@@ -85,13 +89,15 @@ const MantenimientoProductos: React.FC = () => {
         const createdProduct = await createProduct({
           name: newProduct.name,
           description: newProduct.description,
-          price: newProduct.price,
+          purchasePrice: newProduct.purchasePrice,
+          salePrice: newProduct.salePrice,  
+          stock: newProduct.stock,  
           categoryId: newProduct.categoryId,
           image: newProduct.image,
         });
         setProducts((prevProducts) => [...prevProducts, createdProduct]);
         setModalIsOpen(false);
-        setNewProduct({ id: 0, name: '', description: '', price: 0, categoryId: 0, image: '' });
+        setNewProduct({ id: 0, name: '', description: '',purchasePrice:0,  salePrice:0, stock:0,  categoryId: 0, image: '' });
       } catch (err: any) {
         setError('Error al crear el producto');
       }
@@ -111,7 +117,9 @@ const MantenimientoProductos: React.FC = () => {
     { label: 'ID', accessor: 'id' },
     { label: 'Nombre', accessor: 'name' },
     { label: 'Descripción', accessor: 'description' },
-    { label: 'Precio', accessor: 'price' },
+    { label: 'Precio de Compra', accessor: 'purchasePrice' },
+    { label: 'Precio de Venta', accessor: 'salePrice' },
+    { label: 'Cantidad', accessor: 'stock' },
     { label: 'Categoría', accessor: 'categoryName' },
     { label: 'Imagen', accessor: 'image' },
   ];
@@ -137,7 +145,9 @@ const MantenimientoProductos: React.FC = () => {
         { header: 'ID', key: 'id', width: 10 },
         { header: 'Nombre', key: 'name', width: 30 },
         { header: 'Descripción', key: 'description', width: 50 },
-        { header: 'Precio', key: 'price', width: 15 },
+        { header: 'PrecioCompra', key: 'purchasePrice', width: 20 },
+        { header: 'PrecioVenta', key: 'salePrice', width: 20 },
+        { header: 'Cantidad', key: 'stock', width: 20 },    
         { header: 'Categoría', key: 'category', width: 20 },
         { header: 'Imagen', key: 'image', width: 30 },
       ];
@@ -147,7 +157,9 @@ const MantenimientoProductos: React.FC = () => {
           id: product.id,
           name: product.name,
           description: product.description || 'Sin descripción',
-          price: product.price,
+          purchasePrice: product.purchasePrice, 
+          salePrice: product.salePrice, 
+          stock: product.stock,
           category: getCategoryName(product.categoryId),
           image: product.image || 'Sin imagen',
         });
@@ -176,7 +188,7 @@ const MantenimientoProductos: React.FC = () => {
 
       // Add rows to the analysis worksheet
       products.forEach(product => {
-        analysisWorksheet.addRow({ name: product.name, price: product.price });
+        analysisWorksheet.addRow({ name: product.name,purchasePrice: product.purchasePrice, salePrice: product.salePrice, stock: product.stock });  
       });
 
       // Style the header of the analysis worksheet
@@ -241,20 +253,22 @@ const MantenimientoProductos: React.FC = () => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        const jsonData: Array<{ Nombre: string; Descripción: string; Precio: any; Categoría: string; Imagen?: string }> = XLSX.utils.sheet_to_json(worksheet);
-
+        const jsonData: Array<{ Nombre: string; Descripción: string; PrecioCompra:any, PrecioVenta:any, Cantidad:any,  Categoría: string; Imagen?: string }> = XLSX.utils.sheet_to_json(worksheet);
+        console.log(jsonData);
         for (const product of jsonData) {
           try {
-            const price = parseFloat(product.Precio) || 0;
+             
             await createProduct({
               name: product.Nombre,
               description: product.Descripción || '',
-              price: price,
+              purchasePrice: product.PrecioCompra,
+              salePrice:   product.PrecioVenta, 
+              stock:    product.Cantidad,
               categoryId: categories.find(c => c.name === product.Categoría)?.id || 0,
               image: product.Imagen || '',
             });
           } catch (error) {
-            toast.error(`Error al importar el producto: ${product.Nombre}`);
+            toast.error(`Error al importar el producto: ${product.Nombre}  ` );
           }
         }
 
@@ -338,12 +352,34 @@ const MantenimientoProductos: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="price">Precio</label>
+          <label className="block text-gray-700 mb-2" htmlFor="purchasePrice">Precio Compra</label>
           <input
             type="number"
-            id="price"
-            value={newProduct.price}
-            onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
+            id="purchasePrice"
+            value={newProduct.purchasePrice}
+            onChange={(e) => setNewProduct({ ...newProduct, purchasePrice: parseFloat(e.target.value) })}
+            className="w-full p-4 border border-gray-300 rounded-lg text-black"
+            placeholder="Ingresa el precio del producto"
+          />
+        </div>   
+         <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="salePrice">Precio Venta</label>
+          <input
+            type="number"
+            id="salePrice"
+            value={newProduct.salePrice}
+            onChange={(e) => setNewProduct({ ...newProduct, salePrice: parseFloat(e.target.value) })}
+            className="w-full p-4 border border-gray-300 rounded-lg text-black"
+            placeholder="Ingresa el precio del producto"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="stock">Cantidad</label>
+          <input
+            type="number"
+            id="stock"
+            value={newProduct.stock}
+            onChange={(e) => setNewProduct({ ...newProduct, stock: parseFloat(e.target.value) })}
             className="w-full p-4 border border-gray-300 rounded-lg text-black"
             placeholder="Ingresa el precio del producto"
           />

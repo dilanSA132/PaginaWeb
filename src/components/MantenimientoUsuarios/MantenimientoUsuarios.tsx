@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
 import { getUsers, createUser, deleteUser, updateUser } from '@/services/userService'; // Importa el servicio
+import { getRoles } from '@/services/roleService';
 
 interface User {
   id: number;
   name: string;
   email: string;
+  roleId: number; 
 }
 
 const MantenimientoUsuarios: React.FC = () => {
@@ -14,8 +16,9 @@ const MantenimientoUsuarios: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [newUser, setNewUser] = useState<User & { password?: string }>({ id: 0, name: '', email: '', password: '' });
-  const [isEditing, setIsEditing] = useState(false); // Estado para controlar si estamos editando
+  const [newUser, setNewUser] = useState<User & { password?: string }>({ id: 0, name: '', email: '', password: '' , roleId: 0});  
+  const [isEditing, setIsEditing] = useState(false);
+  const [roles, setRoles,] = useState<{ id: number; name: string }[]>([]); 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -26,6 +29,7 @@ const MantenimientoUsuarios: React.FC = () => {
         setUsuarios(users);
       } catch (err: any) {
         setError('Error al cargar los usuarios');
+     
       } finally {
         setLoading(false);
       }
@@ -34,9 +38,26 @@ const MantenimientoUsuarios: React.FC = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const roles = await getRoles();
+        setRoles(roles);
+      } catch (err: any) {
+        setError('Error al cargar los roles');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   const openModalForNewUser = () => {
     setIsEditing(false); // Estamos creando un nuevo usuario
-    setNewUser({ id: 0, name: '', email: '', password: '' }); // Limpia el formulario
+    setNewUser({ id: 0, name: '', email: '', password: '' , roleId:0 }); // Limpia el formulario
     setModalIsOpen(true);
   };
 
@@ -47,30 +68,50 @@ const MantenimientoUsuarios: React.FC = () => {
   };
 
   const handleSaveUser = async () => {
+    if (!newUser.name || !newUser.email || !newUser.roleId) {
+      setError('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+  
+    if (!isEditing && !newUser.password) {
+      setError('Por favor, ingresa una contraseña para el nuevo usuario.');
+      return;
+    }
+  
+    setError(null); // Limpiar cualquier error previo
+  
     if (isEditing) {
-      // Si estamos en modo edición, actualizamos el usuario existente
       try {
-        const updatedUser = await updateUser(newUser.id, { name: newUser.name, email: newUser.email }); // Llama al servicio
+        const updatedUser = await updateUser(newUser.id, {
+          name: newUser.name,
+          email: newUser.email,
+          roleId: newUser.roleId,
+        });
         setUsuarios((prevUsuarios) =>
           prevUsuarios.map((u) => (u.id === updatedUser.id ? updatedUser : u))
         );
         setModalIsOpen(false);
-        setNewUser({ id: 0, name: '', email: '', password: '' }); // Limpia los campos después de guardar
+        setNewUser({ id: 0, name: '', email: '', password: '', roleId: 0 });
       } catch (err: any) {
         setError('Error al actualizar el usuario');
       }
     } else {
-      // Si no estamos en modo edición, estamos creando un nuevo usuario
       try {
-        const createdUser = await createUser({ ...newUser, roleId: 1 });
+        const createdUser = await createUser({
+          name: newUser.name,
+          email: newUser.email,
+          password: newUser.password,
+          roleId: newUser.roleId,
+        });
         setUsuarios((prevUsuarios) => [...prevUsuarios, createdUser]);
         setModalIsOpen(false);
-        setNewUser({ id: 0, name: '', email: '', password: '' }); // Limpia los campos después de crear
+        setNewUser({ id: 0, name: '', email: '', password: '', roleId: 0 });
       } catch (err: any) {
         setError('Error al crear el usuario');
       }
     }
   };
+  
 
   const handleDelete = async (usuario: User) => {
     try {
@@ -85,6 +126,7 @@ const MantenimientoUsuarios: React.FC = () => {
     { label: 'ID', accessor: 'id' },
     { label: 'Nombre', accessor: 'name' },
     { label: 'Correo Electrónico', accessor: 'email' },
+    { label: 'Rol', accessor: 'roleId' }, 
   ];
 
   return (
@@ -98,6 +140,15 @@ const MantenimientoUsuarios: React.FC = () => {
       >
         Nuevo Usuario
       </button>
+      <label
+        className="text-black py-2 px-4 rounded-full mb-4 "  
+      >
+        {roles.map((role) => (
+          <span key={role.id} className="mr-2">
+        {role.id}: {role.name}
+          </span>
+        ))}
+      </label>
 
       {/* Mostrar errores */}
       {error && <p className="text-red-500">{error}</p>}
@@ -138,6 +189,22 @@ const MantenimientoUsuarios: React.FC = () => {
             placeholder="Ingresa el correo electrónico"
           />
         </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="roleId">Rol</label>
+          <select
+            id="roleId"
+            value={newUser.roleId}
+            onChange={(e) => setNewUser({ ...newUser, roleId: parseInt(e.target.value) })}
+            className="w-full p-4 border border-gray-300 rounded-lg text-black "
+          >
+            {roles.map((role) => (
+              <option key={role.id} value={role.id}>
+              {role.name}
+              </option>
+            ))}
+          </select> 
+           </div> 
+           
         {!isEditing && (
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="password">Contraseña</label>

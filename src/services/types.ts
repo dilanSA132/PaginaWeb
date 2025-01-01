@@ -13,6 +13,7 @@ export interface CreateOrderRequest {
   email: string;
   phone: string;
   address: string;
+  userId: number; 
 }
 
 export interface SaleDetailResponse {

@@ -30,24 +30,23 @@ export const getUsers = async () => {
     return response.json();
   };
   
-
-export async function updateUser(id: number, data: { name: string; email: string }) {
-  const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error('Error actualizando el usuario');
+  export async function updateUser(id: number, data: { name: string; email: string; roleId: number }) {
+    const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Error actualizando el usuario');
+    }
+  
+    const updatedUser = await response.json();
+    return updatedUser;
   }
-
-  const updatedUser = await response.json();
-  return updatedUser;
-}
-
+  
 
   export const authenticateUser = async (email: string, password: string) => {
     try {

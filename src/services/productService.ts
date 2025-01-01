@@ -8,7 +8,7 @@ export async function getProducts() {
     return await response.json();
   }
   
-  export async function createProduct(data: { name: string; description?: string; price: number; categoryId: number; image?: string }) {
+  export async function createProduct(data: { name: string; description?: string; purchasePrice:number, salePrice:number, stock:number,  categoryId: number; image?: string }) {
     const response = await fetch('http://localhost:3000/api/v1/products', {
       method: 'POST',
       headers: {
@@ -26,7 +26,15 @@ export async function getProducts() {
   
   export async function updateProduct(
     id: number,
-    data: { name: string; description?: string; price: number; categoryId: number; image?: string }
+    data: {
+      name: string;
+      description?: string;
+      purchasePrice: number; // Precio de compra
+      salePrice: number;     // Precio de venta
+      stock: number;         // Cantidad en inventario
+      categoryId: number;
+      image?: string;
+    }
   ) {
     const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
       method: 'PUT',
@@ -42,6 +50,7 @@ export async function getProducts() {
   
     return await response.json();
   }
+  
   
   export async function deleteProduct(id: number) {
     const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {

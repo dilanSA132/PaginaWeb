@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
-import { getProducts } from '@/services/productService';
+import { getProducts, updateProduct } from '@/services/productService';
 import { createOrder } from '@/services/orderService';
 import { useCartStore } from '@/store/useCartStore';
 import { CreateOrderRequest, OrderDetails } from '@/services/types';
@@ -11,6 +11,7 @@ import { createOrderDetail, getOrderDetails } from '@/services/orderDetailServic
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getCategories } from '@/services/CategoriesService';
+import { signOut, useSession } from 'next-auth/react';
 
 import * as XLSX from 'xlsx';
 
@@ -18,8 +19,10 @@ interface Product {
   id: number;
   name: string;
   description?: string;
-  price: number;
+  purchasePrice: number;
+  salePrice: number;
   image: string;
+  stock: number;
   category: {
     name: string;
   };
@@ -38,6 +41,8 @@ const Products: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
+    const { data: session } = useSession();
+  
   const [contactInfo, setContactInfo] = useState({
     name: '',
     email: '',
@@ -108,7 +113,7 @@ const Products: React.FC = () => {
     const filtered = products.filter((product) => {
       const matchesTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = category ? product.category.name === category : true;
-      const matchesPriceRange = product.price >= range.min && product.price <= range.max;
+      const matchesPriceRange = product.salePrice >= range.min && product.salePrice <= range.max;
       return matchesTerm && matchesCategory && matchesPriceRange;
     });
     setFilteredProducts(filtered);
@@ -165,94 +170,20 @@ const Products: React.FC = () => {
 
   const calculateTotal = () => {
     return cart.reduce(
-      (total, product) => total + product.price * product.quantity,
+      (total, product) => total + product.salePrice * product.quantity,
       0
     );
   };
 
-  const handleDownloadExcel = () => {
-    try {
-      // Crear los datos para el Excel
-      const worksheetData = products.map(product => ({
-        Nombre: product.name,
-        Descripción: product.description || 'Sin descripción',
-        Precio: `₡${product.price}`
-      }));
-
-      // Crear el libro de Excel
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-
-      // Añadir un título
-      XLSX.utils.sheet_add_aoa(worksheet, [["Catálogo de Productos"]], { origin: 'A1' });
-
-      // Aplicar estilos al título
-      worksheet['A1'].s = {
-        font: { bold: true, sz: 16, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "4CAF50" } }, // Fondo verde
-        alignment: { horizontal: "center" }
-      };
-
-      // Ajustar el ancho de las columnas
-      const wscols = [{ wch: 30 }, { wch: 50 }, { wch: 20 }];
-      worksheet['!cols'] = wscols;
-
-      // Añadir estilos de encabezado a las columnas
-      const headerStyle = {
-        font: { bold: true, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "000080" } }, // Fondo azul
-        alignment: { horizontal: "center" }
-      };
-
-      // Aplicar estilo a los encabezados de la tabla
-      const headers = ['A2', 'B2', 'C2'];
-      headers.forEach(header => {
-        if (worksheet[header]) {
-          worksheet[header].s = headerStyle;
-        }
-      });
-
-      // Aplicar bordes a todas las celdas
-      const borderStyle = {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-      };
-
-      for (let R = 1; R <= products.length + 1; R++) {
-        for (let C = 0; C < 3; C++) {
-          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-          if (worksheet[cellAddress]) {
-            worksheet[cellAddress].s = {
-              ...worksheet[cellAddress].s,
-              border: borderStyle,
-            };
-          }
-        }
-      }
-
-      // Añadir la hoja al libro
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
-
-      XLSX.writeFile(workbook, 'catalogo_productos.xlsx');
-      toast.success('Catálogo de productos descargado con éxito!');
-
-    } catch (error) {
-      console.error("Error al generar el archivo de Excel:", error);
-    }
-  };
-
-
-
   const handleOrder = async () => {
+    const userId = session?.user?.id;
     try {
       const orderRequest: CreateOrderRequest = {
         name: contactInfo.name,
         email: contactInfo.email,
         phone: contactInfo.phone,
         address: contactInfo.address,
-
+        userId: userId, 
       };
 
       const newOrder = await createOrder(orderRequest);
@@ -261,7 +192,7 @@ const Products: React.FC = () => {
         productId: product.id,
         name: product.name,
         quantity: product.quantity,
-        amount: product.price * product.quantity,
+        amount: product.salePrice * product.quantity,
         orderId: newOrder.id,
       }));
 
@@ -269,7 +200,7 @@ const Products: React.FC = () => {
       const orderDetails: OrderDetails[] = cart.map((product) => ({
         productId: product.id,
         quantity: product.quantity,
-        amount: product.price * product.quantity,
+        amount: product.salePrice * product.quantity,
         orderId: newOrder.id,
       }));
 
@@ -387,14 +318,14 @@ const Products: React.FC = () => {
   </div>
 )}
 
-            {loading ? (
+       {loading ? (
               <p className="text-center text-teal-600">Cargando productos...</p>
             ) : error ? (
               <p className="text-center text-red-600">{error}</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProducts.map((product, index) => (
-                  <div
+                    <div
                     key={product.id}
                     className={`bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl 
                     opacity-0 animate-fade-in-up`}
@@ -402,25 +333,35 @@ const Products: React.FC = () => {
                       animationDelay: `${index * 0.2}s`,
                       animationFillMode: "forwards",
                     }}
-                  >
+                    >
                     <img
                       src={product.image}
                       alt={product.name}
                       className="h-64 w-full object-cover mb-4 rounded-lg"
                     />
-                    <h3 className="text-xl font-semibold mb-2 text-teal-600">
+                    <h3 className="text-xl font-semibold mb-2 text-black">
                       {product.name} ({product.description})
                     </h3>
-                    <span className="block text-2xl font-bold mb-4 text-teal-700">
-                      ₡{product.price}
+                    <span className="block text-2xl font-bold mb-4 text-yellow-500"> 
+                      ₡{product.salePrice}
                     </span>
-                    <button
-                      onClick={() => addToCart({ ...product, quantity: 1 })}
-                      className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors"
-                    >
-                      Añadir al Carrito
-                    </button>
-                  </div>
+                    <span className="block text-2 font-bold mb-4 text-black-500"> 
+                      Stock: {product.stock}
+                    </span>
+                    {product.stock === 0 ? (
+                      <span className="block text-red-500 font-bold mb-4">Vendido</span>
+                    ) : (
+                      
+                      <button
+                        onClick={() => addToCart({ ...product, quantity: 1 })}
+                        className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors"
+                      >
+                        Añadir al Carrito
+                      </button>
+                    )}
+                    
+              
+                    </div>
                 ))}
               </div>
             )}
@@ -431,12 +372,7 @@ const Products: React.FC = () => {
               onPrevious={handlePreviousPage}
             />
           </div>
-          <button
-            onClick={handleDownloadExcel}
-            className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors"
-          >
-            Descargar Catálogo
-          </button>
+         
         </section>
       </main>
       <Footer />
@@ -490,7 +426,7 @@ const Products: React.FC = () => {
                             />
                           </td>
                           <td className="py-3 px-4 text-black">
-                            ₡{(item.price * item.quantity).toFixed(2)}
+                            ₡{(item.salePrice * item.quantity).toFixed(2)}
                           </td>
                           <td className="py-3 px-4 text-black">
                             <button

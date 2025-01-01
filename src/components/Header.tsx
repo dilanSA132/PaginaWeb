@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaHome, FaStore, FaInfoCircle, FaUser, FaList } from 'react-icons/fa';
+import { FaHome, FaStore, FaInfoCircle, FaUser, FaList, FaBox } from 'react-icons/fa';
 import { signOut, useSession } from 'next-auth/react';
 
 const Header: React.FC = () => {
@@ -51,6 +51,12 @@ const Header: React.FC = () => {
             <a href="/menu" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
               <FaList className="text-2xl transition-transform transform hover:scale-125" />
               <span className="hidden md:inline">Menú</span>
+            </a>
+          )}
+          {session && (
+            <a href="/myOrders" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">
+              <FaBox className="text-2xl transition-transform transform hover:scale-125" />
+              <span className="hidden md:inline">Mis Pedidos</span>
             </a>
           )}
           <a href="/about" className="flex items-center space-x-2 text-white hover:text-gray-100 transition-colors py-2 md:py-0">

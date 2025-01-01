@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Column {
@@ -13,19 +13,18 @@ interface UniversalTableProps {
   onEdit?: (rowData: any) => void;
   onDelete?: (rowData: any) => void;
 }
-
-const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data, onEdit, onDelete }) => {
+const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
   const itemsPerPage = 15;
 
   // Filtrar los datos en función del término de búsqueda
-  const filteredData = data.filter((row) =>
+  const filteredData = Array.isArray(data) ? data.filter((row) =>
     columns.some((column) => {
       const cellValue = column.accessor ? row[column.accessor] : '';
       return cellValue.toString().toLowerCase().includes(searchTerm.toLowerCase());
     })
-  );
+  ) : [];
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -53,9 +52,9 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data, onEdit, 
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); 
+            setCurrentPage(1);
           }}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full text-black  "
+          className="px-4 py-2 border border-gray-300 rounded-md w-full text-black"
         />
       </div>
 

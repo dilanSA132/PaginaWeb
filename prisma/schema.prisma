@@ -6,40 +6,43 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
-
 model Role {
   id    Int    @id @default(autoincrement())
   name  String @unique
-  users User[]
+  users User[] 
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
   name     String
-  password String // Contraseña, campo obligatorio
-  role     Role   @relation(fields: [roleId], references: [id]) // Relación obligatoria
-  roleId   Int    // roleId ya no puede ser nulo
+  password String    // Contraseña, campo obligatorio
+  role     Role      @relation(fields: [roleId], references: [id]) // Relación obligatoria
+  roleId   Int       // roleId ya no puede ser nulo
+  credits  Credit[]  // Relación con créditos abiertos por el cliente
+  orders   Order[]   // Relación con las órdenes del usuario
 }
+
 
 model Category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
-  products Product[]
+  products Product[] 
 }
 
 model Product {
-  id           Int         @id @default(autoincrement())
-  name         String
-  description  String?
-  price        Float
-  category     Category    @relation(fields: [categoryId], references: [id])
-  categoryId   Int
-  image        String?     // Campo para almacenar la imagen
-  sales        SaleDetail[]
-  orderDetails OrderDetail[]
+  id              Int         @id @default(autoincrement())
+  name            String
+  description     String?
+  purchasePrice   Float       // Precio de compra del producto
+  salePrice       Float       // Precio de venta del producto
+  stock           Int         // Cantidad de productos disponibles en inventario
+  category        Category    @relation(fields: [categoryId], references: [id])
+  categoryId      Int
+  image           String?     // Campo para almacenar la imagen
+  sales           SaleDetail[] // Relación con las ventas
+  orderDetails    OrderDetail[] // Relación con los detalles de la orden
 }
-
 model Order {
   id        Int           @id @default(autoincrement())
   createdAt DateTime      @default(now())
@@ -47,10 +50,14 @@ model Order {
   email     String
   phone     String 
   address   String
-  details   OrderDetail[]
+  user      User          @relation(fields: [userId], references: [id]) // Relación con el usuario
+  userId    Int           // Campo para almacenar el ID del usuario
+  details   OrderDetail[] // Detalles de la orden
   status    OrderStatus   @default(PENDING) // Estado de la orden
   sale      Sale?         // Relación con Sale si la orden se convierte en una venta
 }
+
+
 
 enum OrderStatus {
   PENDING
@@ -61,11 +68,11 @@ model OrderDetail {
   id        Int        @id @default(autoincrement())
   quantity  Int
   amount    Float
-  product   Product   @relation(fields: [productId], references: [id])
+  product   Product    @relation(fields: [productId], references: [id])
   productId Int
-  sale      Sale?     @relation(fields: [saleId], references: [id]) // Relación opcional con Sale
-  saleId    Int?      // Campo saleId ahora es opcional
-  order     Order     @relation(fields: [orderId], references: [id])
+  sale      Sale?      @relation(fields: [saleId], references: [id]) // Relación opcional con Sale
+  saleId    Int?       // Campo saleId ahora es opcional
+  order     Order      @relation(fields: [orderId], references: [id])
   orderId   Int
 }
 
@@ -78,9 +85,11 @@ model Sale {
   paymentPlanId  Int?
   details        SaleDetail[]
   orderDetails   OrderDetail[]
-  paymentDetails PaymentDetail[] // Detalles de pago asociados a la venta
+  paymentDetails PaymentDetail[]
   originOrder    Order?         @relation(fields: [originOrderId], references: [id]) // Relación con la orden de origen
   originOrderId  Int?           @unique // ID de la orden original si aplica
+  credit         Credit?        @relation(fields: [creditId], references: [id]) // Relación con crédito
+  creditId       Int?           // Relación opcional
 }
 
 enum PaymentStatus {
@@ -118,4 +127,31 @@ model PaymentPlan {
   installments Int
   amount      Float
   sales       Sale[]
+}
+
+model Credit {
+  id              Int           @id @default(autoincrement())
+  customer        User          @relation(fields: [customerId], references: [id])
+  customerId      Int
+  totalAmount     Float         // Monto total del crédito
+  amountRemaining Float         // Monto restante por pagar
+  createdAt       DateTime      @default(now()) // Fecha de apertura del crédito
+  dueDate         DateTime?     // Fecha de vencimiento del crédito (opcional)
+  status          CreditStatus  @default(ACTIVE) // Estado del crédito
+  payments        CreditPayment[] // Pagos realizados en este crédito
+  sales           Sale[]        // Relación con ventas pagadas con crédito
+}
+
+enum CreditStatus {
+  ACTIVE
+  PAID
+  CANCELLED
+}
+
+model CreditPayment {
+  id          Int      @id @default(autoincrement())
+  credit      Credit  @relation(fields: [creditId], references: [id])
+  creditId    Int
+  amountPaid  Float    // Monto pagado en este pago
+  paymentDate DateTime @default(now()) // Fecha de este pago
 }
