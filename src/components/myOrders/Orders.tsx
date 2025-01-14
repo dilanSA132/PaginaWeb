@@ -17,7 +17,7 @@ interface ProductDetail {
     id: number;
     name: string;
     description: string;
-    price: number;
+    salePrice: number;
     image: string;
   };
 }
@@ -26,7 +26,7 @@ interface Product {
   id: number;
   name: string;
   description: string;
-  price: number;
+  salePrice: number;
   image: string;
 }
 
@@ -81,11 +81,17 @@ const Orders: React.FC = () => {
   
         if (userId) {
           const fetchedOrders = await getOrdersByUserId(userId);
+          const fetchedProducts = await getProducts();  
           console.log(fetchedOrders);
           if (fetchedOrders.orders) {
             setOrders(fetchedOrders.orders);
           } else {
             console.error('No se obtuvieron órdenes');
+          }
+          if (fetchedProducts) {
+            setProducts(fetchedProducts);
+          } else {
+            console.error('No se obtuvieron productos');  
           }
         }
       } catch (err: any) {
@@ -112,13 +118,13 @@ const Orders: React.FC = () => {
         if (existingDetailIndex !== -1) {
           const updatedDetails = [...newOrder.details];
           updatedDetails[existingDetailIndex].quantity += selectedProductQuantity;
-          updatedDetails[existingDetailIndex].amount = updatedDetails[existingDetailIndex].quantity * product.price;
+          updatedDetails[existingDetailIndex].amount = updatedDetails[existingDetailIndex].quantity * product.salePrice;
           setNewOrder({ ...newOrder, details: updatedDetails });
         } else {
           const newDetail: ProductDetail = {
             id: 0,
             quantity: selectedProductQuantity,
-            amount: product.price * selectedProductQuantity,
+            amount: product.salePrice * selectedProductQuantity,
             product: product,
           };
           setNewOrder({ ...newOrder, details: [...newOrder.details, newDetail] });
@@ -270,7 +276,7 @@ const Orders: React.FC = () => {
 
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Órdenes</h1>
+      <h1 className="text-3xl font-bold mb-6 text-teal-600">Mis Compras</h1>
   
    
   
@@ -352,7 +358,7 @@ const Orders: React.FC = () => {
                 <option value="">Seleccionar Producto</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} - ₡{product.price}
+                    {product.name} - ₡{product.salePrice}
                   </option>
                 ))}
               </select>

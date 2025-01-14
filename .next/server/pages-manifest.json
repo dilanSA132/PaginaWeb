@@ -2,9 +2,11 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/myOrders": "pages/myOrders.js",
-  "/login": "pages/login.js",
-  "/menu": "pages/menu.js",
   "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/products": "pages/products.js"
+  "/menu": "pages/menu.js",
+  "/myOrders": "pages/myOrders.js",
+  "/products": "pages/products.js",
+  "/productos": "pages/productos.js",
+  "/categories": "pages/categories.js",
+  "/": "pages/index.js"
 }
