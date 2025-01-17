@@ -54,9 +54,7 @@ model Order {
   userId    Int           // Campo para almacenar el ID del usuario
   details   OrderDetail[] // Detalles de la orden
   status    OrderStatus   @default(PENDING) // Estado de la orden
-  sale      Sale?         // Relación con Sale si la orden se convierte en una venta
 }
-
 
 
 enum OrderStatus {
@@ -70,8 +68,6 @@ model OrderDetail {
   amount    Float
   product   Product    @relation(fields: [productId], references: [id])
   productId Int
-  sale      Sale?      @relation(fields: [saleId], references: [id]) // Relación opcional con Sale
-  saleId    Int?       // Campo saleId ahora es opcional
   order     Order      @relation(fields: [orderId], references: [id])
   orderId   Int
 }
@@ -79,18 +75,24 @@ model OrderDetail {
 model Sale {
   id             Int           @id @default(autoincrement())
   date           DateTime      @default(now())
-  totalAmount    Float
-  paymentStatus  PaymentStatus
-  paymentPlan    PaymentPlan?  @relation(fields: [paymentPlanId], references: [id])
-  paymentPlanId  Int?
-  details        SaleDetail[]
-  orderDetails   OrderDetail[]
-  paymentDetails PaymentDetail[]
-  originOrder    Order?         @relation(fields: [originOrderId], references: [id]) // Relación con la orden de origen
-  originOrderId  Int?           @unique // ID de la orden original si aplica
-  credit         Credit?        @relation(fields: [creditId], references: [id]) // Relación con crédito
-  creditId       Int?           // Relación opcional
+  totalAmount    Float         // Monto total de la venta
+  paymentStatus  PaymentStatus // Estado del pago
+  paymentMethod  PaymentMethod // Método de pago
+  credit         Credit?       @relation(fields: [creditId], references: [id]) // Relación opcional con crédito
+  creditId       Int?          // Campo opcional para manejar crédito
+  details        SaleDetail[]  // Relación con múltiples productos
 }
+
+model SaleDetail {
+  id          Int       @id @default(autoincrement())
+  sale        Sale      @relation(fields: [saleId], references: [id]) // Relación con la venta
+  saleId      Int       // ID de la venta
+  product     Product   @relation(fields: [productId], references: [id]) // Relación con el producto
+  productId   Int       // ID del producto
+  quantity    Int       // Cantidad de este producto en la venta
+  amount      Float     // Monto total por este producto
+}
+
 
 enum PaymentStatus {
   PAID
@@ -98,48 +100,24 @@ enum PaymentStatus {
   PARTIAL
 }
 
-model SaleDetail {
-  id        Int      @id @default(autoincrement())
-  quantity  Int
-  amount    Float
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  sale      Sale     @relation(fields: [saleId], references: [id])
-  saleId    Int
-}
-
-model PaymentDetail {
-  id             Int          @id @default(autoincrement())
-  sale           Sale         @relation(fields: [saleId], references: [id])
-  saleId         Int
-  paymentMethod  PaymentMethod // Método de pago utilizado
-  amountPaid     Float        // Monto pagado
-  paymentDate    DateTime     @default(now()) // Fecha del pago
-}
-
 enum PaymentMethod {
   CASH        // Efectivo
   TRANSFER    // Transferencia
+  CREDIT 
 }
 
-model PaymentPlan {
-  id          Int    @id @default(autoincrement())
-  installments Int
-  amount      Float
-  sales       Sale[]
-}
 
 model Credit {
   id              Int           @id @default(autoincrement())
   customer        User          @relation(fields: [customerId], references: [id])
   customerId      Int
-  totalAmount     Float         // Monto total del crédito
-  amountRemaining Float         // Monto restante por pagar
-  createdAt       DateTime      @default(now()) // Fecha de apertura del crédito
-  dueDate         DateTime?     // Fecha de vencimiento del crédito (opcional)
-  status          CreditStatus  @default(ACTIVE) // Estado del crédito
-  payments        CreditPayment[] // Pagos realizados en este crédito
-  sales           Sale[]        // Relación con ventas pagadas con crédito
+  totalAmount     Float         
+  amountRemaining Float         
+  createdAt       DateTime      @default(now()) 
+  dueDate         DateTime?     
+  status          CreditStatus  @default(ACTIVE) 
+  payments        CreditPayment[] 
+  sales           Sale[]        
 }
 
 enum CreditStatus {

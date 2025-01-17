@@ -40,7 +40,7 @@ export interface Product {
 
 
 export interface SaleDetail {
-  id: number;
+ 
   quantity: number;
   amount: number;
   product: Product;
@@ -66,7 +66,7 @@ export interface PaymentPlan {
 
 
 export interface Sale {
-  id: number;
+  
   totalAmount: number;
   paymentStatus: 'PAID' | 'PENDING' | 'PARTIAL';
   date: string;

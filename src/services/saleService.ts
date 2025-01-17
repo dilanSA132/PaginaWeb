@@ -16,14 +16,14 @@ export async function getSales() {
   }
 }
 
-export async function createSale(sale: any) {
+export async function createSale(data:any) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(sale),
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       const errorData = await response.json();

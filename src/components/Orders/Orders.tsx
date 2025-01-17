@@ -8,61 +8,41 @@ import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { signOut, useSession } from 'next-auth/react';
+import { Order, Product, ProductDetail, Sale, SaleDetail, Credit,PaymentStatus } from './interfaces';
+import { createSale } from '@/services/saleService';
 
-interface ProductDetail {
-  id: number;
-  quantity: number;
-  amount: number;
-  product: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-  };
-}
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-}
-
-interface Order {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  createdAt: string;
-  status: string; // PENDING or SOLD
-  details: ProductDetail[];
-}
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [saleModalOpen, setsaleModalOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentStatus, setPaymentStatus] = useState<string>('');
+  const [creditTerm, setCreditTerm] = useState<string>('');
+  const [creditDuration, setCreditDuration] = useState<number>(0);
+  const [creditInterest, setCreditInterest] = useState<number>(0);
   const [deletedDetails, setDeletedDetails] = useState<number[]>([]);
-    const { data: session } = useSession();
-  
+  const { data: session } = useSession();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [selectedProductQuantity, setSelectedProductQuantity] = useState<number>(1);
   const [newOrder, setNewOrder] = useState<Order>({
     id: 0,
     name: '',
     email: '',
     phone: '',
     address: '',
+    userId: session?.user?.id,
     createdAt: '',
     status: 'PENDING',
     details: [],
   });
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [selectedProductQuantity, setSelectedProductQuantity] = useState<number>(1);
+  let totalPerQuota :any = 0;
+  let totalWithInterest: any = 0;
+  let totalAmount :any = 0;
+  
 
   useEffect(() => {
     const fetchOrdersAndProducts = async () => {
@@ -88,6 +68,7 @@ const Orders: React.FC = () => {
       email: '',
       phone: '',
       address: '',
+      userId: session?.user?.id,
       createdAt: '',
       status: 'PENDING',
       details: [],
@@ -104,13 +85,13 @@ const Orders: React.FC = () => {
         if (existingDetailIndex !== -1) {
           const updatedDetails = [...newOrder.details];
           updatedDetails[existingDetailIndex].quantity += selectedProductQuantity;
-          updatedDetails[existingDetailIndex].amount = updatedDetails[existingDetailIndex].quantity * product.price;
+          updatedDetails[existingDetailIndex].amount = updatedDetails[existingDetailIndex].quantity * product.salePrice;
           setNewOrder({ ...newOrder, details: updatedDetails });
         } else {
           const newDetail: ProductDetail = {
             id: 0,
             quantity: selectedProductQuantity,
-            amount: product.price * selectedProductQuantity,
+            amount: product.salePrice * selectedProductQuantity,
             product: product,
           };
           setNewOrder({ ...newOrder, details: [...newOrder.details, newDetail] });
@@ -168,7 +149,7 @@ const Orders: React.FC = () => {
         email: newOrder.email,
         phone: newOrder.phone,
         address: newOrder.address,
-        userId:session?.user?.id,
+        userId: session?.user?.id,
       });
 
       const details: OrderDetails[] = newOrder.details.map((detail) => ({
@@ -219,7 +200,7 @@ const Orders: React.FC = () => {
     { label: 'Dirección', accessor: 'address' },
     { label: 'Fecha de Creación', accessor: 'createdAt' },
     { label: 'Estado', accessor: 'status' },
-    {label : 'Usuario', accessor: 'userId'},
+    { label: 'Usuario', accessor: 'userId' },
     {
       label: 'Acciones',
       render: (order: Order) => (
@@ -228,7 +209,10 @@ const Orders: React.FC = () => {
           className="bg-teal-500 text-white py-1 px-2 rounded-full hover:bg-teal-600"
         >
           Ver Detalles
+
+
         </button>
+
       ),
     },
   ];
@@ -244,12 +228,43 @@ const Orders: React.FC = () => {
 
   const closeModal = () => {
     setModalIsOpen(false);
+
+    if (saleModalOpen) {
+      setNewOrder({
+        id: 0,
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        userId: session?.user?.id,
+        createdAt: '',
+        status: 'PENDING',
+        details: [],
+      });
+      setDeletedDetails([]);
+      setSelectedProductId(null);
+      setSelectedProductQuantity(1);
+    }
+
+  };
+
+  const saleOrder = async (order: Order) => {
+    setNewOrder(order);
+    setsaleModalOpen(true);
+
+    console.log(order);
+    closeModal();
+
+  }
+  const closeSaleModal = () => {
+    setsaleModalOpen(false);
     setNewOrder({
       id: 0,
       name: '',
       email: '',
       phone: '',
       address: '',
+      userId: session?.user?.id,
       createdAt: '',
       status: 'PENDING',
       details: [],
@@ -257,21 +272,49 @@ const Orders: React.FC = () => {
     setDeletedDetails([]);
     setSelectedProductId(null);
     setSelectedProductQuantity(1);
+    setPaymentMethod('');
+    setPaymentStatus(''); 
   };
+
+  const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPaymentMethod(e.target.value);
+  };
+
+  const handlePaymentStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPaymentStatus(e.target.value);
+  };
+  const handleSaveSale = async () => {
+    const saleData = {
+      '12/24/2525':Date,
+      totalWithInterest ,
+      paymentStatus,
+      paymentMethod,
+    };
+   
+    try {
+      const result = await createSale(saleData);
+      console.log('Sale created successfully:', result);
+      // Aquí puedes realizar alguna acción después de crear la venta (ej. redirigir al usuario, limpiar el formulario, etc.)
+    } catch (error) {
+    
+    }
+  };
+
+  
 
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Órdenes</h1>
-  
+
       <button
         onClick={openModalForNewOrder}
         className="bg-teal-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-teal-600"
       >
         Nueva Orden
       </button>
-  
+
       {error && <p className="text-red-500">{error}</p>}
-  
+
       {!loading ? (
         <UniversalTable
           columns={columns}
@@ -281,10 +324,142 @@ const Orders: React.FC = () => {
       ) : (
         <p className="text-center text-gray-600">Cargando órdenes...</p>
       )}
-  
+
+      <CustomModal isOpen={saleModalOpen} onClose={closeSaleModal}>
+        <h2 className="text-2xl font-bold mb-4">Realizar Venta</h2>
+
+        <div className="mb-4"></div>
+        <h3 className="text-xl font-bold mb-2">Detalles de la Orden</h3>
+        <div className="border p-4 rounded-lg text-black">
+          <p><strong>Nombre:</strong> {newOrder.name}</p>
+          <p><strong>Correo Electrónico:</strong> {newOrder.email}</p>
+          <p><strong>Teléfono:</strong> {newOrder.phone}</p>
+          <p><strong>Dirección:</strong> {newOrder.address}</p>
+          <p><strong>Fecha de Creación:</strong> {newOrder.createdAt}</p>
+          <p><strong>Estado:</strong> {newOrder.status}</p>
+          <p><strong>Usuario:</strong> {newOrder.userId}</p>
+
+          <h4 className="text-lg font-bold mt-4">Productos:</h4>
+          {newOrder.details.map((detail) => (
+            <div key={detail.id} className="border-b py-2">
+              <p><strong>Producto:</strong> {detail.product.name}</p>
+              <p><strong>Cantidad:</strong> {detail.quantity}</p>
+              <p><strong>Monto:</strong> ₡{detail.amount}</p>
+            </div>
+          ))}
+          <p className="mt-4"><strong>Total:</strong> ₡{newOrder.details.reduce((total, detail) => total + detail.amount, 0)}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="paymentMethod">Método de Pago</label>
+            <select
+              id="paymentMethod"
+              className="w-full p-4 border border-gray-300 rounded-lg text-black"
+              value={paymentMethod}
+              onChange={handlePaymentMethodChange}
+            >
+              <option value="">Seleccionar Método de Pago</option>
+              <option value="CASH">Efectivo</option>
+              <option value="TRANSFER">Transferencia</option>
+              <option value="CREDIT">Crédito</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="paymentStatus">Estado del Pago</label>
+            <select
+              id="paymentStatus"
+              className="w-full p-4 border border-gray-300 rounded-lg text-black"
+              value={paymentStatus}
+              onChange={handlePaymentStatusChange}
+            >
+              <option value="">Seleccionar Estado de Pago</option>
+              <option value="PAID">Pagado</option>
+              <option value="PENDING">Pendiente</option>
+            </select>
+          </div>
+        </div>
+        {paymentMethod === 'CREDIT' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="creditTerm">Plazo</label>
+              <select
+                id="creditTerm"
+                className="w-full p-4 border border-gray-300 rounded-lg text-black"
+                value={creditTerm}
+                onChange={(e) => setCreditTerm(e.target.value)}
+              >
+                <option value="">Seleccionar Plazo</option>
+                <option value="MONTHLY">Mensual</option>
+                <option value="WEEKLY">Semanal</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="creditDuration">Duración</label>
+              <input
+                type="number"
+                id="creditDuration"
+                className="w-full p-4 border border-gray-300 rounded-lg text-black"
+                value={creditDuration}
+                onChange={(e) => setCreditDuration(Number(e.target.value))}
+                placeholder="Duración en meses/semanas"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="creditInterest">Interés</label>
+              <input
+                type="number"
+                id="creditInterest"
+                className="w-full p-4 border border-gray-300 rounded-lg text-black"
+                value={creditInterest}
+                onChange={(e) => setCreditInterest(Number(e.target.value))}
+                placeholder="Interés en %"
+              />
+            </div>
+          </div>
+        )}
+        {paymentMethod === 'CREDIT' && (
+          <div className="mt-4">
+            <h4 className="text-lg font-bold">Resumen de Crédito</h4>
+            {(() => {
+               totalAmount = newOrder.details.reduce((total, detail) => total + detail.amount, 0);
+               totalWithInterest = totalAmount * (1 + creditInterest / 100);
+               totalPerQuota = totalWithInterest / creditDuration;
+
+              return (
+                <>
+                  <p><strong>Total Final:</strong> ₡{totalWithInterest.toFixed(2)}</p>
+                  <p><strong>Total por Cuota:</strong> ₡{totalPerQuota.toFixed(2)}</p>
+                  <p><strong>Plazo:</strong> {creditDuration} {creditTerm === 'MONTHLY' ? 'meses' : 'semanas'}</p>
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        <div className="flex justify-end mt-4">
+
+          <button
+            onClick={handleSaveSale}
+            className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
+          >
+            {newOrder.id ? 'Guardar Venta' : 'Crear Orden'}
+          </button>
+          <button
+            onClick={closeSaleModal}
+            className="ml-4 bg-red-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
+          >
+            Cancelar
+          </button>
+        </div>
+      </CustomModal>
+
       <CustomModal isOpen={modalIsOpen} onClose={closeModal}>
         <h2 className="text-2xl font-bold mb-4">{newOrder.id ? 'Detalles de la Orden' : 'Crear Nueva Orden'}</h2>
-        
+
         <div className="flex flex-col lg:flex-row lg:justify-between lg:space-x-4">
           {/* Left Section */}
           <div className="lg:w-1/2 w-full">
@@ -333,7 +508,7 @@ const Orders: React.FC = () => {
               />
             </div>
           </div>
-  
+
           {/* Right Section */}
           <div className="lg:w-1/2 w-full mt-4 lg:mt-0 flex flex-col">
             <h3 className="text-xl font-bold mb-2">Añadir Productos a la Orden</h3>
@@ -346,7 +521,7 @@ const Orders: React.FC = () => {
                 <option value="">Seleccionar Producto</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} - ₡{product.price}
+                    {product.name} - ₡{product.salePrice}
                   </option>
                 ))}
               </select>
@@ -365,7 +540,7 @@ const Orders: React.FC = () => {
                 Añadir
               </button>
             </div>
-  
+
             {/* Display added products with scroll */}
             {newOrder.details.length > 0 && (
               <div className="flex flex-col mb-4">
@@ -374,7 +549,7 @@ const Orders: React.FC = () => {
                   {newOrder.details.map((detail) => (
                     <div key={detail.id} className="flex items-center justify-between border-b py-2">
                       <div className="flex items-center">
-                        <img 
+                        <img
                           src={detail.product?.image || '/path/to/default-image.jpg'}
                           alt={detail.product?.name || 'Producto sin nombre'}
                           className="w-16 h-16 mr-4"
@@ -398,7 +573,7 @@ const Orders: React.FC = () => {
             )}
           </div>
         </div>
-  
+
         {/* Save and Cancel buttons */}
         <div className="flex justify-end mt-4">
           <button
@@ -409,16 +584,22 @@ const Orders: React.FC = () => {
           </button>
           <button
             onClick={closeModal}
-            className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
+            className="ml-4 bg-red-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
           >
             Cancelar
+          </button>
+          <button
+            onClick={() => saleOrder(newOrder)} // Pasa las variables necesarias aquí
+            className="ml-4 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
+          >
+            Realizar Venta
           </button>
         </div>
       </CustomModal>
       <ToastContainer />
     </div>
   );
-  
+
 };
 
 export default Orders;
