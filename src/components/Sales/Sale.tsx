@@ -1,276 +1,361 @@
-import React, { useState, useEffect } from 'react';
-import UniversalTable from '../Table/UniversalTable';
-import CustomModal from '../modal/CustomModal';
-import { getSales, createSale, deleteSale, updateSale } from '@/services/saleService';
-import { createSaleDetail } from '@/services/saleDetailService';
-import { getPaymentPlans } from '@/services/paymentPlanService';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { getSales } from '@/services/saleService';
 import { getProducts } from '@/services/productService';
-import { Sale, SaleDetail, PaymentPlan,Product } from '@/services/types';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  LineElement,
+  PointElement,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  LineElement,
+  PointElement
+);
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  purchasePrice: number;
+  salePrice: number;
+  stock: number;
+  categoryId: number;
+  image: string;
+}
+
+interface SaleDetail {
+  id: number;
+  saleId: number;
+  productId: number;
+  quantity: number;
+  amount: number;
+  product: Product;
+}
+
+interface Sale {
+  id: number;
+  date: string;
+  totalAmount: number;
+  paymentStatus: string;
+  paymentMethod: string;
+  creditId: number | null;
+  details: SaleDetail[];
+}
 
 const Sales: React.FC = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [newSale, setNewSale] = useState<Sale>({
-    id: 0,
-    totalAmount: 0,
-    paymentStatus: 'PENDING',
-    date: new Date().toISOString(),
-    details: [],
-    paymentDetails: [],
-    paymentPlanId: null,
-    originOrderId: null,
-  });
-  const [products, setProducts] = useState<Product[]>([]);
-  const [paymentPlans, setPaymentPlans] = useState<PaymentPlan[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [selectedProductQuantity, setSelectedProductQuantity] = useState<number>(1);
 
   useEffect(() => {
-    const fetchSalesAndProducts = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchSales = async () => {
       try {
-        const [fetchedSales, fetchedProducts, fetchedPaymentPlans] = await Promise.all([
-          getSales(),
-          getProducts(),
-          getPaymentPlans(),
-        ]);
-        setSales(fetchedSales);
-        setProducts(fetchedProducts);
-        setPaymentPlans(fetchedPaymentPlans);
-      } catch (err: any) {
-        setError('Error al cargar los datos');
+        const response = await getSales();
+        setSales(response || []);
+      } catch (error) {
+        console.error('Error al obtener las ventas:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchSalesAndProducts();
+
+    fetchSales();
   }, []);
 
-  const openModalForNewSale = () => {
-    setNewSale({
-      id: 0,
-      totalAmount: 0,
-      paymentStatus: 'PENDING',
-      date: new Date().toISOString(),
-      details: [],
-      paymentDetails: [],
-      paymentPlanId: null,
-      originOrderId: null,
-    });
-    setModalIsOpen(true);
-  };
+  const totalRevenue = useMemo(
+    () => sales.reduce((sum, sale) => sum + sale.totalAmount, 0),
+    [sales]
+  );
 
-  const handleAddProductToSale = () => {
-    if (selectedProductId && selectedProductQuantity > 0) {
-      const product = products.find((p) => p.id === selectedProductId);
-      if (product) {
-        const existingDetailIndex = newSale.details.findIndex((d) => d.product.id === product.id);
-        if (existingDetailIndex !== -1) {
-          const updatedDetails = [...newSale.details];
-          updatedDetails[existingDetailIndex].quantity += selectedProductQuantity;
-          updatedDetails[existingDetailIndex].amount = updatedDetails[existingDetailIndex].quantity * product.price;
-          setNewSale({ ...newSale, details: updatedDetails });
-        } else {
-          const newDetail: SaleDetail = {
-            id: 0,
-            quantity: selectedProductQuantity,
-            amount: product.price * selectedProductQuantity,
-            product: product,
-          };
-          setNewSale({ ...newSale, details: [...newSale.details, newDetail] });
-        }
-        setSelectedProductId(null);
-        setSelectedProductQuantity(1);
-      }
-    }
-  };
-
-  const handleSaveSale = async () => {
-    try {
-      const createdSale = await createSale(newSale);
-      const details = newSale.details.map((detail) => ({
-        productId: detail.product.id,
-        quantity: detail.quantity,
-        amount: detail.amount,
-        saleId: createdSale.id,
-      }));
-
-      await createSaleDetail(createdSale.id);
-      setSales([...sales, { ...createdSale, details }]);
-      closeModal();
-      toast.success('Venta creada exitosamente.');
-    } catch (error) {
-      console.error('Error al crear la venta:', error);
-      toast.error('Error al crear la venta.');
-    }
-  };
-
-  const handleDelete = async (sale: Sale) => {
-    try {
-      await deleteSale(sale.id);
-      setSales((prevSales) => prevSales.filter((s) => s.id !== sale.id));
-      toast.success('Venta eliminada exitosamente.');
-    } catch (error) {
-      console.error('Error al eliminar la venta:', error);
-      toast.error('Error al eliminar la venta.');
-    }
-  };
-
-  const columns = [
-    { label: 'ID', accessor: 'id' },
-    { label: 'Fecha', accessor: 'date' },
-    { label: 'Monto Total', accessor: 'totalAmount' },
-    { label: 'Estado de Pago', accessor: 'paymentStatus' },
-    {
-      label: 'Acciones',
-      render: (sale: Sale) => (
-        <button
-          onClick={() => openModalForSaleDetails(sale)}
-          className="bg-teal-500 text-white py-1 px-2 rounded-full hover:bg-teal-600"
-        >
-          Ver Detalles
-        </button>
+  const totalProductsSold = useMemo(
+    () =>
+      sales.reduce(
+        (sum, sale) =>
+          sum + sale.details.reduce((subSum, detail) => subSum + detail.quantity, 0),
+        0
       ),
-    },
-  ];
+    [sales]
+  );
 
-  const openModalForSaleDetails = (sale: Sale) => {
-    setNewSale({
-      ...sale,
-      details: sale.details.map((detail) => ({ ...detail })),
+  const productSales = useMemo(() => sales.flatMap((sale) => sale.details), [sales]);
+
+  const topProducts = useMemo(
+    () =>
+      productSales.reduce((acc: Record<string, number>, detail) => {
+        acc[detail.product.name] = (acc[detail.product.name] || 0) + detail.quantity;
+        return acc;
+      }, {}),
+    [productSales]
+  );
+
+  const salesByPaymentMethod = useMemo(() => {
+    return sales.reduce((acc, sale) => {
+      acc[sale.paymentMethod] = (acc[sale.paymentMethod] || 0) + sale.totalAmount;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [sales]);
+
+  const salesByCategory = useMemo(() => {
+    return sales.reduce((acc, sale) => {
+      sale.details.forEach((detail) => {
+        const categoryName = detail.product.categoryId.toString(); 
+        acc[categoryName] = (acc[categoryName] || 0) + detail.amount;
+      });
+      return acc;
+    }, {} as Record<string, number>);
+  }, [sales]);
+
+  const salesOverTime = useMemo(() => {
+    const dailySales: Record<string, number> = {};
+    sales.forEach((sale) => {
+      const date = new Date(sale.date).toLocaleDateString();
+      dailySales[date] = (dailySales[date] || 0) + sale.totalAmount;
     });
-    setModalIsOpen(true);
+    return {
+      labels: Object.keys(dailySales),
+      data: Object.values(dailySales),
+    };
+  }, [sales]);
+
+  const barChartData = useMemo(
+    () => ({
+      labels: Object.keys(topProducts),
+      datasets: [
+        {
+          label: 'Unidades Vendidas',
+          data: Object.values(topProducts),
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [topProducts]
+  );
+
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        setProducts(response || []);
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const inventoryValue = useMemo(
+    () => products.reduce((sum, product) => sum + product.purchasePrice, 0),
+    [products]
+  );
+
+  const pieChartData = useMemo(
+    () => ({
+      labels: ['Ingresos', 'Valor del Inventario'],
+      datasets: [
+        {
+          data: [totalRevenue, inventoryValue],
+          backgroundColor: ['#4caf50', '#ff9800'],
+          hoverBackgroundColor: ['#388e3c', '#f57c00'],
+        },
+      ],
+    }),
+    [totalRevenue, inventoryValue]
+  );
+
+  const lineChartData = useMemo(
+    () => ({
+      labels: salesOverTime.labels,
+      datasets: [
+        {
+          label: 'Ventas a lo largo del Tiempo',
+          data: salesOverTime.data,
+          borderColor: '#42A5F5',
+          backgroundColor: 'rgba(66, 165, 245, 0.2)',
+          fill: true,
+        },
+      ],
+    }),
+    [salesOverTime]
+  );
+
+  if (loading) {
+    return <div className="text-center mt-10">Cargando...</div>;
+  }
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('Informe de Ventas', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Ingresos Totales: $${totalRevenue.toFixed(2)}`, 14, 30);
+    doc.text(`Total Productos Vendidos: ${totalProductsSold}`, 14, 40);
+
+    const topProductsTable = Object.entries(topProducts).map(([productName, quantity]) => [
+      productName,
+      quantity,
+    ]);
+
+    doc.autoTable({
+      head: [['Producto', 'Unidades Vendidas']],
+      body: topProductsTable,
+      startY: 50,
+      theme: 'grid',
+      headStyles: { fillColor: [54, 162, 235] },
+    });
+
+    // Tabla de Ventas por Método de Pago
+    const paymentMethodTable = Object.entries(salesByPaymentMethod).map(([method, total]) => [
+      method,
+      `$${total.toFixed(2)}`,
+    ]);
+
+    doc.autoTable({
+      head: [['Método de Pago', 'Total Ventas']],
+      body: paymentMethodTable,
+      theme: 'grid',
+      headStyles: { fillColor: [255, 99, 132] },
+    });
+
+    doc.save('informe_ventas.pdf');
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setNewSale({
-      id: 0,
-      totalAmount: 0,
-      paymentStatus: 'PENDING',
-      date: new Date().toISOString(),
-      details: [],
-      paymentDetails: [],
-      paymentPlanId: null,
-      originOrderId: null,
-    });
-  };
+
 
   return (
-    <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-teal-600">Gestión de Ventas</h1>
+    <div className="p-5">
+      <h1 className="text-3xl font-bold mb-5 text-center">Panel de Ventas</h1>
       <button
-        onClick={openModalForNewSale}
-        className="bg-teal-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-teal-600"
+        onClick={generatePDF}
+        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-5"
       >
-        Nueva Venta
+        Generar Informe de Ventas
       </button>
-      {error && <p className="text-red-500">{error}</p>}
-      {!loading ? (
-        <UniversalTable columns={columns} data={sales} onDelete={handleDelete} />
-      ) : (
-        <p className="text-center text-gray-600">Cargando ventas...</p>
-      )}
-      <CustomModal isOpen={modalIsOpen} onClose={closeModal}>
-        <h2 className="text-2xl font-bold mb-4">{newSale.id ? 'Detalles de la Venta' : 'Crear Nueva Venta'}</h2>
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:space-x-4">
-          <div className="lg:w-1/2 w-full">
-            <h3 className="text-xl font-bold mb-2">Añadir Productos a la Venta</h3>
-            <div className="flex space-x-2 mb-4">
-              <select
-                value={selectedProductId || ''}
-                onChange={(e) => setSelectedProductId(Number(e.target.value))}
-                className="w-full p-4 border border-gray-300 rounded-lg text-black"
-              >
-                <option value="">Seleccionar Producto</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} - ₡{product.price}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                min="1"
-                value={selectedProductQuantity}
-                onChange={(e) => setSelectedProductQuantity(Number(e.target.value))}
-                className="w-24 p-4 border border-gray-300 rounded-lg text-black"
-                placeholder="Cantidad"
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+
+        <div className="bg-white p-5 shadow rounded" style={{ maxHeight: '550px', overflow: 'auto' }}>
+          <h2 className="text-xl font-semibold mb-3">Productos Más Vendidos</h2>
+          <div className="h-full">
+            <Bar
+              data={barChartData}
+              options={{
+                maintainAspectRatio: false,
+                responsive: true,
+                animation: {
+                  duration: 1000,
+                },
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-5 shadow rounded" style={{ height: '550px', overflow: 'auto' }}>
+          <h2 className="text-xl font-semibold mb-3">Ingresos vs Valor del Inventario</h2>
+          <div className="h-full">
+            <Pie
+              data={pieChartData}
+              options={{
+                maintainAspectRatio: false,
+                responsive: true,
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-5 shadow rounded" style={{ maxHeight: '550px', overflow: 'auto' }}>
+          <h2 className="text-xl font-semibold mb-3">Ventas a lo largo del Tiempo</h2>
+          <div className="h-full">
+            <Line
+              data={lineChartData}
+              options={{
+                maintainAspectRatio: false,
+                responsive: true,
+                animation: {
+                  duration: 1000,
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <h2 className="text-xl font-semibold mb-3">Análisis Adicional</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="bg-white p-5 shadow rounded" style={{ maxHeight: '550px', overflow: 'auto' }}>
+            <h3 className="text-lg font-semibold mb-3">Ventas por Método de Pago</h3>
+            <div className="h-full">
+              <Pie
+                data={{
+                  labels: Object.keys(salesByPaymentMethod),
+                  datasets: [
+                    {
+                      data: Object.values(salesByPaymentMethod),
+                      backgroundColor: ['#ff8a80', '#ff9800', '#ffeb3b'],
+                      hoverBackgroundColor: ['#ff5252', '#f57c00', '#fbc02d'],
+                    },
+                  ],
+                }}
+                options={{
+                  maintainAspectRatio: false,
+                  responsive: true,
+                }}
               />
-              <button
-                onClick={handleAddProductToSale}
-                className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
-              >
-                Añadir
-              </button>
             </div>
-
-            {/* Display added products with scroll */}
-            {newSale.details.length > 0 && (
-              <div className="flex flex-col mb-4">
-                <h3 className="text-xl font-bold mb-2 text-black">Productos Añadidos</h3>
-                <div className="overflow-y-auto max-h-64 text-black border p-2 rounded-lg">
-                  {newSale.details.map((detail) => (
-                    <div key={detail.id} className="flex items-center justify-between border-b py-2">
-                      <div className="flex items-center">
-                        <img 
-                          src={detail.product?.image || '/path/to/default-image.jpg'}
-                          alt={detail.product?.name || 'Producto sin nombre'}
-                          className="w-16 h-16 mr-4"
-                        />
-                        <div>
-                          <p><strong>Producto:</strong> {detail.product?.name || 'Producto desconocido'}</p>
-                          <p><strong>Cantidad:</strong> {detail.quantity}</p>
-                          <p><strong>Monto:</strong> ₡{detail.amount}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Payment Plan Selection */}
-          <div className="lg:w-1/2 w-full">
-            <h3 className="text-xl font-bold mb-2">Seleccionar Plan de Pago</h3>
-            <select
-              value={newSale.paymentPlanId || ''}
-              onChange={(e) => setNewSale({ ...newSale, paymentPlanId: Number(e.target.value) })}
-              className="w-full p-4 border border-gray-300 rounded-lg text-black"
-            >
-              <option value="">Seleccionar Plan de Pago</option>
-              {paymentPlans.map((plan) => (
-                <option key={plan.id} value={plan.id}>
-                  {plan.installments} cuotas de ₡{plan.amount.toFixed(2)}
-                </option>
-              ))}
-            </select>
+          <div className="bg-white p-5 shadow rounded" style={{ maxHeight: '550px', overflow: 'auto' }}>
+            <h3 className="text-lg font-semibold mb-3">Ventas por Categoría</h3>
+            <div className="h-full">
+              <Bar
+                data={{
+                  labels: Object.keys(salesByCategory),
+                  datasets: [
+                    {
+                      label: 'Ingresos por Categoría',
+                      data: Object.values(salesByCategory),
+                      backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                      borderColor: 'rgba(255, 99, 132, 1)',
+                      borderWidth: 1,
+                    },
+                  ],
+                }}
+                options={{
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  animation: {
+                    duration: 1000,
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Save and Cancel buttons */}
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={handleSaveSale}
-            className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
-          >
-            {newSale.id ? 'Guardar Cambios' : 'Crear Venta'}
-          </button>
-          <button
-            onClick={closeModal}
-            className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
-          >
-            Cancelar
-          </button>
-        </div>
-      </CustomModal>
-      <ToastContainer />
+      </div>
     </div>
   );
 };

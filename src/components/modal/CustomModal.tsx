@@ -15,7 +15,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children }) 
     <div className="modal-overlay">
       <div className="modal-content">
         <button onClick={onClose} className="modal-close-button">X</button>
-        {children}
+        <div className="modal-body">{children}</div>
       </div>
       <style jsx>{`
         .modal-overlay {
@@ -29,13 +29,22 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children }) 
           align-items: center;
           justify-content: center;
           z-index: 1000;
+          padding: 20px; /* Para evitar que el contenido toque los bordes */
         }
         .modal-content {
           background: white;
           padding: 20px;
           border-radius: 8px;
           position: relative;
+          max-height: 90vh; /* Limita la altura máxima del modal */
           min-width: 300px;
+          width: 100%;
+          max-width: 600px;
+          overflow: hidden; /* Evita desbordamiento horizontal */
+        }
+        .modal-body {
+          max-height: calc(90vh - 40px); /* Ajusta según el padding */
+          overflow-y: auto; /* Habilita el desplazamiento vertical */
         }
         .modal-close-button {
           position: absolute;

@@ -51,6 +51,29 @@ export async function getProducts() {
     return await response.json();
   }
   
+
+
+
+
+
+  export async function updateStockProduct(data:{ id: number, stock: number}) {
+    const response = await fetch(`http://localhost:3000/api/v1/products/${data.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Error al actualizar el producto');
+    }
+  
+    return await response.json();
+  }
+  
+
+
   
   export async function deleteProduct(id: number) {
     const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
