@@ -8,7 +8,14 @@ export async function GET(
 ) {
   try {
     const sales = await prisma.sale.findMany({
-      include: { details: { include: { product: true } } },
+      include: {
+        details: { include: { product: true } },
+        credit: {
+          include: {
+            payments: true,
+          },
+        },
+      },
     });
     return NextResponse.json(sales, { status: 200 });
   } catch (error) {

@@ -4,7 +4,7 @@ import { getSales } from '@/services/saleService';
 import { getProducts } from '@/services/productService';
 
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 import {
   Chart as ChartJS,
@@ -220,7 +220,7 @@ const Sales: React.FC = () => {
       quantity,
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [['Producto', 'Unidades Vendidas']],
       body: topProductsTable,
       startY: 50,
@@ -234,7 +234,7 @@ const Sales: React.FC = () => {
       `$${total.toFixed(2)}`,
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [['Método de Pago', 'Total Ventas']],
       body: paymentMethodTable,
       theme: 'grid',

@@ -1,4 +1,3 @@
-// pages/api/auth/[...nextauth].ts
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import prisma from '@/lib/prisma';
@@ -17,17 +16,14 @@ export default NextAuth({
           throw new Error('Email y contraseña son requeridos');
         }
 
-        // Buscar el usuario por email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
-        // Si el usuario no existe o la contraseña es incorrecta
         if (!user || !(await bcrypt.compare(credentials.password, user.password))) {
-          return null; // La autenticación fallará si retornas null
+          return null; 
         }
 
-        // Retorna el usuario autenticado
         return {
           id: user.id,
           name: user.name,

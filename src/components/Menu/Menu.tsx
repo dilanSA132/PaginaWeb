@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { FaUserCog, FaBoxOpen, FaKey, FaTags, FaShoppingCart, FaChartLine } from 'react-icons/fa';
+import { FaUserCog, FaBoxOpen, FaKey, FaTags, FaShoppingCart, FaChartLine, FaMoneyBillWave , FaWallet} from 'react-icons/fa';
 
 const Menu: React.FC = () => {
   const router = useRouter();
@@ -12,10 +12,10 @@ const Menu: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 to-green-100 animate-fade-in">
       <header className="bg-teal-500 text-white p-4 shadow-lg">
-        <h1 className="text-3xl font-bold text-center">Menú Principal</h1>
+        
       </header>
       <main className="flex-grow flex items-center justify-center p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"> {/* Aumenté gap de 6 a 8 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Carta de Mantenimiento de Usuarios */}
           <div
             className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
@@ -72,8 +72,27 @@ const Menu: React.FC = () => {
             onClick={() => handleNavigation('/sale')}
           >
             <FaChartLine className="text-orange-700 text-5xl mb-3" />
-            <h3 className="text-lg font-bold mb-1 text-orange-700">Ventas</h3>
+            <h3 className="text-lg font-bold mb-1 text-orange-700">Panel</h3>
             <p className="text-gray-700 text-sm">Analiza las ventas y el rendimiento de tu tienda.</p>
+          </div>
+
+          {/* Carta de Cuentas por Cobrar */}
+          <div
+            className="bg-gradient-to-r from-red-200 via-red-300 to-red-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
+            onClick={() => handleNavigation('/cuentas-por-cobrar')}
+          >
+            <FaMoneyBillWave className="text-red-700 text-5xl mb-3" />
+            <h3 className="text-lg font-bold mb-1 text-red-700">Cuentas por Cobrar</h3>
+            <p className="text-gray-700 text-sm">Gestiona las cuentas pendientes de tus clientes.</p>
+          </div>
+
+          <div
+            className="bg-gradient-to-r from-indigo-200 via-indigo-300 to-indigo-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
+            onClick={() => handleNavigation('/saleMaintenance')}
+          >
+            <FaWallet className="text-indigo-700 text-5xl mb-3" />
+            <h3 className="text-lg font-bold mb-1 text-indigo-700">Ventas</h3>
+            <p className="text-gray-700 text-sm">Gestiona y realiza un seguimiento de las ventas realizadas.</p>
           </div>
         </div>
       </main>
