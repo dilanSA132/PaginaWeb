@@ -4,16 +4,17 @@ interface CustomModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  width?: string; // Prop opcional para personalizar el ancho
 }
 
-const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children }) => {
+const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, width }) => {
   if (!isOpen) {
     return null;
   }
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content" style={{ maxWidth: width || '600px' }}> {/* Usa el ancho personalizado o el predeterminado */}
         <button onClick={onClose} className="modal-close-button">X</button>
         <div className="modal-body">{children}</div>
       </div>
@@ -39,7 +40,6 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children }) 
           max-height: 90vh; /* Limita la altura máxima del modal */
           min-width: 300px;
           width: 100%;
-          max-width: 600px;
           overflow: hidden; /* Evita desbordamiento horizontal */
         }
         .modal-body {

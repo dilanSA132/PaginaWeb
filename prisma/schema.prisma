@@ -131,6 +131,18 @@ model CreditPayment {
   id          Int      @id @default(autoincrement())
   credit      Credit  @relation(fields: [creditId], references: [id])
   creditId    Int
-  amountPaid  Float    // Monto pagado en este pago
-  paymentDate DateTime @default(now()) // Fecha de este pago
+  amountToPay  Float     
+  amountPaid  Float    
+  paymentDate DateTime @default(now()) 
+}
+
+
+model Email {
+  id        Int      @id @default(autoincrement()) // ID único para cada correo
+  userName  String      // ID del usuario asociado
+  email     String   // Dirección de correo electrónico (ya no será único)
+  subject   String   // Asunto del correo
+  type      String   // Tipo del correo (puede ser "entrada", "salida", etc.)
+  content   String   // Contenido del correo
+  createdAt DateTime @default(now()) // Fecha de creación
 }

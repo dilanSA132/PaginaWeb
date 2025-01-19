@@ -65,3 +65,20 @@ export async function getCredits() {
     return await response.json();
   }
   
+  
+export async function updateCreditRemaining(id : number, amountRemaining: number) {
+    const response = await fetch(`http://localhost:3000/api/v1/credits/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amountRemaining }),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Error al actualizar el monto restante del crédito');
+    }
+  
+    return await response.json();
+
+}

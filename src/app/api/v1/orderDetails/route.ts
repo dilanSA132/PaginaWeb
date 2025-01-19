@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const orderDetails = await prisma.orderDetail.findMany({
-      include: { product: true, sale: true, order: true },
+      include: { product: true, order: true },
     });
     return NextResponse.json(orderDetails, { status: 200 });
   } catch (error) {

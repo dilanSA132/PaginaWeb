@@ -35,7 +35,7 @@ export interface Order {
 
 
 export interface Sale {
-  id?: number; 
+  id: number; 
   date: Date; 
   totalAmount: number; // Monto total de la venta
   paymentStatus: PaymentStatus; // Estado del pago
@@ -46,7 +46,7 @@ export interface Sale {
 }
 
 export interface SaleDetail {
-  id?: number; // ID opcional, generado automáticamente
+  id: number; // ID opcional, generado automáticamente
   saleId?: number; // ID de la venta asociada
   productId: number; // ID del producto vendido
   quantity: number; // Cantidad del producto
@@ -61,21 +61,22 @@ export type PaymentMethod = 'CASH' | 'TRANSFER' | 'CREDIT' ;
 
 
 export interface CreditPayment {
-  id?: number; // ID opcional, ya que se genera automáticamente
-  creditId: number; // ID del crédito asociado
-  amountPaid: number; // Monto pagado en este pago
-  paymentDate: Date; // Fecha del pago
+  id: number; // ID opcional, ya que se genera automáticamente
+  creditId?: number; // ID del crédito asociado
+  amountToPay?: number; // Monto a pagar en este pago 
+  amountPaid?: number; // Monto pagado en este pago
+  paymentDate?: Date; // Fecha del pago
 }
 
 
 export interface Credit {
-  id?: number;
-  customerId: number;
-  totalAmount: number;
-  amountRemaining: number;
+  id: number;
+  customerId?: number;
+  totalAmount?: number;
+  amountRemaining?: number;
   createdAt?: Date;
   dueDate?: Date;
-  status: CreditStatus;
+  status?: CreditStatus;
   payments?: CreditPayment[];
   sales?: Sale[];
 }

@@ -9,6 +9,8 @@ interface User {
   name: string;
   email: string;
   roleId: number; 
+  password?: string;  
+  
 }
 
 const MantenimientoUsuarios: React.FC = () => {
@@ -77,7 +79,8 @@ const MantenimientoUsuarios: React.FC = () => {
       setError('Por favor, ingresa una contraseña para el nuevo usuario.');
       return;
     }
-  
+     console.log("Este es el  ",newUser)  ; 
+
     setError(null); // Limpiar cualquier error previo
   
     if (isEditing) {

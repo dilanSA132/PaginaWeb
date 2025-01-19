@@ -173,7 +173,7 @@ const Sales: React.FC = () => {
 
   const pieChartData = useMemo(
     () => ({
-      labels: ['Ingresos', 'Valor del Inventario'],
+      labels: ['Ventas', 'Valor del Inventario'],
       datasets: [
         {
           data: [totalRevenue, inventoryValue],
@@ -274,7 +274,7 @@ const Sales: React.FC = () => {
         </div>
 
         <div className="bg-white p-5 shadow rounded" style={{ height: '550px', overflow: 'auto' }}>
-          <h2 className="text-xl font-semibold mb-3">Ingresos vs Valor del Inventario</h2>
+          <h2 className="text-xl font-semibold mb-3">Ventas vs Valor del Inventario</h2>
           <div className="h-full">
             <Pie
               data={pieChartData}

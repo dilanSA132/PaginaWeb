@@ -39,6 +39,8 @@ export async function getOrdersByUserId(userId: number) {
 
 export async function createOrder(order: any) {
   try {
+    console.log('Este siiiiii es ', order);  
+
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {

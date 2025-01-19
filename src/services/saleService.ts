@@ -73,3 +73,24 @@ export async function updateSale(saleId: number, saleData: any) {
     throw error;
   }
 }
+
+
+export async function updateSaleStatus(saleId: number, paymentStatus: string) {
+  try {
+    const response = await fetch(`${baseUrl}/${saleId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ paymentStatus }), 
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error updating sale');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating sale:', error);
+    throw error;
+  }
+}

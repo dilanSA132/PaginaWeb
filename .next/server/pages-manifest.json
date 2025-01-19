@@ -2,8 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/menu": "pages/menu.js",
-  "/sale": "pages/sale.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/saleMaintenance": "pages/saleMaintenance.js"
+  "/login": "pages/login.js",
+  "/marketing": "pages/marketing.js",
+  "/saleMaintenance": "pages/saleMaintenance.js",
+  "/menu": "pages/menu.js"
 }

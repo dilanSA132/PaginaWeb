@@ -8,8 +8,8 @@ import { CreateOrderRequest, OrderDetails } from '@/services/types';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { signOut, useSession } from 'next-auth/react';
-import { Order, Product, ProductDetail, Sale, PaymentMethod,CreditStatus , SaleDetail ,PaymentStatus } from './interfaces';
-import { updateStockProduct } from '@/services/productService';  
+import { Order, Product, ProductDetail, Sale, PaymentMethod, CreditStatus, SaleDetail, PaymentStatus } from '../Interfaces/interfaces';
+import { updateStockProduct } from '@/services/productService';
 import { createSale } from '@/services/saleService';
 
 
@@ -26,6 +26,7 @@ const Orders: React.FC = () => {
   const [creditInterest, setCreditInterest] = useState<number>(0);
   const [deletedDetails, setDeletedDetails] = useState<number[]>([]);
   const { data: session } = useSession();
+  const [filterText, setFilterText] = useState(''); 
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [selectedProductQuantity, setSelectedProductQuantity] = useState<number>(1);
@@ -40,10 +41,10 @@ const Orders: React.FC = () => {
     status: 'PENDING',
     details: [],
   });
-  let totalPerQuota :any = 0;
+  let totalPerQuota: any = 0;
   let totalWithInterest: any = 0;
-  let totalAmount :any = 0;
-  
+  let totalAmount: any = 0;
+
 
   useEffect(() => {
     const fetchOrdersAndProducts = async () => {
@@ -274,7 +275,7 @@ const Orders: React.FC = () => {
     setSelectedProductId(null);
     setSelectedProductQuantity(1);
     setPaymentMethod('');
-    setPaymentStatus(''); 
+    setPaymentStatus('');
   };
 
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -290,47 +291,48 @@ const Orders: React.FC = () => {
         toast.error('Por favor selecciona el método y estado de pago.');
         return;
       }
-  
+
       const totalAmount = newOrder.details.reduce(
         (total, detail) => total + detail.amount,
         0
       );
-  
+
       if (newOrder.details.length === 0) {
         toast.error('No hay productos en la orden.');
         return;
       }
-  
+
       const creditData =
         paymentMethod === 'CREDIT'
           ? {
-              customerId: newOrder.userId,
-              totalAmount: totalAmount, 
-              amountRemaining: totalAmount, 
-              dueDate: new Date(
-                new Date().setMonth(new Date().getMonth() + creditDuration)
-              ),
-              status: 'ACTIVE' as CreditStatus,
-            }
+            customerId: newOrder.userId,
+            totalAmount: totalAmount,
+            amountRemaining: totalAmount,
+            dueDate: new Date(
+              new Date().setMonth(new Date().getMonth() + creditDuration)
+            ),
+            status: 'ACTIVE' as CreditStatus,
+          }
           : undefined;
-  
-          const creditPayments =
-          paymentMethod === 'CREDIT' && creditData
-            ? Array.from({ length: creditDuration }, (_, index) => ({
-                amountPaid: totalAmount / creditDuration,
-                paymentDate: new Date(
-                  new Date().setMonth(new Date().getMonth() + index + 1) 
-                ),
-              }))
-            : undefined;
-        
-  
+
+      const creditPayments =
+        paymentMethod === 'CREDIT' && creditData
+          ? Array.from({ length: creditDuration }, (_, index) => ({
+            amountPaid: 0,
+            amountToPay: totalAmount / creditDuration,  
+            paymentDate: new Date(
+              new Date().setMonth(new Date().getMonth() + index + 1)
+            ),
+          }))
+          : undefined;
+
+
       const saleDetails = newOrder.details.map((detail) => ({
         productId: detail.product.id,
         quantity: detail.quantity,
         amount: detail.amount,
       }));
-  
+
       const saleData = {
         date: new Date(),
         totalAmount,
@@ -346,7 +348,7 @@ const Orders: React.FC = () => {
       const outOfStockProducts = newOrder.details.filter(
         (detail) => detail.product.stock < detail.quantity
       );
-  
+
       if (outOfStockProducts.length > 0) {
         const productNames = outOfStockProducts.map((detail) => detail.product.name).join(', ');
         toast.error(`Los siguientes productos no tienen suficiente stock: ${productNames}`);
@@ -361,15 +363,15 @@ const Orders: React.FC = () => {
         prevOrders.map((order) =>
           order.id === updatedOrder.id ? updatedOrder : order
         )
-      );  
-    const re=  await Promise.all(
-      newOrder.details.map((detail) =>
-      updateStockProduct({ id: detail.product.id, stock: detail.product.stock - detail.quantity })
-      )
-    );
+      );
+      await Promise.all(
+        newOrder.details.map((detail) =>
+          updateStockProduct({ id: detail.product.id, stock: detail.product.stock - detail.quantity })
+        )
+      );
 
- 
-    setsaleModalOpen(false);  
+
+      setsaleModalOpen(false);
       toast.success('Venta creada exitosamente.');
       console.log('Resultado:', result);
     } catch (error) {
@@ -377,7 +379,7 @@ const Orders: React.FC = () => {
       toast.error('Error al crear la venta. Por favor, inténtalo de nuevo.');
     }
   };
-  
+
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Órdenes</h1>
@@ -401,144 +403,144 @@ const Orders: React.FC = () => {
         <p className="text-center text-gray-600">Cargando órdenes...</p>
       )}
 
-<CustomModal isOpen={saleModalOpen} onClose={closeSaleModal}>
-  <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg max-w-4x max-h-90 overflow-y-auto">
-    <h2 className="text-2xl font-bold mb-4">Realizar Venta</h2>
+      <CustomModal isOpen={saleModalOpen} onClose={closeSaleModal}>
+        <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg max-w-4x max-h-90 overflow-y-auto">
+          <h2 className="text-2xl font-bold mb-4">Realizar Venta</h2>
 
-    <div className="mb-4">
-    
-      <div className="border p-4 rounded-lg text-black max-h-96 overflow-y-auto">
-        <p><strong>Nombre:</strong> {newOrder.name}</p>
-        <p><strong>Correo Electrónico:</strong> {newOrder.email}</p>
-        <p><strong>Teléfono:</strong> {newOrder.phone}</p>
-        <p><strong>Dirección:</strong> {newOrder.address}</p>
-        <p><strong>Fecha de Creación:</strong> {newOrder.createdAt}</p>
-        <p><strong>Estado:</strong> {newOrder.status}</p>
-        <p><strong>Usuario:</strong> {newOrder.userId}</p>
+          <div className="mb-4">
 
-        <h4 className="text-lg font-bold mt-4">Productos:</h4>
-        {newOrder.details.map((detail) => (
-          <div key={detail.id} className="border-b py-2">
-            <p><strong>Producto:</strong> {detail.product.name}</p>
-            <p><strong>Cantidad:</strong> {detail.quantity}</p>
-            <p><strong>Monto:</strong> ₡{detail.amount}</p>
+            <div className="border p-4 rounded-lg text-black max-h-96 overflow-y-auto">
+              <p><strong>Nombre:</strong> {newOrder.name}</p>
+              <p><strong>Correo Electrónico:</strong> {newOrder.email}</p>
+              <p><strong>Teléfono:</strong> {newOrder.phone}</p>
+              <p><strong>Dirección:</strong> {newOrder.address}</p>
+              <p><strong>Fecha de Creación:</strong> {newOrder.createdAt}</p>
+              <p><strong>Estado:</strong> {newOrder.status}</p>
+              <p><strong>Usuario:</strong> {newOrder.userId}</p>
+
+              <h4 className="text-lg font-bold mt-4">Productos:</h4>
+              {newOrder.details.map((detail) => (
+                <div key={detail.id} className="border-b py-2">
+                  <p><strong>Producto:</strong> {detail.product.name}</p>
+                  <p><strong>Cantidad:</strong> {detail.quantity}</p>
+                  <p><strong>Monto:</strong> ₡{detail.amount}</p>
+                </div>
+              ))}
+              <p className="mt-4"><strong>Total:</strong> ₡{newOrder.details.reduce((total, detail) => total + detail.amount, 0)}</p>
+            </div>
           </div>
-        ))}
-        <p className="mt-4"><strong>Total:</strong> ₡{newOrder.details.reduce((total, detail) => total + detail.amount, 0)}</p>
-      </div>
-    </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      <div className="mb-4">
-        <label className="block text-gray-700 mb-2" htmlFor="paymentMethod">Método de Pago</label>
-        <select
-          id="paymentMethod"
-          className="w-full p-3 border border-gray-300 rounded-lg text-black"
-          value={paymentMethod}
-          onChange={handlePaymentMethodChange}
-        >
-          <option value="">Seleccionar Método de Pago</option>
-          <option value="CASH">Efectivo</option>
-          <option value="TRANSFER">Transferencia</option>
-          <option value="CREDIT">Crédito</option>
-        </select>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="paymentMethod">Método de Pago</label>
+              <select
+                id="paymentMethod"
+                className="w-full p-3 border border-gray-300 rounded-lg text-black"
+                value={paymentMethod}
+                onChange={handlePaymentMethodChange}
+              >
+                <option value="">Seleccionar Método de Pago</option>
+                <option value="CASH">Efectivo</option>
+                <option value="TRANSFER">Transferencia</option>
+                <option value="CREDIT">Crédito</option>
+              </select>
+            </div>
 
-      <div className="mb-4">
-        <label className="block text-gray-700 mb-2" htmlFor="paymentStatus">Estado del Pago</label>
-        <select
-          id="paymentStatus"
-          className="w-full p-3 border border-gray-300 rounded-lg text-black"
-          value={paymentStatus}
-          onChange={handlePaymentStatusChange}
-        >
-          <option value="">Seleccionar Estado de Pago</option>
-          <option value="PAID">Pagado</option>
-          <option value="PENDING">Pendiente</option>
-        </select>
-      </div>
-    </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="paymentStatus">Estado del Pago</label>
+              <select
+                id="paymentStatus"
+                className="w-full p-3 border border-gray-300 rounded-lg text-black"
+                value={paymentStatus}
+                onChange={handlePaymentStatusChange}
+              >
+                <option value="">Seleccionar Estado de Pago</option>
+                <option value="PAID">Pagado</option>
+                <option value="PENDING">Pendiente</option>
+              </select>
+            </div>
+          </div>
 
-    {paymentMethod === 'CREDIT' && (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="creditTerm">Plazo</label>
-          <select
-            id="creditTerm"
-            className="w-full p-3 border border-gray-300 rounded-lg text-black"
-            value={creditTerm}
-            onChange={(e) => setCreditTerm(e.target.value)}
-          >
-            <option value="">Seleccionar Plazo</option>
-            <option value="MONTHLY">Mensual</option>
-            <option value="WEEKLY">Semanal</option>
-          </select>
+          {paymentMethod === 'CREDIT' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="creditTerm">Plazo</label>
+                <select
+                  id="creditTerm"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black"
+                  value={creditTerm}
+                  onChange={(e) => setCreditTerm(e.target.value)}
+                >
+                  <option value="">Seleccionar Plazo</option>
+                  <option value="MONTHLY">Mensual</option>
+                  <option value="WEEKLY">Semanal</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="creditDuration">Duración</label>
+                <input
+                  type="number"
+                  id="creditDuration"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black"
+                  value={creditDuration}
+                  onChange={(e) => setCreditDuration(Number(e.target.value))}
+                  placeholder="Duración en meses/semanas"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="creditInterest">Interés</label>
+                <input
+                  type="number"
+                  id="creditInterest"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black"
+                  value={creditInterest}
+                  onChange={(e) => setCreditInterest(Number(e.target.value))}
+                  placeholder="Interés en %"
+                />
+              </div>
+            </div>
+          )}
+
+          {paymentMethod === 'CREDIT' && (
+            <div className="mt-4">
+              <h4 className="text-lg font-bold">Resumen de Crédito</h4>
+              {(() => {
+                const totalAmount = newOrder.details.reduce((total, detail) => total + detail.amount, 0);
+                const totalWithInterest = totalAmount * (1 + creditInterest / 100);
+                const totalPerQuota = totalWithInterest / creditDuration;
+
+                return (
+                  <>
+                    <p><strong>Total Final:</strong> ₡{totalWithInterest.toFixed(2)}</p>
+                    <p><strong>Total por Cuota:</strong> ₡{totalPerQuota.toFixed(2)}</p>
+                    <p><strong>Plazo:</strong> {creditDuration} {creditTerm === 'MONTHLY' ? 'meses' : 'semanas'}</p>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          <div className="flex justify-end mt-4 gap-4">
+            <button
+              onClick={handleSaveSale}
+              className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
+            >
+              {newOrder.id ? 'Guardar Venta' : 'Crear Orden'}
+            </button>
+            <button
+              onClick={closeSaleModal}
+              className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="creditDuration">Duración</label>
-          <input
-            type="number"
-            id="creditDuration"
-            className="w-full p-3 border border-gray-300 rounded-lg text-black"
-            value={creditDuration}
-            onChange={(e) => setCreditDuration(Number(e.target.value))}
-            placeholder="Duración en meses/semanas"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="creditInterest">Interés</label>
-          <input
-            type="number"
-            id="creditInterest"
-            className="w-full p-3 border border-gray-300 rounded-lg text-black"
-            value={creditInterest}
-            onChange={(e) => setCreditInterest(Number(e.target.value))}
-            placeholder="Interés en %"
-          />
-        </div>
-      </div>
-    )}
-
-    {paymentMethod === 'CREDIT' && (
-      <div className="mt-4">
-        <h4 className="text-lg font-bold">Resumen de Crédito</h4>
-        {(() => {
-          const totalAmount = newOrder.details.reduce((total, detail) => total + detail.amount, 0);
-          const totalWithInterest = totalAmount * (1 + creditInterest / 100);
-          const totalPerQuota = totalWithInterest / creditDuration;
-
-          return (
-            <>
-              <p><strong>Total Final:</strong> ₡{totalWithInterest.toFixed(2)}</p>
-              <p><strong>Total por Cuota:</strong> ₡{totalPerQuota.toFixed(2)}</p>
-              <p><strong>Plazo:</strong> {creditDuration} {creditTerm === 'MONTHLY' ? 'meses' : 'semanas'}</p>
-            </>
-          );
-        })()}
-      </div>
-    )}
-
-    <div className="flex justify-end mt-4 gap-4">
-      <button
-        onClick={handleSaveSale}
-        className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
-      >
-        {newOrder.id ? 'Guardar Venta' : 'Crear Orden'}
-      </button>
-      <button
-        onClick={closeSaleModal}
-        className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
-      >
-        Cancelar
-      </button>
-    </div>
-  </div>
-</CustomModal>
+      </CustomModal>
 
 
-      <CustomModal isOpen={modalIsOpen} onClose={closeModal}>
+      <CustomModal isOpen={modalIsOpen} onClose={closeModal} width='1000px'>
         <h2 className="text-2xl font-bold mb-4">{newOrder.id ? 'Detalles de la Orden' : 'Crear Nueva Orden'}</h2>
 
         <div className="flex flex-col lg:flex-row lg:justify-between lg:space-x-4">
@@ -590,37 +592,56 @@ const Orders: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Section */}
           <div className="lg:w-1/2 w-full mt-4 lg:mt-0 flex flex-col">
-            <h3 className="text-xl font-bold mb-2">Añadir Productos a la Orden</h3>
-            <div className="flex space-x-2 mb-4">
-              <select
-                value={selectedProductId || ''}
-                onChange={(e) => setSelectedProductId(Number(e.target.value))}
-                className="w-full p-4 border border-gray-300 rounded-lg text-black"
-              >
-                <option value="">Seleccionar Producto</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} - ₡{product.salePrice}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                min="1"
-                value={selectedProductQuantity}
-                onChange={(e) => setSelectedProductQuantity(Number(e.target.value))}
-                className="w-24 p-4 border border-gray-300 rounded-lg text-black"
-                placeholder="Cantidad"
-              />
-              <button
-                onClick={handleAddProductToOrder}
-                className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
-              >
-                Añadir
-              </button>
-            </div>
+    <h3 className="text-xl font-bold mb-2">Añadir Productos a la Orden</h3>
+    
+    {/* Campo de filtro */}
+    <div className="mb-4">
+      <input
+        type="text"
+        placeholder="Filtrar productos"
+        value={filterText}
+        onChange={(e) => setFilterText(e.target.value)}
+        className="w-full p-4 border border-gray-300 rounded-lg text-black"
+      />
+    </div>
+
+    {/* Sección para seleccionar producto */}
+    <div className="flex space-x-2 mb-4">
+      <select
+        value={selectedProductId || ''}
+        onChange={(e) => setSelectedProductId(Number(e.target.value))}
+        className="w-full p-4 border border-gray-300 rounded-lg text-black"
+      >
+        <option value="">Seleccionar Producto</option>
+        {products
+          .filter((product) => 
+            product.name.toLowerCase().includes(filterText.toLowerCase()) // Filtrado de productos
+          )
+          .map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name} - ₡{product.salePrice}
+            </option>
+          ))}
+      </select>
+
+      <input
+        type="number"
+        min="1"
+        value={selectedProductQuantity}
+        onChange={(e) => setSelectedProductQuantity(Number(e.target.value))}
+        className="w-24 p-4 border border-gray-300 rounded-lg text-black"
+        placeholder="Cantidad"
+      />
+
+      <button
+        onClick={handleAddProductToOrder}
+        className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
+      >
+        Añadir
+      </button>
+    </div>
+  
 
             {/* Display added products with scroll */}
             {newOrder.details.length > 0 && (
@@ -655,7 +676,7 @@ const Orders: React.FC = () => {
           </div>
         </div>
 
-        {/* Save and Cancel buttons */}
+     
         <div className="flex justify-end mt-4">
           <button
             onClick={newOrder.id ? handleUpdateOrder : handleSaveOrder}
@@ -669,13 +690,17 @@ const Orders: React.FC = () => {
           >
             Cancelar
           </button>
+
+          {newOrder.details.length > 0 && (
           <button
             onClick={() => saleOrder(newOrder)} // Pasa las variables necesarias aquí
             className="ml-4 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-gray-600"
           >
             Realizar Venta
           </button>
+        )} 
         </div>
+
       </CustomModal>
       <ToastContainer />
     </div>

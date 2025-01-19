@@ -45,6 +45,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+
     
     const newSale = await prisma.sale.create({
       data: {
@@ -64,6 +66,7 @@ export async function POST(req: NextRequest) {
                 ? {
                     create: creditPayments.map((payment: any) => ({
                       amountPaid: payment.amountPaid,
+                      amountToPay: payment.amountToPay , 
                       paymentDate: payment.paymentDate,
                     })),
                   }

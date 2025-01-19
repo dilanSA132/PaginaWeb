@@ -9,6 +9,8 @@ export const getUsers = async () => {
   };
   
   export const createUser = async (userData: any) => {
+console.log("Este es el usuario ", userData)  
+
     const response = await fetch('/api/v1/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
