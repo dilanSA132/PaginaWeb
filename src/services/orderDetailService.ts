@@ -1,6 +1,7 @@
 import { OrderDetails } from "./types";
 
-const baseUrl = 'http://localhost:3000/api/v1/orderDetails';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const baseUrl = `${API_BASE_URL}/orderDetails`;
 
 export async function getOrderDetails() {
   try {
@@ -16,6 +17,7 @@ export async function getOrderDetails() {
     throw error;
   }
 }
+
 export async function createOrderDetail(orderDetails: OrderDetails[]) {
   try {
     const response = await fetch(baseUrl, {
@@ -23,7 +25,7 @@ export async function createOrderDetail(orderDetails: OrderDetails[]) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderDetails), 
+      body: JSON.stringify(orderDetails),
     });
     if (!response.ok) {
       throw new Error('Error creating order details');
@@ -43,7 +45,7 @@ export async function deleteOrderDetail(id: number) {
     if (!response.ok) {
       throw new Error('Error deleting order detail');
     }
-    return await response.json(); 
+    return await response.json();
   } catch (error) {
     console.error(error);
     throw error;
@@ -62,7 +64,7 @@ export async function updateOrderDetail(id: number, updatedOrderDetail: OrderDet
     if (!response.ok) {
       throw new Error('Error updating order detail');
     }
-    return await response.json(); 
+    return await response.json();
   } catch (error) {
     console.error(error);
     throw error;

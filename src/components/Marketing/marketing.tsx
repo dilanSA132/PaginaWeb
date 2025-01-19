@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css'; // Importa estilos de React Quill
 import ReactQuill from 'react-quill'; // Importa el editor WYSIWYG
 import { sendEmail } from '@/services/emailService';
 import { getUsers } from '@/services/userService';
-import { updateEmail,deleteEmail, createEmail, getEmails } from '@/services/emailsServer'; // Asegúrate de tener estas funciones
+import { updateEmail, deleteEmail, createEmail, getEmails } from '@/services/emailsServer'; // Asegúrate de tener estas funciones
 
 interface User {
     id: number;
@@ -19,6 +19,8 @@ interface EmailFormProps {
 
 const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
     const [subject, setSubject] = useState('');
+    const [scheduleDate, setScheduleDate] = useState('');
+
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -99,8 +101,8 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
         }
     };
 
-    const handleDeleteEmail = async (index: number) => {    
-    
+    const handleDeleteEmail = async (index: number) => {
+
         const emailToDelete = sentEmails[index];
         console.log("Este es el emailToDelete ", emailToDelete)
         try {
@@ -109,9 +111,9 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
             toast.success('Correo eliminado exitosamente');
         } catch (error) {
             console.error('Error al eliminar el correo:', error);
-            toast.error('Ocurrió un error al eliminar el correo');  
+            toast.error('Ocurrió un error al eliminar el correo');
 
-    }
+        }
     };
 
 
@@ -126,24 +128,33 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
 
         try {
             await Promise.all(
-                selectedUsers.map(async (user) => {
-                    const emailContent = htmlContent.replace('{{name}}', user.name);
-                    await sendEmail(subject, emailContent, user.email);
+            selectedUsers.map(async (user) => {
+                const emailContent = htmlContent.replace('{{name}}', user.name);
 
-                    const emailData = {
-                        userName: user.name,
-                        email: user.email,
-                        subject,
-                        type: selectedTemplate,
-                        content: emailContent,
-                        createdAt: new Date().toISOString(),
-                    };
-                    console.log("Este es el emailData ", emailData)
-                    await createEmail(emailData); // Crear email usando el servicio
-                    setSentEmails((prev) => [...prev, emailData]); // Actualizar el estado de correos enviados
-                })
+                const emailData = {
+                    userName: user.name,
+                    email: user.email,
+                    subject,
+                    type: selectedTemplate,
+                    content: emailContent,
+                    createdAt: scheduleDate ? new Date(scheduleDate).toISOString() : new Date().toISOString(),
+                };
+                const today = new Date().toISOString().split('T')[0];
+                const emailDate = new Date(emailData.createdAt).toISOString().split('T')[0];
+            console.log("comparaciom ", emailDate, today)    
+            if (emailDate === today) {
+                await sendEmail(subject, emailContent, user.email);
+                await createEmail(emailData);
+                setSentEmails((prev) => [...prev, emailData]);
+                toast.success('Correos enviados exitosamente');
+            } else {
+                await createEmail(emailData);
+                setSentEmails((prev) => [...prev, emailData]);
+                toast.info('Se creo correctamente, se enviará la fecha correspondiente.');
+            }
+            })
             );
-            toast.success('Correos enviados exitosamente');
+            
             onSendSuccess();
         } catch (error) {
             if (error instanceof Error) {
@@ -168,9 +179,8 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                 <h1 className="text-4xl font-semibold text-center text-gray-800 mb-8">
                     Enviar Correos Personalizados
                 </h1>
-    
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    {/* Vista Previa y Edición */}
                     <div className="p-8 bg-gray-100 rounded-lg shadow-md">
                         <h2 className="text-xl font-semibold mb-4">Vista Previa y Edición</h2>
                         <ReactQuill
@@ -180,8 +190,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                             className="h-96 border rounded-md overflow-y-auto"
                         />
                     </div>
-    
-                    {/* Formulario y Correos Enviados */}
+
                     <div className="space-y-8">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
@@ -197,7 +206,34 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                                     required
                                 />
                             </div>
-    
+
+                            <div>
+                                <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700">
+                                    Enviar Programado:
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    id="scheduleDate"
+                                    className="mt-1 p-3 w-full text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={scheduleDate}
+                                    onChange={(e) => setScheduleDate(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="currentDate" className="block text-sm font-medium text-gray-700">
+                                    Fecha Actual:
+                                </label>
+                                <button
+                                    type="button"
+                                    id="currentDate"
+                                    className="mt-1 p-2 bg-gray-300 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    onClick={() => setScheduleDate(new Date().toISOString().slice(0, 16))}
+                                >
+                                    Actual
+                                </button>
+                            </div>
+
+
                             <div>
                                 <label htmlFor="template" className="block text-sm font-medium text-gray-700">
                                     Seleccionar Plantilla:
@@ -213,7 +249,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                                     <option value="info">Información</option>
                                 </select>
                             </div>
-    
+
                             <div>
                                 <input
                                     type="text"
@@ -223,7 +259,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
-    
+
                             <div>
                                 <h3 className="text-lg font-semibold">Selecciona Usuarios:</h3>
                                 <div className="overflow-y-auto max-h-80">
@@ -259,9 +295,9 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                                     </table>
                                 </div>
                             </div>
-    
+
                             {error && <p className="text-red-500 text-xs">{error}</p>}
-    
+
                             <div className="flex justify-center">
                                 <button
                                     type="submit"
@@ -273,7 +309,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                             </div>
                         </form>
                     </div>
-    
+
                     {/* Correos Enviados (sección a la derecha) */}
                     <div className="col-span-1 lg:col-span-1 mt-8 lg:mt-0 max-h-96 overflow-y-auto">
                         <h2 className="text-xl font-semibold mb-4">Correos Enviados:</h2>
@@ -308,10 +344,10 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                         </table>
                     </div>
                 </div>
-    
+
                 <ToastContainer />
             </div>
         </div>
     );
-}    
+}
 export default EmailForm;

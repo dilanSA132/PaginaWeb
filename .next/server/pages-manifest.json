@@ -2,8 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/login": "pages/login.js",
+  "/menu": "pages/menu.js",
   "/marketing": "pages/marketing.js",
-  "/saleMaintenance": "pages/saleMaintenance.js",
-  "/menu": "pages/menu.js"
+  "/sale": "pages/sale.js",
+  "/productos": "pages/productos.js"
 }

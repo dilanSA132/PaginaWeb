@@ -1,4 +1,5 @@
-const baseUrl = 'http://localhost:3000/api/v1/orders';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const baseUrl = `${API_BASE_URL}/orders`;
 
 export async function getOrders() {
   try {
@@ -17,7 +18,7 @@ export async function getOrders() {
 
 export async function getOrdersByUserId(userId: number) {
   try {
-    const response = await fetch("http://localhost:3000/api/v1/orders/id", {
+    const response = await fetch(`${API_BASE_URL}/orders/id`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,9 +29,9 @@ export async function getOrdersByUserId(userId: number) {
     if (!response.ok) {
       throw new Error('Error fetching orders');
     }
-   const re= await response.json();
+    const re = await response.json();
     console.log("Aquiiiiii ", re)
-    return  re ;
+    return re;
   } catch (error) {
     console.error('Error obteniendo órdenes:', error);
     throw error;
@@ -57,6 +58,7 @@ export async function createOrder(order: any) {
     throw error;
   }
 }
+
 export async function deleteOrder(id: number) {
   try {
     const response = await fetch(`${baseUrl}/${id}`, {
@@ -71,7 +73,6 @@ export async function deleteOrder(id: number) {
     throw error;
   }
 }
-
 
 export async function updateOrder(id: number, updatedOrder: any) {
   try {

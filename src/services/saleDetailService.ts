@@ -1,8 +1,10 @@
-const baseUrl = 'http://localhost:3000/api/v1/saleDetails';
+// src/services/saleDetailService.ts
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getSaleDetails() {
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch(`${API_BASE_URL}/saleDetails`, {
       method: 'GET',
     });
     if (!response.ok) {
@@ -17,7 +19,7 @@ export async function getSaleDetails() {
 
 export async function createSaleDetail(saleDetail: any) {
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch(`${API_BASE_URL}/saleDetails`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +39,7 @@ export async function createSaleDetail(saleDetail: any) {
 // Función para eliminar un detalle de venta
 export async function deleteSaleDetail(saleDetailId: number) {
   try {
-    const response = await fetch(`${baseUrl}/${saleDetailId}`, {
+    const response = await fetch(`${API_BASE_URL}/saleDetails/${saleDetailId}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
@@ -53,7 +55,7 @@ export async function deleteSaleDetail(saleDetailId: number) {
 // Función para actualizar un detalle de venta
 export async function updateSaleDetail(saleDetailId: number, saleDetailData: any) {
   try {
-    const response = await fetch(`${baseUrl}/${saleDetailId}`, {
+    const response = await fetch(`${API_BASE_URL}/saleDetails/${saleDetailId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -67,12 +69,11 @@ export async function updateSaleDetail(saleDetailId: number, saleDetailData: any
   } catch (error) {
     console.error(error);
     throw error;
-  } 
+  }
 }
-// src/services/saleDetailService.ts
 
 export async function getSaleDetailsBySaleId(saleId: number) {
-  const response = await fetch(`/api/v1/saleDetails/${saleId}`, {
+  const response = await fetch(`${API_BASE_URL}/saleDetails/${saleId}`, {
     method: 'GET',
   });
 
@@ -82,4 +83,3 @@ export async function getSaleDetailsBySaleId(saleId: number) {
 
   return await response.json();
 }
-

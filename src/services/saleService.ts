@@ -1,3 +1,5 @@
+// src/services/saleService.ts
+
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1/sales';
 
 export async function getSales() {
@@ -16,7 +18,7 @@ export async function getSales() {
   }
 }
 
-export async function createSale(data:any) {
+export async function createSale(data: any) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
@@ -74,7 +76,6 @@ export async function updateSale(saleId: number, saleData: any) {
   }
 }
 
-
 export async function updateSaleStatus(saleId: number, paymentStatus: string) {
   try {
     const response = await fetch(`${baseUrl}/${saleId}`, {
@@ -82,15 +83,15 @@ export async function updateSaleStatus(saleId: number, paymentStatus: string) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ paymentStatus }), 
+      body: JSON.stringify({ paymentStatus }),
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Error updating sale');
+      throw new Error(errorData.message || 'Error updating sale status');
     }
     return await response.json();
   } catch (error) {
-    console.error('Error updating sale:', error);
+    console.error('Error updating sale status:', error);
     throw error;
   }
 }

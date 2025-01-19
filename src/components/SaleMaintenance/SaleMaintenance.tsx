@@ -215,7 +215,7 @@ const SaleMaintenance: React.FC = () => {
             accessor: 'credit',
             render: (sale: any) => {
                 if (sale.credit) {
-                    const startDate = sale.credit.payments.length > 0 ? format(new Date(sale.credit.payments[0].paymentDate), 'dd/MM/yyyy') : '';
+                    const startDate = sale.credit?.payments?.length > 0 ? format(new Date(sale.credit.payments[0].paymentDate), 'dd/MM/yyyy') : '';
                     const endDate = sale.credit.dueDate ? format(new Date(sale.credit.dueDate), 'dd/MM/yyyy') : '';
                     return <span>{startDate && endDate ? `${startDate} - ${endDate}` : startDate || endDate || null}</span>;
                 } else {
@@ -264,7 +264,7 @@ const SaleMaintenance: React.FC = () => {
                                     <input
                                         type="date"
                                         id="startDate"
-                                        value={format(new Date(newSale.credit.payments[0]?.paymentDate || newSale.date), 'yyyy-MM-dd')}
+                                        value={newSale.credit?.payments?.length ? format(new Date(newSale.credit.payments[0].paymentDate), 'yyyy-MM-dd') : format(new Date(newSale.date), 'yyyy-MM-dd')}
                                         disabled
                                         onChange={(e) => {
                                             const updatedPayments = newSale.credit.payments.map((payment, index) =>

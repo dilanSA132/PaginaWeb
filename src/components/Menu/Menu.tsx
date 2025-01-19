@@ -86,9 +86,6 @@ const Menu: React.FC = () => {
             <p className="text-gray-700 text-sm">Gestiona y realiza un seguimiento de las ventas realizadas.</p>
           </div>
 
-
-
-
           <div
             className="bg-gradient-to-r from-pink-200 via-pink-300 to-pink-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/marketing')}

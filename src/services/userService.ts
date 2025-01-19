@@ -1,74 +1,104 @@
+// src/services/userService.ts
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1/users';
+
 export const getUsers = async () => {
-    const response = await fetch('/api/v1/users', {
+  try {
+    const response = await fetch(baseUrl, {
       method: 'GET',
     });
     if (!response.ok) {
-      throw new Error('Error fetching users');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error fetching users');
     }
-    return response.json();
-  };
-  
-  export const createUser = async (userData: any) => {
-console.log("Este es el usuario ", userData)  
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
 
-    const response = await fetch('/api/v1/users', {
+export const createUser = async (userData: any) => {
+  try {
+    console.log("Este es el usuario ", userData);
+
+    const response = await fetch(baseUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
+
     if (!response.ok) {
-      throw new Error('Error creating user');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error creating user');
     }
-    return response.json();
-  };
-  
-  export const deleteUser = async (id: number) => {
-    const response = await fetch(`/api/v1/users/${id}`, {
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (id: number) => {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'DELETE',
     });
+
     if (!response.ok) {
-      throw new Error('Error deleting user');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error deleting user');
     }
-    return response.json();
-  };
-  
-  export async function updateUser(id: number, data: { name: string; email: string; roleId: number }) {
-    const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+
+export const updateUser = async (id: number, data: { name: string; email: string; roleId: number }) => {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
-  
+
     if (!response.ok) {
-      throw new Error('Error actualizando el usuario');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error updating user');
     }
-  
+
     const updatedUser = await response.json();
     return updatedUser;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
   }
-  
+};
 
-  export const authenticateUser = async (email: string, password: string) => {
-    try {
-      const response = await fetch('/api/v1/users/byUsername', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Error autenticando usuario');
-      }
-  
-      return await response.json(); // Devolver los datos del usuario autenticado
-    } catch (error: any) {
-      throw new Error(error.message || 'Error en el servicio de autenticación');
+export const authenticateUser = async (email: string, password: string) => {
+  try {
+    const response = await fetch(`${baseUrl}/byUsername`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error authenticating user');
     }
-  };
-  
-  
+
+    return await response.json(); // Return authenticated user data
+  } catch (error: any) {
+    console.error('Error authenticating user:', error);
+    throw new Error(error.message || 'Authentication service error');
+  }
+};
