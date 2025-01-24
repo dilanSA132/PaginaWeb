@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
+import { ErrorResponse } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
+
 
 export async function DELETE(
   req: NextRequest,
