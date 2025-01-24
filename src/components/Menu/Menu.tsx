@@ -16,7 +16,6 @@ const Menu: React.FC = () => {
       </header>
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Carta de Mantenimiento de Usuarios */}
           <div
             className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/userMaintenance')}
@@ -26,7 +25,6 @@ const Menu: React.FC = () => {
             <p className="text-gray-700 text-sm">Gestiona usuarios, crea, edita o elimina usuarios del sistema.</p>
           </div>
 
-          {/* Carta de Productos */}
           <div
             className="bg-gradient-to-r from-green-200 via-green-300 to-green-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/productos')}
@@ -36,7 +34,6 @@ const Menu: React.FC = () => {
             <p className="text-gray-700 text-sm">Gestiona los productos de tu tienda, incluyendo precios y categorías.</p>
           </div>
 
-          {/* Carta de Roles */}
           <div
             className="bg-gradient-to-r from-purple-200 via-purple-300 to-purple-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/roles')}
@@ -46,7 +43,6 @@ const Menu: React.FC = () => {
             <p className="text-gray-700 text-sm">Gestiona los roles y permisos de los usuarios en el sistema.</p>
           </div>
 
-          {/* Carta de Categorías */}
           <div
             className="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/categories')}
@@ -56,7 +52,6 @@ const Menu: React.FC = () => {
             <p className="text-gray-700 text-sm">Gestiona las categorías de tus productos.</p>
           </div>
 
-          {/* Carta de Orders */}
           <div
             className="bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 w-64 h-64 rounded-lg shadow-md text-center flex flex-col items-center justify-center transform hover:scale-105 transition-transform cursor-pointer hover:shadow-xl animate-blink"
             onClick={() => handleNavigation('/orders')}

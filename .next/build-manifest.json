@@ -25,20 +25,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/marketing": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/marketing.js"
-    ],
     "/menu": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/menu.js"
     ],
-    "/productos": [
+    "/saleMaintenance": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/productos.js"
+      "static/chunks/pages/saleMaintenance.js"
     ]
   },
   "ampFirstPages": []
