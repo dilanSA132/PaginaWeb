@@ -1,4 +1,5 @@
-import create from 'zustand';
+import { create } from 'zustand';
+
 
 interface CartItem {
   id: number;
@@ -7,6 +8,8 @@ interface CartItem {
   image: string;
   quantity: number; 
 }
+
+
 
 interface CartState {
   cart: CartItem[];

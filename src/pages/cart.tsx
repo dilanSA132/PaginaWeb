@@ -38,7 +38,7 @@ const Cart: React.FC = () => {
                           <img src={product.image} alt={product.name} className="h-16 w-16 object-cover rounded-lg" />
                         </td>
                         <td className="py-2 px-4 border-b">{product.name}</td>
-                        <td className="py-2 px-4 border-b">${product.price}</td>
+                        <td className="py-2 px-4 border-b">${product.salePrice}</td>
                         <td className="py-2 px-4 border-b">
                           <button
                             onClick={() => removeFromCart(product.id)}

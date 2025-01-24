@@ -1,8 +1,1 @@
-{
-  "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/menu": "pages/menu.js",
-  "/sale": "pages/sale.js",
-  "/saleMaintenance": "pages/saleMaintenance.js"
-}
+{"/_app":"pages/_app.js","/_error":"pages/_error.js","/_document":"pages/_document.js","/about":"pages/about.html","/api/auth/[...nextauth]":"pages/api/auth/[...nextauth].js","/cart":"pages/cart.html","/":"pages/index.html","/categories":"pages/categories.html","/login":"pages/login.html","/menu":"pages/menu.html","/orders":"pages/orders.html","/myOrders":"pages/myOrders.html","/products":"pages/products.html","/productos":"pages/productos.html","/register":"pages/register.html","/roles":"pages/roles.html","/sale":"pages/sale.html","/saleMaintenance":"pages/saleMaintenance.html","/userMaintenance":"pages/userMaintenance.html","/marketing":"pages/marketing.html","/404":"pages/404.html"}
