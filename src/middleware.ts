@@ -1,44 +1,37 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import type { NextRequest } from 'next/server';
+// Usa 'process.env' para acceder a variables de entorno de Next.js
 
-// Middleware para la autenticación y redirección en las funciones Edge
-export async function middleware(req: NextRequest) {
-  // Obtén el token de autenticación usando la cabecera de la solicitud
-  const secret = req.headers.get('NEXTAUTH_SECRET');  // Usamos la cabecera 'NEXTAUTH_SECRET'
-  
+export async function middleware(req:any) {
+  // Acceder a las variables de entorno usando 'next/env'
+  const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) {
-    // Si no encontramos el secreto, retornamos un error
-    return NextResponse.error();
+    return NextResponse.error();  // Si no hay secreto, retornar error
   }
 
   const session = await getToken({ req, secret: secret });
   console.log('session', session);
 
   if (!session) {
-    // Si no hay sesión, redirigimos al usuario a la página de login
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     url.search = `p=${requestedPage}`;
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url);  // Redirigir a login si no hay sesión
   }
 
   const userRoleId = session.roleId;
   const restrictedRoutesForUser = ['/menu']; 
 
-  // Redirigir si el rol del usuario es 2 y está intentando acceder a una ruta restringida
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = '/products';  // Redirigir a la página de productos
+    url.pathname = '/products';  // Redirigir si el rol del usuario es 2
     return NextResponse.redirect(url);
   }
 
-  // Si todo está bien, continuamos con la solicitud
-  return NextResponse.next();
+  return NextResponse.next();  // Continuar si todo está bien
 }
 
-// Configuración para especificar las rutas que el middleware debe manejar
 export const config = {
-  matcher: ['/menu'], // Solo se aplica a las rutas que incluyan '/menu'
+  matcher: ['/menu'],  // Aplicar el middleware solo a estas rutas
 };
