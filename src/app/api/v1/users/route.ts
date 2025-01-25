@@ -3,17 +3,20 @@ import { ErrorResponse } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
-export async function GET(
-  req: NextRequest,
-  _res: NextResponse<String | ErrorResponse | null>
-) {
-  // Manejo de CORS
-  const response = NextResponse.next();
-  const allowedOrigin = 'https://pagina-bya9vquvf-dilans-projects-76ddfd04.vercel.app'; // Cambia esto por tu dominio de Vercel
+const allowedOrigin = 'https://pagina-bya9vquvf-dilans-projects-76ddfd04.vercel.app'; // Cambia esto por tu dominio de Vercel
 
+// Función para manejar CORS
+function handleCors(response: NextResponse) {
   response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return response;
+}
+
+export async function GET(req: NextRequest, _res: NextResponse<String | ErrorResponse | null>) {
+  // Manejo de CORS
+  const response = NextResponse.next();
+  handleCors(response);
 
   // Responder a las solicitudes OPTIONS (pre-flight)
   if (req.method === 'OPTIONS') {
@@ -31,17 +34,10 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  _res: NextResponse<String | ErrorResponse | null>
-) {
+export async function POST(req: NextRequest, _res: NextResponse<String | ErrorResponse | null>) {
   // Manejo de CORS
   const response = NextResponse.next();
-  const allowedOrigin = 'https://pagina-bya9vquvf-dilans-projects-76ddfd04.vercel.app'; // Cambia esto por tu dominio de Vercel
-
-  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  handleCors(response);
 
   // Responder a las solicitudes OPTIONS (pre-flight)
   if (req.method === 'OPTIONS') {
