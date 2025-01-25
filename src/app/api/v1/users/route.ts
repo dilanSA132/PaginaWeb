@@ -10,6 +10,16 @@ const corsHeaders = {
   'Access-Control-Allow-Credentials': 'true',  
 };
 
+// Función para manejar solicitudes OPTIONS
+export async function OPTIONS() {
+  const response = NextResponse.json(null, { status: 204 });
+  response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+  response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+  response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+  response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+  return response;
+}
+
 // Función GET para obtener usuarios
 export async function GET(
   _req: NextRequest,
