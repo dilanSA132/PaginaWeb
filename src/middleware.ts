@@ -6,18 +6,22 @@ import { env } from 'process';
 // Configuración de CORS
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',  // Permitir todos los orígenes
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',  // Métodos permitidos
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',  // Métodos permitidos
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',  // Encabezados permitidos
+  'Access-Control-Allow-Credentials': 'true',  // Si usas credenciales como cookies, añadir esto
 };
 
 // Middleware para aplicar CORS
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
+
+  // Agregar encabezados de CORS a todas las respuestas
   res.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
   res.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
   res.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+  res.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
 
-  // Si es una solicitud OPTIONS (preflight), se debe responder inmediatamente
+  // Si es una solicitud OPTIONS (preflight), responder inmediatamente
   if (req.method === 'OPTIONS') {
     return res;
   }
