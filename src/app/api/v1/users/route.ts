@@ -11,24 +11,6 @@ const corsHeaders = {
   'Access-Control-Allow-Credentials': 'true',  // Si usas cookies o credenciales, añade esto
 };
 
-// Middleware CORS
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-
-  // Agregar encabezados de CORS a todas las respuestas
-  res.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
-  res.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
-  res.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
-  res.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
-
-  // Si es una solicitud OPTIONS (preflight), responder inmediatamente
-  if (req.method === 'OPTIONS') {
-    return res;
-  }
-
-  return res;  // Continuar con la solicitud si no es OPTIONS
-}
-
 // Función GET para obtener usuarios
 export async function GET(
   _req: NextRequest,
