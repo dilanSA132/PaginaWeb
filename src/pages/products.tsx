@@ -248,7 +248,7 @@ const Products: React.FC = () => {
 
 
       await sendEmail(subject, html, contactInfo.email);
-
+      console.log(subject, html, contactInfo.email);  
       console.log('Pedido realizado con éxito y correo enviado');
       setIsCartOpen(false);
     } catch (err) {

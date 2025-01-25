@@ -11,6 +11,7 @@ export const sendEmail = async (subject: string, html: string, recipientEmail: s
 
   if (!response.ok) {
     const errorResponse = await response.json();
+    console.log(errorResponse); 
     throw new Error(errorResponse.message || 'Error enviando correo');
   }
 
