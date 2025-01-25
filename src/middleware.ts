@@ -1,3 +1,8 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { env } from 'process';
+
 export async function middleware(req: NextRequest) {
   const session = await getToken({
     req,
@@ -33,3 +38,4 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/menu', '/products', '/api/*'], // Aplica el middleware en otras rutas si es necesario
 };
+
