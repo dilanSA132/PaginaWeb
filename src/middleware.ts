@@ -1,11 +1,9 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-import { env } from 'process';
-
 export async function middleware(req: NextRequest) {
-  const session = await getToken({ req, secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg' });
-  console.log('session', session);  
+  const session = await getToken({
+    req,
+    secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg'
+  });
+  
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
@@ -23,15 +21,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Add CORS headers to the response
+  // Añadir cabeceras CORS
   const response = NextResponse.next();
-  response.headers.set('Access-Control-Allow-Origin', '*'); // Allow all origins or specify a domain
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allow methods
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow specific headers
-  
+  response.headers.set('Access-Control-Allow-Origin', '*'); // Permitir todos los orígenes o especificar un dominio
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Permitir métodos
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Permitir cabeceras específicas
+
   return response;
 }
 
 export const config = {
-  matcher: ['/menu'],
+  matcher: ['/menu', '/products', '/api/*'], // Aplica el middleware en otras rutas si es necesario
 };
