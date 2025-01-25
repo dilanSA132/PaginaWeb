@@ -8,15 +8,21 @@ export async function middleware(req: NextRequest) {
   
   // Handling CORS headers
   const response = NextResponse.next();
-  response.headers.set('Access-Control-Allow-Origin', '*'); // Allow all origins
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allow these methods
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow these headers
-  
-  // Handle preflight requests (OPTIONS)
+
+  // Cambia esto por tu dominio de producción en Vercel
+  const allowedOrigin = 'https://pagina-bya9vquvf-dilans-projects-76ddfd04.vercel.app'; 
+
+  // Asegúrate de que solo aceptas solicitudes desde tu dominio de Vercel
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin); 
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Responder a las solicitudes OPTIONS (pre-flight)
   if (req.method === 'OPTIONS') {
     return response;
   }
 
+  // Si no hay sesión, redirige a la página de login
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
@@ -28,12 +34,14 @@ export async function middleware(req: NextRequest) {
   const userRoleId = session.roleId; 
   const restrictedRoutesForUser = ['/menu']; 
 
+  // Si el rol del usuario es 2 y está intentando acceder a rutas restringidas, redirige
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = '/products'; 
     return NextResponse.redirect(url);
   }
 
+  // Devolver la respuesta con los headers CORS configurados
   return response;
 }
 
