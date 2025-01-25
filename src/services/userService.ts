@@ -1,104 +1,68 @@
 // src/services/userService.ts
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1/users';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+if (!baseUrl) {
+  throw new Error('NEXT_PUBLIC_API_URL is not defined in the environment variables');
+}
 
 export const getUsers = async () => {
-  try {
-    const response = await fetch(baseUrl, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error fetching users');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
+  const response = await fetch(baseUrl);
+  if (!response.ok) {
+    throw new Error('Error al obtener los usuarios');
   }
+  return await response.json();
 };
 
 export const createUser = async (userData: any) => {
-  try {
-    console.log("Este es el usuario ", userData);
+  const response = await fetch(baseUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+  });
 
-    const response = await fetch(baseUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error creating user');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Error al crear el usuario');
   }
+
+  return await response.json();
 };
 
 export const deleteUser = async (id: number) => {
-  try {
-    const response = await fetch(`${baseUrl}/${id}`, {
-      method: 'DELETE',
-    });
+  const response = await fetch(`${baseUrl}/${id}`, {
+    method: 'DELETE',
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error deleting user');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Error al eliminar el usuario');
   }
+
+  return await response.json();
 };
 
 export const updateUser = async (id: number, data: { name: string; email: string; roleId: number }) => {
-  try {
-    const response = await fetch(`${baseUrl}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+  const response = await fetch(`${baseUrl}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error updating user');
-    }
-
-    const updatedUser = await response.json();
-    return updatedUser;
-  } catch (error) {
-    console.error('Error updating user:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Error al actualizar el usuario');
   }
+
+  return await response.json();
 };
 
 export const authenticateUser = async (email: string, password: string) => {
-  try {
-    const response = await fetch(`${baseUrl}/byUsername`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+  const response = await fetch(`${baseUrl}/byUsername`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error authenticating user');
-    }
-
-    return await response.json(); // Return authenticated user data
-  } catch (error: any) {
-    console.error('Error authenticating user:', error);
-    throw new Error(error.message || 'Authentication service error');
+  if (!response.ok) {
+    throw new Error('Error al autenticar al usuario');
   }
+
+  return await response.json();
 };
