@@ -23,7 +23,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  // Add CORS headers to the response
+  const response = NextResponse.next();
+  response.headers.set('Access-Control-Allow-Origin', '*'); // Allow all origins or specify a domain
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allow methods
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow specific headers
+  
+  return response;
 }
 
 export const config = {
