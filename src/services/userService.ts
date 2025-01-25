@@ -1,6 +1,6 @@
 // src/services/userService.ts
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!baseUrl) {
   throw new Error('NEXT_PUBLIC_API_URL is not defined in the environment variables');
 }
