@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-
+import { env } from 'process';
 
 export async function middleware(req: NextRequest) {
-  const session = await getToken({ req, secret: "jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg" });
+  const session = await getToken({ req, secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg' });
   console.log('session', session);  
   if (!session) {
     const requestedPage = req.nextUrl.pathname;

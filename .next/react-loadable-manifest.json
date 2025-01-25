@@ -3,7 +3,7 @@
     "id": 34668,
     "files": [
       "static/chunks/72a30a16.f507ab5c487c8bd4.js",
-      "static/chunks/385.0c0c80fe6ce8f7d9.js"
+      "static/chunks/385.664c979d114b5797.js"
     ]
   },
   "..\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> dompurify": {
@@ -15,16 +15,14 @@
   "..\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> html2canvas": {
     "id": 61120,
     "files": [
-      "static/chunks/ad7f724d.f8913d2889cdae0f.js"
+      "static/chunks/ad7f724d.1c6ab677bc0ca828.js"
     ]
   },
   "pages\\marketing.tsx -> ../components/Marketing/marketing": {
-    "id": 98413,
+    "id": 344,
     "files": [
-      "static/css/9b6600bcf2c6a441.css",
-      "static/chunks/eabe11fc.d0ffdfa3eff20643.js",
-      "static/chunks/592.06576b1801232fac.js",
-      "static/chunks/413.de1ce5ac0a8e5a17.js"
+      "static/css/5a56e3c1761e58ad.css",
+      "static/chunks/344.1423593cf26262c8.js"
     ]
   }
 }

@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'react-quill/dist/quill.snow.css'; // Importa estilos de React Quill
-import ReactQuill from 'react-quill'; // Importa el editor WYSIWYG
 import { sendEmail } from '@/services/emailService';
 import { getUsers } from '@/services/userService';
 import { updateEmail, deleteEmail, createEmail, getEmails } from '@/services/emailsServer'; // Asegúrate de tener estas funciones
-
 interface User {
     id: number;
     email: string;
@@ -183,12 +180,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="p-8 bg-gray-100 rounded-lg shadow-md">
                         <h2 className="text-xl font-semibold mb-4">Vista Previa y Edición</h2>
-                        <ReactQuill
-                            theme="snow"
-                            value={htmlContent}
-                            onChange={setHtmlContent}
-                            className="h-96 border rounded-md overflow-y-auto"
-                        />
+           
                     </div>
 
                     <div className="space-y-8">
