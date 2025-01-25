@@ -3,22 +3,20 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(req: NextRequest) {
-
-  if (req.method === 'OPTIONS') {
-    const res = NextResponse.next();
-    res.headers.set('Access-Control-Allow-Origin', '*');
-    res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res;
-  }
-
-  const res = NextResponse.next();
-  res.headers.set('Access-Control-Allow-Origin', 'https://pagina-5al8gc75i-dilans-projects-76ddfd04.vercel.app');
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
   const session = await getToken({ req, secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg' });
   console.log('session', session);  
+  
+  // Handling CORS headers
+  const response = NextResponse.next();
+  response.headers.set('Access-Control-Allow-Origin', '*'); // Allow all origins
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allow these methods
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow these headers
+  
+  // Handle preflight requests (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    return response;
+  }
+
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
@@ -36,9 +34,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ['/menu', '/api/v1/roles'],
+  matcher: ['/menu'],
 };
