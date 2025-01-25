@@ -1,48 +1,53 @@
 import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { env } from 'process';
 
+// Configuración de CORS
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',  // Permitir todos los orígenes
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',  // Métodos permitidos
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',  // Encabezados permitidos
+};
+
+// Middleware para aplicar CORS
 export async function middleware(req: NextRequest) {
-  const session = await getToken({
-    req,
-    secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg', // Utiliza un secreto más seguro (env variable)
-  });
+  const res = NextResponse.next();
+  res.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+  res.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+  res.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
 
-  // Manejo de CORS
-  const response = NextResponse.next();
-  const allowedOrigin = 'https://pagina-bya9vquvf-dilans-projects-76ddfd04.vercel.app'; 
-
-  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  // Responder a las solicitudes OPTIONS (pre-flight)
+  // Si es una solicitud OPTIONS (preflight), se debe responder inmediatamente
   if (req.method === 'OPTIONS') {
-    return response;
+    return res;
   }
 
-  // Si no hay sesión, redirige a la página de login
+  // Obtener el token de la sesión
+  const session = await getToken({ req, secret: env.JWT_SECRET });
+  console.log('session', session);
+
+  // Si no existe sesión, redirigir al login
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
-    url.pathname = `/login`;
-    url.search = `p=${requestedPage}`;
+    url.pathname = '/login';
+    url.search = `p=${requestedPage}`;  // Pasar la página solicitada en el parámetro 'p'
     return NextResponse.redirect(url);
   }
 
   const userRoleId = session.roleId;
   const restrictedRoutesForUser = ['/menu'];
 
-  // Si el rol del usuario es 2 y está intentando acceder a rutas restringidas, redirige
+  // Si el rol es 2 (y la ruta está restringida), redirigir al usuario
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = '/products';
+    url.pathname = '/products';  // Redirigir a otra página
     return NextResponse.redirect(url);
   }
 
-  return response;
+  return res;  // Continuar con la solicitud si no hay problemas
 }
 
 export const config = {
-  matcher: ['/menu'],
+  matcher: ['/menu', '/api/v1/:path*'],  // Este middleware solo se aplica a las rutas que comienzan con '/menu' y '/api/v1/*'
 };
