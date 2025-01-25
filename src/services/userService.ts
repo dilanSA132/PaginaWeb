@@ -6,7 +6,12 @@ if (!baseUrl) {
 }
 
 export const getUsers = async () => {
-  const response = await fetch(`${baseUrl}/users`);
+  const response = await fetch(`${baseUrl}/users`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*', // Añadir CORS
+    },
+  });
   if (!response.ok) {
     throw new Error('Error al obtener los usuarios');
   }
@@ -16,7 +21,10 @@ export const getUsers = async () => {
 export const createUser = async (userData: any) => {
   const response = await fetch(`${baseUrl}/users`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*', // Añadir CORS
+    },
     body: JSON.stringify(userData),
   });
 
@@ -30,6 +38,9 @@ export const createUser = async (userData: any) => {
 export const deleteUser = async (id: number) => {
   const response = await fetch(`${baseUrl}/users/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Access-Control-Allow-Origin': '*', // Añadir CORS
+    },
   });
 
   if (!response.ok) {
@@ -42,7 +53,10 @@ export const deleteUser = async (id: number) => {
 export const updateUser = async (id: number, data: { name: string; email: string; roleId: number }) => {
   const response = await fetch(`${baseUrl}/users/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*', // Añadir CORS
+    },
     body: JSON.stringify(data),
   });
 
@@ -56,7 +70,10 @@ export const updateUser = async (id: number, data: { name: string; email: string
 export const authenticateUser = async (email: string, password: string) => {
   const response = await fetch(`${baseUrl}/users/authenticate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*', // Añadir CORS
+    },
     body: JSON.stringify({ email, password }),
   });
 
