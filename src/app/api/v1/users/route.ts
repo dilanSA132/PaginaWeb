@@ -3,6 +3,32 @@ import { ErrorResponse } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
+// Configuración CORS
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',  // Permitir todos los orígenes, o puedes cambiar '*' por dominios específicos
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',  // Métodos permitidos
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',  // Encabezados permitidos
+  'Access-Control-Allow-Credentials': 'true',  // Si usas cookies o credenciales, añade esto
+};
+
+// Middleware CORS
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+
+  // Agregar encabezados de CORS a todas las respuestas
+  res.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+  res.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+  res.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+  res.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+
+  // Si es una solicitud OPTIONS (preflight), responder inmediatamente
+  if (req.method === 'OPTIONS') {
+    return res;
+  }
+
+  return res;  // Continuar con la solicitud si no es OPTIONS
+}
+
 // Función GET para obtener usuarios
 export async function GET(
   _req: NextRequest,
@@ -12,9 +38,23 @@ export async function GET(
     const users = await prisma.user.findMany({
       include: { role: true },
     });
-    return NextResponse.json(users, { status: 200 });
+
+    const response = NextResponse.json(users, { status: 200 });
+
+    // Agregar encabezados CORS a la respuesta
+    response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+    response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+    response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+    response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+
+    return response;
   } catch (error) {
-    return NextResponse.json({ message: 'Error fetching users' }, { status: 500 });
+    const response = NextResponse.json({ message: 'Error fetching users' }, { status: 500 });
+    response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+    response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+    response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+    response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+    return response;
   }
 }
 
@@ -28,7 +68,12 @@ export async function POST(
 
     // Encriptar la contraseña antes de guardar
     if (!body.password) {
-      return NextResponse.json({ message: 'Password is required' }, { status: 400 });
+      const response = NextResponse.json({ message: 'Password is required' }, { status: 400 });
+      response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+      response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+      response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+      response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+      return response;
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -41,8 +86,21 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    const response = NextResponse.json(newUser, { status: 201 });
+
+    // Agregar encabezados CORS a la respuesta
+    response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+    response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+    response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+    response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+
+    return response;
   } catch (error) {
-    return NextResponse.json({ message: 'Error creating user' }, { status: 500 });
+    const response = NextResponse.json({ message: 'Error creating user' }, { status: 500 });
+    response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
+    response.headers.set('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
+    response.headers.set('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
+    response.headers.set('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
+    return response;
   }
 }
