@@ -3,12 +3,11 @@ import { ErrorResponse } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
-// Configuración CORS
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',  // Permitir todos los orígenes, o puedes cambiar '*' por dominios específicos
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',  // Métodos permitidos
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',  // Encabezados permitidos
-  'Access-Control-Allow-Credentials': 'true',  // Si usas cookies o credenciales, añade esto
+  'Access-Control-Allow-Origin': '*',  
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',  
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',  
+  'Access-Control-Allow-Credentials': 'true',  
 };
 
 // Función GET para obtener usuarios
