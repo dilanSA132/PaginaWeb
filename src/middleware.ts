@@ -6,19 +6,17 @@ export async function middleware(req: NextRequest) {
   // Log para verificar la solicitud
   console.log('Middleware ejecutado para:', req.method, req.nextUrl.pathname);
 
-  // Manejo de solicitudes OPTIONS (CORS preflight)
   if (req.method === 'OPTIONS') {
-    console.log('Solicitud OPTIONS recibida');
     return new NextResponse(null, {
       status: 204,
       headers: {
-        'Access-Control-Allow-Origin': '*', // Permitir todos los orígenes (ajustar en producción)
+        'Access-Control-Allow-Origin': 'https://pagina-r0xdl2vwh-dilans-projects-76ddfd04.vercel.app', // Tu dominio
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
     });
   }
-
+  
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
@@ -39,7 +37,7 @@ export async function middleware(req: NextRequest) {
 
   // Configuración de las cabeceras CORS para las respuestas
   const response = NextResponse.next();
-  response.headers.set('Access-Control-Allow-Origin', '*'); // Cambiar '*' por el dominio específico en producción
+  response.headers.set('Access-Control-Allow-Origin', 'https://pagina-r0xdl2vwh-dilans-projects-76ddfd04.vercel.app');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
