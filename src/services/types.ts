@@ -28,7 +28,6 @@ export interface SaleDetailResponse {
     price: number;
   };
 }
-// services/types.ts
 
 export interface Product {
   id: number;

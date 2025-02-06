@@ -6,7 +6,7 @@ export const sendEmail = async (subject: string, html: string, recipientEmail: s
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ subject, html, recipientEmail }),  // Incluimos el destinatario y el HTML
+    body: JSON.stringify({ subject, html, recipientEmail }),  
   });
 
   if (!response.ok) {
@@ -15,5 +15,5 @@ export const sendEmail = async (subject: string, html: string, recipientEmail: s
     throw new Error(errorResponse.message || 'Error enviando correo');
   }
 
-  return response.json(); // Retorna la respuesta del servidor
+  return response.json(); 
 };

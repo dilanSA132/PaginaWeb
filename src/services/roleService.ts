@@ -16,8 +16,6 @@ export async function createRole(data: { name: string }) {
     headers: {
       'Content-Type': 'application/json',
     },
-    mode: 'no-cors',
-
     body: JSON.stringify(data),
   });
 
@@ -34,8 +32,6 @@ export async function updateRole(id: number, data: { name: string }) {
     headers: {
       'Content-Type': 'application/json',
     },
-    mode: 'no-cors',
-
     body: JSON.stringify(data),
   });
 
@@ -49,8 +45,6 @@ export async function updateRole(id: number, data: { name: string }) {
 export async function deleteRole(id: number) {
   const response = await fetch(`${API_BASE_URL}/roles/${id}`, {
     method: 'DELETE',
-    mode: 'no-cors',
-
   });
 
   if (!response.ok) {

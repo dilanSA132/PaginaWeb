@@ -1,4 +1,3 @@
-// src/services/userService.ts
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!baseUrl) {
@@ -6,10 +5,7 @@ if (!baseUrl) {
 }
 
 export const getUsers = async () => {
-  const response = await fetch(`${baseUrl}/users`, {
-    headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors',
-  });
+  const response = await fetch(`${baseUrl}/users`);
   if (!response.ok) {
     throw new Error('Error al obtener los usuarios');
   }
@@ -20,8 +16,6 @@ export const createUser = async (userData: any) => {
   const response = await fetch(`${baseUrl}/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors',
-
     body: JSON.stringify(userData),
   });
 
@@ -35,8 +29,6 @@ export const createUser = async (userData: any) => {
 export const deleteUser = async (id: number) => {
   const response = await fetch(`${baseUrl}/users/${id}`, {
     method: 'DELETE',
-    mode: 'no-cors',
-
   });
 
   if (!response.ok) {
@@ -50,8 +42,6 @@ export const updateUser = async (id: number, data: { name: string; email: string
   const response = await fetch(`${baseUrl}/users/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors',
-
     body: JSON.stringify(data),
   });
 
@@ -66,7 +56,6 @@ export const authenticateUser = async (email: string, password: string) => {
   const response = await fetch(`${baseUrl}/users/byUsername`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors',
     body: JSON.stringify({ email, password }),
   });
 
