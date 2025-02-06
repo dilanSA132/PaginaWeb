@@ -11,10 +11,9 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, wi
   if (!isOpen) {
     return null;
   }
-
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: width || '600px' }}> {/* Usa el ancho personalizado o el predeterminado */}
+      <div className="modal-content" style={{ maxWidth: width || '600px' }}>
         <button onClick={onClose} className="modal-close-button">X</button>
         <div className="modal-body">{children}</div>
       </div>
@@ -30,21 +29,21 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, wi
           align-items: center;
           justify-content: center;
           z-index: 1000;
-          padding: 20px; /* Para evitar que el contenido toque los bordes */
+          padding: 20px;
         }
         .modal-content {
           background: white;
           padding: 20px;
           border-radius: 8px;
           position: relative;
-          max-height: 90vh; /* Limita la altura máxima del modal */
+          max-height: 90vh;
           min-width: 300px;
           width: 100%;
-          overflow: hidden; /* Evita desbordamiento horizontal */
+          overflow: hidden;
         }
         .modal-body {
-          max-height: calc(90vh - 40px); /* Ajusta según el padding */
-          overflow-y: auto; /* Habilita el desplazamiento vertical */
+          max-height: calc(90vh - 40px);
+          overflow-y: auto;
         }
         .modal-close-button {
           position: absolute;
@@ -55,9 +54,31 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, wi
           font-size: 16px;
           cursor: pointer;
         }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+          .modal-overlay {
+            align-items: flex-end;
+            padding: 0;
+          }
+          .modal-content {
+            border-radius: 12px 12px 0 0;
+            width: 100%;
+            max-width: 100%;
+            max-height: 80vh;
+            transform: translateY(100%);
+            animation: slide-up 0.3s ease-out forwards;
+          }
+          @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+          }
+        }
       `}</style>
     </div>
   );
 };
+
+
 
 export default CustomModal;
