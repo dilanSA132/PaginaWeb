@@ -11,7 +11,14 @@ export async function GET(
     const users = await prisma.user.findMany({
       include: { role: true },
     });
-    return NextResponse.json(users, { status: 200 });
+    const response = NextResponse.json(users, { status: 200 });
+    
+    // Agregar las cabeceras CORS
+    response.headers.set('Access-Control-Allow-Origin', '*'); // Cambiar '*' por el dominio específico en producción
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return response;
   } catch (error) {
     return NextResponse.json({ message: 'Error fetching users' }, { status: 500 });
   }
@@ -39,7 +46,14 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    const response = NextResponse.json(newUser, { status: 201 });
+    
+    // Agregar las cabeceras CORS
+    response.headers.set('Access-Control-Allow-Origin', '*'); // Cambiar '*' por el dominio específico en producción
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return response;
   } catch (error) {
     return NextResponse.json({ message: 'Error creating user' }, { status: 500 });
   }
