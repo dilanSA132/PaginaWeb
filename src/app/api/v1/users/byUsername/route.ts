@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-const cors = require('cors')();
+const cors = require('cors')(); 
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,14 +9,7 @@ export async function POST(req: NextRequest) {
 
     // Validación básica
     if (!email || !password) {
-      const response = NextResponse.json({ message: 'Email y contraseña son requeridos' }, { status: 400 });
-      
-      // Aplicar cabeceras CORS
-      response.headers.set('Access-Control-Allow-Origin', '*');
-      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      
-      return response;
+      return NextResponse.json({ message: 'Email y contraseña son requeridos' }, { status: 400 });
     }
 
     // Buscar el usuario por email
@@ -26,30 +19,16 @@ export async function POST(req: NextRequest) {
 
     // Si el usuario no existe
     if (!user) {
-      const response = NextResponse.json({ message: 'Usuario no encontrado' }, { status: 404 });
-      
-      // Aplicar cabeceras CORS
-      response.headers.set('Access-Control-Allow-Origin', '*');
-      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      
-      return response;
+      return NextResponse.json({ message: 'Usuario no encontrado' }, { status: 404 });
     }
 
     // Comparar la contraseña proporcionada con la almacenada (sin encriptación)
     if (user.password !== password) {
-      const response = NextResponse.json({ message: 'Contraseña incorrecta' }, { status: 401 });
-      
-      // Aplicar cabeceras CORS
-      response.headers.set('Access-Control-Allow-Origin', '*');
-      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      
-      return response;
+      return NextResponse.json({ message: 'Contraseña incorrecta' }, { status: 401 });
     }
 
     // Si la autenticación es exitosa, devolver la información del usuario (sin la contraseña)
-    const response = NextResponse.json({
+    return NextResponse.json({
       message: 'Autenticación exitosa',
       user: {
         id: user.id,
@@ -58,23 +37,9 @@ export async function POST(req: NextRequest) {
         roleId: user.roleId
       }
     }, { status: 200 });
-    
-    // Aplicar cabeceras CORS
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    return response;
 
   } catch (error) {
     console.error('Error autenticando usuario:', error);
-    const response = NextResponse.json({ message: 'Error autenticando usuario' }, { status: 500 });
-    
-    // Aplicar cabeceras CORS
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    return response;
+    return NextResponse.json({ message: 'Error autenticando usuario' }, { status: 500 });
   }
 }
