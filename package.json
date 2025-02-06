@@ -42,6 +42,7 @@
     "react-toastify": "^10.0.5",
     "react-tsparticles": "^2.12.2",
     "save-dev": "^0.0.1-security",
+    "swiper": "^11.2.2",
     "xlsx": "^0.18.5",
     "xlsx-chart": "^0.4.3",
     "zustand": "^4.5.5"

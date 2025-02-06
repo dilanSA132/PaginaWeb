@@ -50,6 +50,12 @@ const Sales: React.FC = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
+  const paymentMethodTranslations = {
+    CASH: 'Efectivo',
+    CREDIT: 'Crédito',
+    TRANSFER: 'Transferencia',
+  };
+  
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -175,7 +181,7 @@ const Sales: React.FC = () => {
     doc.text('Informe de Ventas', 14, 20);
 
     doc.setFontSize(12);
-    doc.text(`Ingresos Totales: $${totalRevenue.toFixed(2)}`, 14, 30);
+    doc.text(`Ingresos Totales: ${totalRevenue.toFixed(2)} Colones`, 14, 30);
     doc.text(`Total Productos Vendidos: ${totalProductsSold}`, 14, 40);
 
     const topProductsTable = Object.entries(topProducts).map(([productName, quantity]) => [
@@ -191,9 +197,10 @@ const Sales: React.FC = () => {
       headStyles: { fillColor: [54, 162, 235] },
     });
 
+
     const paymentMethodTable = Object.entries(salesByPaymentMethod).map(([method, total]) => [
-      method,
-      `$${total.toFixed(2)}`,
+      paymentMethodTranslations[method as keyof typeof paymentMethodTranslations] || method, 
+      `${total.toFixed(2)} Col`, 
     ]);
 
     autoTable(doc, {
@@ -295,34 +302,36 @@ const Sales: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
-          <Card>
-            <CardContent>
-              <PieChart
-                width={500}
-                height={260}
-                series={[{
-                  id: 'payment-methods',
-                  data: Object.entries(paymentMethods).map(([method, count]) => ({
-                    id: method,
-                    value: count,
-                    label: method,
-                  })),
-                  innerRadius: 30,
-                  outerRadius: 100,
-                  paddingAngle: 5,
-                  cornerRadius: 5,
-                  startAngle: -45,
-                  endAngle: 225,
-                  cx: 150,
-                  cy: 150,
-                  highlightScope: { fade: 'global', highlight: 'item' },
-                  faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                }]}
-              />
-              <Typography variant="h6" align="center">Tipos de Pago</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+  <Card>
+    <CardContent>
+      <PieChart
+        width={500}
+        height={260}
+        series={[
+          {
+            id: 'payment-methods',
+            data: Object.entries(paymentMethods).map(([method, count]) => ({
+              id: method,
+              value: count,
+              label: paymentMethodTranslations[method as keyof typeof paymentMethodTranslations], // Traducción al español
+            })),
+            innerRadius: 30,
+            outerRadius: 100,
+            paddingAngle: 5,
+            cornerRadius: 5,
+            startAngle: -45,
+            endAngle: 225,
+            cx: 150,
+            cy: 150,
+            highlightScope: { fade: 'global', highlight: 'item' },
+            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+          },
+        ]}
+      />
+      <Typography variant="h6" align="center">Tipos de Pago</Typography>
+    </CardContent>
+  </Card>
+</Grid>
 
         <Grid item xs={12} md={6} lg={4}>
           <Card>

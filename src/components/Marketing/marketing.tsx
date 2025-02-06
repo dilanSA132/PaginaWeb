@@ -179,8 +179,11 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="p-8 bg-gray-100 rounded-lg shadow-md">
-                        <h2 className="text-xl font-semibold mb-4">Vista Previa y Edición</h2>
-           
+                        <h2 className="text-xl font-semibold mb-4">Vista Previa</h2>
+                        <div className="border p-4 rounded-md bg-white">
+                            <h3 className="font-bold">{subject}</h3>
+                            <div className="mt-4" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                        </div>
                     </div>
 
                     <div className="space-y-8">

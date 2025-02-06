@@ -16,14 +16,15 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="w-full md:w-1/4 mb-8 md:mb-0">
-            <h4 className="text-xl font-bold mb-4">Enlaces Rápidos</h4>
-            <ul>
+            <h4 className="text-xl font-bold mb-4 flex">Enlaces Rápidos</h4>
+            <ul className="flex space-x-4">
               {links.map((link, index) => (
-                <li key={index} className="mb-2">
-                  <a href={`#${link.toLowerCase()}`} className="hover:text-white transition-colors">{link}</a>
-                </li>
+              <li key={index} className="mb-2">
+                <a href={`#${link.toLowerCase()}`} className="hover:text-white transition-colors">{link}</a>
+              </li>
               ))}
             </ul>
+       
           </div>
 
           <div className="w-full md:w-1/4 mb-8 md:mb-0">
@@ -42,21 +43,6 @@ const Footer: React.FC = () => {
             </ul>
             <p className="mt-4">Correo: <a href="mailto:contacto@mitiendadecolonias.com" className="hover:underline">contacto@mitiendadecolonias.com</a></p>
             <p>Teléfono: <a href="tel:+1234567890" className="hover:underline">+1 234 567 890</a></p>
-          </div>
-
-          <div className="w-full md:w-1/4 mb-8 md:mb-0">
-            <h4 className="text-xl font-bold mb-4">Suscríbete a nuestro boletín</h4>
-            <p className="mb-4">Recibe ofertas exclusivas y novedades directamente en tu bandeja de entrada.</p>
-            <form>
-              <input
-                type="email"
-                placeholder="Tu correo electrónico"
-                className="w-full p-2 mb-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-black"
-              />
-              <button className="w-full bg-teal-500 text-white py-2 rounded-full hover:bg-teal-600 transition-colors">
-                Suscribirse
-              </button>
-            </form>
           </div>
         </div>
 

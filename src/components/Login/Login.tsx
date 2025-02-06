@@ -39,7 +39,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 to-green-100 animate-fade-in">
+<div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-purple-200 animate-fade-in">
       <main className="flex-grow flex items-center justify-center py-16">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full transform transition-transform duration-500 hover:scale-105">
           <h2 className="text-4xl font-bold text-center mb-6 text-teal-600">Iniciar Sesión</h2>
