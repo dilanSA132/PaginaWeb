@@ -13,6 +13,7 @@ export async function middleware(req: NextRequest) {
       },
     });
   }
+
   console.log(req.method);
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   console.log('session', session);
@@ -35,6 +36,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const response = NextResponse.next();
+  
   response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -43,5 +45,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/menu', '/api/v1/users'],
+  matcher: ['/menu', '/api/v1/:path*'],
 };
