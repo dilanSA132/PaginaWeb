@@ -1,14 +1,22 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { env } from 'process';
 
 export async function middleware(req: NextRequest) {
-  const session = await getToken({
-    req,
-    secret: 'jksde7fufsefjhsoiyawedawdngqwdpoqeuqwdnasigdywdawdkajiwgdyuagwyudqw213kanwuyyg'
-  });
-  
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  }
+  console.log(req.method);
+  const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  console.log('session', session);
+
   if (!session) {
     const requestedPage = req.nextUrl.pathname;
     const url = req.nextUrl.clone();
@@ -17,25 +25,23 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const userRoleId = session.roleId; 
-  const restrictedRoutesForUser = ['/menu']; 
-
+  const userRoleId = session.roleId;
+  const restrictedRoutesForUser = ['/menu'];
+  
   if (userRoleId === 2 && restrictedRoutesForUser.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = '/products'; 
+    url.pathname = '/products';
     return NextResponse.redirect(url);
   }
 
-  // Añadir cabeceras CORS
   const response = NextResponse.next();
-  response.headers.set('Access-Control-Allow-Origin', '*'); // Permitir todos los orígenes o especificar un dominio
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Permitir métodos
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Permitir cabeceras específicas
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   return response;
 }
 
 export const config = {
-  matcher: ['/menu', '/products', '/api/(.*)'] // Aplica el middleware en otras rutas si es necesario
+  matcher: ['/menu', '/api/v1/users'],
 };
-
