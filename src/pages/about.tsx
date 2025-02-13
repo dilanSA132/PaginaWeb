@@ -1,38 +1,117 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { getParameters, Parameter } from '../services/parametersService';
 
 const About: React.FC = () => {
+  const [parameters, setParameters] = useState<Parameter | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null); // Para manejar las secciones activas
+
+  useEffect(() => {
+    const fetchParameters = async () => {
+      try {
+        const data = await getParameters();
+        setParameters(data[0]);
+      } catch (error) {
+        setError('Error al obtener los parámetros');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParameters();
+  }, []);
+
+  if (loading) return <div className="text-center py-10 text-xl">Cargando...</div>;
+  if (error) return <div className="text-center py-10 text-xl text-red-600">{error}</div>;
+
+  // Manejar el clic en las tarjetas
+  const handleClick = (section: string) => {
+    setActiveSection(activeSection === section ? null : section); // Si la sección ya está activa, la desactivamos
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <main className="flex-grow">
-        <section className="bg-white py-16">
-          <div className="container mx-auto px-8 text-center">
-            <h2 className="text-3xl font-bold text-teal-600 mb-8">Acerca de Nosotros</h2>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              En MiTiendaDeColonias, nos especializamos en ofrecer las mejores fragancias del mercado. Nuestro compromiso es
-              brindarte una experiencia olfativa inigualable, con productos seleccionados cuidadosamente para garantizar la
-              máxima calidad y satisfacción.
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              Desde nuestras primeras ventas, hemos crecido y expandido nuestra selección de productos, asegurando que cada
-              cliente encuentre la fragancia que más le guste. Nos enorgullece ofrecer perfumes y colonias de marcas
-              reconocidas y exclusivas, que reflejan tanto la elegancia como la sofisticación.
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-8">
-              Nuestra misión es ayudarte a descubrir tu esencia personal, aquella que resalta tu identidad y te hace único.
-              Creemos que el perfume adecuado puede transformar tu día y elevar tu confianza, y estamos aquí para ayudarte a
-              encontrar el que más te representa.
-            </p>
-            <img
-              src="https://images.unsplash.com/photo-1532634726-8b9fb998fb24?fit=crop&w=800&q=80"
-              alt="Imagen de tienda de colonias"
-              className="mx-auto rounded-lg shadow-lg mt-8"
-            />
+    <div className="flex flex-col min-h-screen bg-white">
+      <main className="flex-grow py-16">
+        <div className="container mx-auto px-8 text-center">
+          <h2 className="text-4xl font-extrabold mb-6 text-gray-800">Acerca de Nosotros</h2>
+
+          {/* Tarjetas con títulos */}
+          <div className="flex justify-center gap-12 mb-12">
+            {/* Tarjeta Información */}
+            <div
+              className="relative w-96 h-72 bg-gradient-to-r from-teal-200 via-teal-300 to-teal-400 shadow-xl rounded-lg p-6 cursor-pointer overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl animate-blink"
+              onClick={() => handleClick('info')}
+            >
+              <div className="flex items-center justify-center h-full">
+                <h3 className="text-3xl font-bold text-white">Información</h3>
+              </div>
+              {activeSection === 'info' && (
+                <div className="absolute inset-0 p-6 bg-teal-500 rounded-lg opacity-100 transition-opacity duration-500">
+                  <p className="text-lg md:text-xl font-light text-white">{parameters?.info}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Tarjeta Misión */}
+            <div
+              className="relative w-96 h-72 bg-gradient-to-r from-green-200 via-green-300 to-green-400 shadow-xl rounded-lg p-6 cursor-pointer overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl animate-blink"
+              onClick={() => handleClick('mission')}
+            >
+              <div className="flex items-center justify-center h-full">
+                <h3 className="text-3xl font-bold text-white">Misión</h3>
+              </div>
+              {activeSection === 'mission' && (
+                <div className="absolute inset-0 p-6 bg-green-500 rounded-lg opacity-100 transition-opacity duration-500">
+                  <p className="text-lg md:text-xl font-light italic text-white">"{parameters?.mission}"</p>
+                </div>
+              )}
+            </div>
+
+            {/* Tarjeta Visión */}
+            <div
+              className="relative w-96 h-72 bg-gradient-to-r from-purple-200 via-purple-300 to-purple-400 shadow-xl rounded-lg p-6 cursor-pointer overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl animate-blink"
+              onClick={() => handleClick('vision')}
+            >
+              <div className="flex items-center justify-center h-full">
+                <h3 className="text-3xl font-bold text-white">Visión</h3>
+              </div>
+              {activeSection === 'vision' && (
+                <div className="absolute inset-0 p-6 bg-purple-500 rounded-lg opacity-100 transition-opacity duration-500">
+                  <p className="text-lg md:text-xl font-light text-white">{parameters?.vision}</p>
+                </div>
+              )}
+            </div>
           </div>
-        </section>
+
+          {/* Creador */}
+          <div className="mt-10">
+            <div className="bg-white shadow-xl rounded-lg p-6 max-w-lg mx-auto">
+              <p className="text-md font-medium mb-2">Creador:</p>
+              <p className="text-lg md:text-xl">Dilan Sancho Lopez</p>
+            </div>
+          </div>
+        </div>
       </main>
       <Footer />
+      <style jsx>{`
+        @keyframes blink {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        .animate-blink {
+          animation: blink 3s infinite;
+        }
+      `}</style>
     </div>
   );
 };

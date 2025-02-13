@@ -41,8 +41,8 @@ const Products: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-    const { data: session } = useSession();
-  
+  const { data: session } = useSession();
+
   const [contactInfo, setContactInfo] = useState({
     name: '',
     email: '',
@@ -183,7 +183,7 @@ const Products: React.FC = () => {
         email: contactInfo.email,
         phone: contactInfo.phone,
         address: contactInfo.address,
-        userId: userId, 
+        userId: userId,
       };
 
       const newOrder = await createOrder(orderRequest);
@@ -248,7 +248,7 @@ const Products: React.FC = () => {
 
 
       await sendEmail(subject, html, contactInfo.email);
-      console.log(subject, html, contactInfo.email);  
+      console.log(subject, html, contactInfo.email);
       console.log('Pedido realizado con éxito y correo enviado');
       setIsCartOpen(false);
     } catch (err) {
@@ -276,56 +276,56 @@ const Products: React.FC = () => {
             </button>
 
             {showFilters && (
-  <div>
-    {/* Filtro por categoría */}
-    <div className="mb-4">
-      <label htmlFor="categoryFilter" className="block text-black font-semibold">Filtrar por Categoría</label>
-      <select
-        id="categoryFilter"
-        value={selectedCategory || ''}
-        onChange={handleCategoryChange}
-        className="w-full border border-gray-300 rounded-md px-3 py-2  text-black"
-      >
-        <option value="">Todas las Categorías</option>
-        {categories.map((category: Category) => (
-          <option key={category.id} value={category.name}>
-            {category.name}
-          </option>
-        ))}
-      </select>
-    </div>
+              <div>
+                {/* Filtro por categoría */}
+                <div className="mb-4">
+                  <label htmlFor="categoryFilter" className="block text-black font-semibold">Filtrar por Categoría</label>
+                  <select
+                    id="categoryFilter"
+                    value={selectedCategory || ''}
+                    onChange={handleCategoryChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2  text-black"
+                  >
+                    <option value="">Todas las Categorías</option>
+                    {categories.map((category: Category) => (
+                      <option key={category.id} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-    {/* Filtro por rango de precios */}
-    <div className="mb-4">
-      <label className="block text-black font-semibold">Filtrar por Precio</label>
-      <div className="flex space-x-4">
-        <input
-          type="number"
-          placeholder="Precio Mínimo"
-          value={priceRange.min}
-          onChange={(e) => handlePriceChange(e, 'min')}
-          className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-black" 
-        />
-        <input
-          type="number"
-          placeholder="Precio Máximo"
-          value={priceRange.max}
-          onChange={(e) => handlePriceChange(e, 'max')}
-          className="w-1/2 border border-gray-300 rounded-md px-3 py-2  text-black"
-        />
-      </div>
-    </div>
-  </div>
-)}
+                {/* Filtro por rango de precios */}
+                <div className="mb-4">
+                  <label className="block text-black font-semibold">Filtrar por Precio</label>
+                  <div className="flex space-x-4">
+                    <input
+                      type="number"
+                      placeholder="Precio Mínimo"
+                      value={priceRange.min}
+                      onChange={(e) => handlePriceChange(e, 'min')}
+                      className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-black"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Precio Máximo"
+                      value={priceRange.max}
+                      onChange={(e) => handlePriceChange(e, 'max')}
+                      className="w-1/2 border border-gray-300 rounded-md px-3 py-2  text-black"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-       {loading ? (
+            {loading ? (
               <p className="text-center text-teal-600">Cargando productos...</p>
             ) : error ? (
               <p className="text-center text-red-600">{error}</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProducts.map((product, index) => (
-                    <div
+                  <div
                     key={product.id}
                     className={`bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl 
                     opacity-0 animate-fade-in-up`}
@@ -333,7 +333,7 @@ const Products: React.FC = () => {
                       animationDelay: `${index * 0.2}s`,
                       animationFillMode: "forwards",
                     }}
-                    >
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
@@ -342,16 +342,16 @@ const Products: React.FC = () => {
                     <h3 className="text-xl font-semibold mb-2 text-black">
                       {product.name} ({product.description})
                     </h3>
-                    <span className="block text-2xl font-bold mb-4 text-yellow-500"> 
+                    <span className="block text-2xl font-bold mb-4 text-yellow-500">
                       ₡{product.salePrice}
                     </span>
-                    <span className="block text-2 font-bold mb-4 text-black-500"> 
+                    <span className="block text-2 font-bold mb-4 text-black-500">
                       Stock: {product.stock}
                     </span>
                     {product.stock === 0 ? (
                       <span className="block text-red-500 font-bold mb-4">Vendido</span>
                     ) : (
-                      
+
                       <button
                         onClick={() => addToCart({ ...product, quantity: 1 })}
                         className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors"
@@ -359,9 +359,9 @@ const Products: React.FC = () => {
                         Añadir al Carrito
                       </button>
                     )}
-                    
-              
-                    </div>
+
+
+                  </div>
                 ))}
               </div>
             )}
@@ -372,7 +372,7 @@ const Products: React.FC = () => {
               onPrevious={handlePreviousPage}
             />
           </div>
-         
+
         </section>
       </main>
       <Footer />

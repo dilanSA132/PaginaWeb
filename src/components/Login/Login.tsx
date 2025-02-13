@@ -20,32 +20,33 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    // Llamada al método signIn de next-auth
     const result = await signIn('credentials', {
-      redirect: false, // Evitar redirección automática
+      redirect: false,
       email,
-      password
+      password,
     });
 
     setLoading(false);
 
     if (result?.error) {
-      // Mostrar error si ocurre algún problema durante la autenticación
       setError(result.error);
     } else {
-      // Redirigir a la página solicitada o a /menu si no hay ninguna
       router.push(p ? String(p) : '/menu');
     }
   };
 
   return (
-<div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-purple-200 animate-fade-in">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-purple-200 animate-fade-in">
       <main className="flex-grow flex items-center justify-center py-16">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full transform transition-transform duration-500 hover:scale-105">
-          <h2 className="text-4xl font-bold text-center mb-6 text-teal-600">Iniciar Sesión</h2>
+          <h2 className="text-4xl font-bold text-center mb-6 text-teal-600">
+            Iniciar Sesión
+          </h2>
           <form onSubmit={handleLogin}>
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="email">Correo Electrónico</label>
+              <label className="block text-gray-700 mb-2" htmlFor="email">
+                Correo Electrónico
+              </label>
               <input
                 type="email"
                 id="email"
@@ -57,7 +58,9 @@ const Login: React.FC = () => {
               />
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="password">Contraseña</label>
+              <label className="block text-gray-700 mb-2" htmlFor="password">
+                Contraseña
+              </label>
               <input
                 type="password"
                 id="password"
@@ -75,10 +78,29 @@ const Login: React.FC = () => {
             >
               {loading ? 'Autenticando...' : 'Iniciar Sesión'}
             </button>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
+            {error && (
+              <div className="mt-4 text-center">
+                {error.toLowerCase().includes('credential') ? (
+                  <p className="text-red-500">
+                    Credenciales inválidas.{' '}
+                    <a
+                      href="/recover-password"
+                      className="underline hover:text-teal-600"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </a>
+                  </p>
+                ) : (
+                  <p className="text-red-500">{error}</p>
+                )}
+              </div>
+            )}
           </form>
           <p className="mt-6 text-center text-gray-700">
-            ¿No tienes una cuenta? <a href="/register" className="text-teal-600 hover:underline">Regístrate aquí</a>
+            ¿No tienes una cuenta?{' '}
+            <a href="/register" className="text-teal-600 hover:underline">
+              Regístrate aquí
+            </a>
           </p>
         </div>
       </main>

@@ -146,3 +146,17 @@ model Email {
   content   String   // Contenido del correo
   createdAt DateTime @default(now()) // Fecha de creación
 }
+
+model Parameter {
+  id             Int      @id @default(1)
+  info           String?
+  email          String   @unique
+  emailPassword  String
+  location       String?
+  pageName       String
+  mission        String?
+  vision         String?
+  logo           String?
+  createdAt      DateTime @default(now())
+  phone          String?  
+}

@@ -140,7 +140,6 @@ const MantenimientoProductos: React.FC = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Catálogo de Productos');
 
-      // Define columns
       worksheet.columns = [
         { header: 'ID', key: 'id', width: 10 },
         { header: 'Nombre', key: 'name', width: 30 },
@@ -186,12 +185,10 @@ const MantenimientoProductos: React.FC = () => {
         { header: 'Precio', key: 'price', width: 15 }
       ];
 
-      // Add rows to the analysis worksheet
       products.forEach(product => {
         analysisWorksheet.addRow({ name: product.name,purchasePrice: product.purchasePrice, salePrice: product.salePrice, stock: product.stock });  
       });
 
-      // Style the header of the analysis worksheet
       analysisWorksheet.getRow(1).font = { bold: true };
       analysisWorksheet.getRow(1).eachCell(cell => {
         cell.fill = {

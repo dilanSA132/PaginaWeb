@@ -1,22 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-
+import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 export async function POST(req: NextRequest) {
-  const { subject, html, recipientEmail } = await req.json();
+  const { subject, html, recipientEmail, emailPassword } = await req.json();
+
+  const parameter = await prisma.parameter.findUnique({
+    where: { id: 1 },
+  });
+
+  if (!parameter) {
+    return NextResponse.json({ message: 'Configuración no encontrada' }, { status: 500 });
+  }
+
+  const { email, emailPassword: plainPassword } = parameter;  
 
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.EMAIL_USER, // Usa la variable de entorno para el usuario
-      pass: process.env.EMAIL_PASSWORD, // Usa la variable de entorno para la contraseña
+      user: email,
+      pass: plainPassword,  
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER, // También para el campo "from"
-    to: recipientEmail, // Se envía al correo proporcionado por el cliente
+    from: email,
+    to: recipientEmail,
     subject: subject || 'Asunto no especificado',
-    html: html || '<p>Sin contenido en el mensaje</p>', // Usamos el contenido HTML
+    html: html || '<p>Sin contenido en el mensaje</p>',
   };
 
   try {
