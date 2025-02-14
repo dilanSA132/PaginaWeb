@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 import { deleteSaleDetail } from '@/services/saleDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import CustomModal from '../modal/CustomModal';
-import { deleteCredit, updateCreditRemaining  } from '@/services/creditService';
+import { deleteCredit, updateCreditRemaining } from '@/services/creditService';
 import { getCreditsDetails, updateCreditDetail, deleteCreditDetail } from '@/services/CreditPayments';
 import 'react-toastify/dist/ReactToastify.css';
-import {  Sale,CreditPayment, PaymentStatus } from './Interfaces';
+import { Sale, CreditPayment, PaymentStatus } from './Interfaces';
 import { access } from 'fs';
 
 const SaleMaintenance: React.FC = () => {
@@ -224,7 +224,7 @@ const SaleMaintenance: React.FC = () => {
             },
         },
     ];
-    
+
 
     const handleSaveSale = () => {
         if (isEditing) {
@@ -270,15 +270,15 @@ const SaleMaintenance: React.FC = () => {
                                             const updatedPayments = newSale.credit.payments.map((payment, index) =>
                                                 index === 0 ? { ...payment, paymentDate: new Date(e.target.value).toISOString() } : payment
                                             );
-                                            setNewSale({ 
-                                                ...newSale, 
-                                                credit: { 
-                                                    ...newSale.credit, 
+                                            setNewSale({
+                                                ...newSale,
+                                                credit: {
+                                                    ...newSale.credit,
                                                     payments: updatedPayments.map(payment => ({
                                                         ...payment,
                                                         paymentDate: new Date(payment.paymentDate)
-                                                    })) 
-                                                } 
+                                                    }))
+                                                }
                                             });
                                         }}
                                         className="w-full p-4 border border-gray-300 rounded-lg text-black"
@@ -338,7 +338,7 @@ const SaleMaintenance: React.FC = () => {
                             </select>
                         </div>
                     </div>
-
+                    <div className="credit-payments-container">
                     {newSale.credit && newSale.credit.payments && (
                         <div className="flex-grow w-1/2 max-h-96 overflow-y-auto">
                             <h3 className="text-xl font-bold mb-4">Pagos del Crédito</h3>
@@ -430,6 +430,7 @@ const SaleMaintenance: React.FC = () => {
                             </table>
                         </div>
                     )}
+                    </div>  
 
                 </div>
 

@@ -33,6 +33,12 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+
+.credit-payments-container * {
+  color: black;
+}
+
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
