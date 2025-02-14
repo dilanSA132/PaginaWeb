@@ -77,7 +77,7 @@ const Products: React.FC = () => {
         }
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
-        setTotalItems(fetchedProducts.length);  
+        setTotalItems(fetchedProducts.length);
       } catch (err) {
         setError('Error al cargar los productos');
       } finally {
@@ -153,7 +153,7 @@ const Products: React.FC = () => {
   };
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setItemsPerPage(itemsPerPage);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const handleNext = () => {
@@ -169,7 +169,7 @@ const Products: React.FC = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  
+
   const currentProducts = filteredProducts.slice(
     startIndex,
     startIndex + itemsPerPage
@@ -374,13 +374,13 @@ const Products: React.FC = () => {
               </div>
             )}
             <Pagination
-             currentPage={currentPage}
-             totalItems={totalItems}
-             itemsPerPage={itemsPerPage}
-             onNext={handleNext}
-             onPrevious={handlePrevious}
-             onPageChange={handlePageChange}
-             onItemsPerPageChange={handleItemsPerPageChange}
+              currentPage={currentPage}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
 
@@ -399,6 +399,14 @@ const Products: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-4xl">
             <h2 className="text-2xl font-bold mb-4 text-black">Tu Carrito</h2>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsCartOpen(false)}
+                className="text-black bg-gray-200 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
             {cart.length === 0 ? (
               <p className="text-center text-black">Tu carrito está vacío.</p>
             ) : (

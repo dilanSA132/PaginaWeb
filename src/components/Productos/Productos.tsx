@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import UniversalTable from '../Table/UniversalTable';
 import CustomModal from '../modal/CustomModal';
 import { getProducts, createProduct, deleteProduct, updateProduct } from '@/services/productService';
-import { getCategories } from '@/services/CategoriesService';
+import { createCategory, getCategories } from '@/services/CategoriesService';
 import * as XLSX from 'xlsx';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -14,9 +14,9 @@ interface Product {
   id: number;
   name: string;
   description?: string;
-  purchasePrice: number; // Precio de compra  
-  salePrice: number;     // Precio de venta
-  stock: number;         // Cantidad en inventario
+  purchasePrice: number; 
+  salePrice: number;     
+  stock: number;         
   categoryId: number;
   image?: string;
 }
@@ -179,7 +179,6 @@ const MantenimientoProductos: React.FC = () => {
         };
       });
   
-      // Corregir segunda hoja: Análisis de Precios
       const analysisWorksheet = workbook.addWorksheet('Análisis de Precios');
       analysisWorksheet.columns = [
         { header: 'Producto', key: 'name', width: 30 },
@@ -261,7 +260,13 @@ const MantenimientoProductos: React.FC = () => {
         console.log(jsonData);
         for (const product of jsonData) {
           try {
-             
+            let cat = categories.find(c => c.name === product.Categoría)?.id || 0; 
+            if (cat == 0) { 
+              await createCategory({ name: product.Categoría });  
+              const categoriesResponse = await getCategories();
+              setCategories(categoriesResponse);
+              cat = categoriesResponse.find((c: Category) => c.name === product.Categoría)?.id || 0;
+            }
             await createProduct({
               name: product.Nombre,
               description: product.Descripción || '',

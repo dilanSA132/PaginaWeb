@@ -5,11 +5,10 @@ import { format } from 'date-fns';
 import { deleteSaleDetail } from '@/services/saleDetailService';
 import { ToastContainer, toast } from 'react-toastify';
 import CustomModal from '../modal/CustomModal';
-import { deleteCredit, updateCreditRemaining } from '@/services/creditService';
+import { deleteCredit, updateCreditRemaining  } from '@/services/creditService';
 import { getCreditsDetails, updateCreditDetail, deleteCreditDetail } from '@/services/CreditPayments';
 import 'react-toastify/dist/ReactToastify.css';
-import { Sale, CreditPayment, PaymentStatus } from './Interfaces';
-import { access } from 'fs';
+import {  Sale,CreditPayment, PaymentStatus } from './Interfaces';
 
 const SaleMaintenance: React.FC = () => {
     const [sales, setSales] = useState<Sale[]>([]);
@@ -36,19 +35,18 @@ const SaleMaintenance: React.FC = () => {
         creditPayments: [],
     });
 
+    const fetchSales = async () => {
+        try {
+            const data = await getSales();
+            setSales(data);
+        } catch (error) {
+            console.error('Error al obtener las ventas:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchSales = async () => {
-            try {
-                const data = await getSales();
-                setSales(data);
-
-
-            } catch (error) {
-                console.error('Error al obtener las ventas:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchSales();
     }, []);
 
@@ -103,6 +101,7 @@ const SaleMaintenance: React.FC = () => {
         }
     };
 
+    
 
     const cleanStates = () => {
         setNewSale({
@@ -122,6 +121,7 @@ const SaleMaintenance: React.FC = () => {
             creditPayments: [],
         });
         setEditingAmountPaid({});
+        fetchSales();
     }
 
     const handleDeleteSale = async (sale: Sale) => {
@@ -151,7 +151,6 @@ const SaleMaintenance: React.FC = () => {
                     await deleteCreditDetail(creditDetail.id!);
                 }
 
-                // 2.3 Eliminar el crédito principal
                 if (sale.credit.id) {
                     await deleteCredit(sale.credit.id);
                 }
@@ -224,7 +223,7 @@ const SaleMaintenance: React.FC = () => {
             },
         },
     ];
-
+    
 
     const handleSaveSale = () => {
         if (isEditing) {
@@ -234,9 +233,11 @@ const SaleMaintenance: React.FC = () => {
         }
     };
 
-    if (loading) return <div>Cargando...</div>;
+    if (loading) return <div></div>;
 
+    
     return (
+        
         <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-teal-600">Ventas</h1>
 
@@ -251,12 +252,11 @@ const SaleMaintenance: React.FC = () => {
                 }}
                 onDelete={(rowData) => handleDeleteSale(rowData)}
             />
-
             <CustomModal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)} width="1300px">
                 <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Editar Venta' : 'Crear Nueva Venta'}</h2>
 
-                <div className="flex gap-10">
-                    <div className="flex-grow w-1/2">
+                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex-1">
                         {newSale.paymentMethod === 'CREDIT' && newSale.credit ? (
                             <>
                                 <div className="mb-4">
@@ -270,15 +270,15 @@ const SaleMaintenance: React.FC = () => {
                                             const updatedPayments = newSale.credit.payments.map((payment, index) =>
                                                 index === 0 ? { ...payment, paymentDate: new Date(e.target.value).toISOString() } : payment
                                             );
-                                            setNewSale({
-                                                ...newSale,
-                                                credit: {
-                                                    ...newSale.credit,
+                                            setNewSale({ 
+                                                ...newSale, 
+                                                credit: { 
+                                                    ...newSale.credit, 
                                                     payments: updatedPayments.map(payment => ({
                                                         ...payment,
                                                         paymentDate: new Date(payment.paymentDate)
-                                                    }))
-                                                }
+                                                    })) 
+                                                } 
                                             });
                                         }}
                                         className="w-full p-4 border border-gray-300 rounded-lg text-black"
@@ -337,13 +337,22 @@ const SaleMaintenance: React.FC = () => {
                                 <option value="PARTIAL">Parcial</option>
                             </select>
                         </div>
+
+                        <div className="flex justify-center mt-4">
+                            <button
+                                onClick={handleSaveSale}
+                                className="bg-teal-500 text-white py-2 px-4 rounded-lg"
+                            >
+                                Guardar
+                            </button>
+                        </div>
                     </div>
-                    <div className="credit-payments-container">
+
                     {newSale.credit && newSale.credit.payments && (
-                        <div className="flex-grow w-1/2 max-h-96 overflow-y-auto">
+                            <div className="flex-grow w-full max-h-96  credit-payments-container ">
                             <h3 className="text-xl font-bold mb-4">Pagos del Crédito</h3>
                             <table className="w-full border-collapse border border-gray-300">
-                                <thead>
+                            <thead>
                                     <tr>
                                         <th className="border border-gray-300 px-4 py-2">Fecha de Pago</th>
                                         <th className="border border-gray-300 px-4 py-2">Monto a Pagar</th>
@@ -430,20 +439,8 @@ const SaleMaintenance: React.FC = () => {
                             </table>
                         </div>
                     )}
-                    </div>  
-
-                </div>
-
-                <div className="flex justify-end mt-4">
-                    <button
-                        onClick={handleSaveSale}
-                        className="bg-teal-500 text-white py-2 px-4 rounded-lg"
-                    >
-                        Guardar
-                    </button>
-                </div>
+                </div>           
             </CustomModal>
-
             <ToastContainer />
         </div>
     );
