@@ -62,7 +62,7 @@ const Products: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 120000 });
   const productsPerPage = 9;
   const [showFilters, setShowFilters] = useState(false);
-  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalItems, setTotalItems] = useState(100); // Este valor normalmente vendría de tu API o datos
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -274,11 +274,9 @@ const Products: React.FC = () => {
       <main className="flex-grow">
         <section className="py-16">
           <div className="container mx-auto px-8">
-            <h2 className="text-3xl font-bold text-center mb-12 text-teal-600">
+            <h2 className="text-3xl font-bold text-center mb-5 text-teal-600">
               Nuestros Productos
             </h2>
-            <SearchBar onSearch={handleSearch} />
-
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition-colors mb-4"
@@ -286,6 +284,9 @@ const Products: React.FC = () => {
               {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
             </button>
 
+            <SearchBar onSearch={handleSearch} />
+
+ 
             {showFilters && (
               <div>
                 <div className="mb-4">
@@ -331,7 +332,7 @@ const Products: React.FC = () => {
             ) : error ? (
               <p className="text-center text-red-600">{error}</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {currentProducts.map((product, index) => (
                   <div
                     key={product.id}

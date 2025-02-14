@@ -121,11 +121,11 @@ const Pagination: React.FC<PaginationProps> = ({
           onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
           className="border border-gray-300 rounded-md px-3 py-2 text-black mt-5"
         >
-          <option value={6}>6</option>
-          <option value={12}>12</option>
+          <option value={8}>8</option>
+          <option value={16}>16</option>
           <option value={24}>24</option>
-          <option value={48}>48</option>
-          <option value={96}>96</option>
+          <option value={32}>32</option>
+          <option value={40}>40</option>
         </select>
       </div>
     </div>

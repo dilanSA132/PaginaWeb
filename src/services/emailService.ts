@@ -1,3 +1,5 @@
+import cron from 'node-cron';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const sendEmail = async (subject: string, html: string, recipientEmail: string) => {
@@ -17,3 +19,5 @@ export const sendEmail = async (subject: string, html: string, recipientEmail: s
 
   return response.json(); 
 };
+
+
