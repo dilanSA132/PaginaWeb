@@ -44,7 +44,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 to-green-100 animate-fade-in">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-teal-100 to-green-100 animate-fade-in  px-6 sm:px-8 md:px-12 lg:px-20">
       
       <main className="flex-grow flex items-center justify-center py-16">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full transform transition-transform duration-500 hover:scale-105">
