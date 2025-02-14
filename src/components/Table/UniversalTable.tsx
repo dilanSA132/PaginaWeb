@@ -16,10 +16,9 @@ interface UniversalTableProps {
 
 const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Estado para la cantidad de elementos por página
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
+  const [itemsPerPage, setItemsPerPage] = useState(10); 
+  const [searchTerm, setSearchTerm] = useState(''); 
 
-  // Filtrar los datos en función del término de búsqueda
   const filteredData = Array.isArray(data) ? data.filter((row) =>
     columns.some((column) => {
       const cellValue = column.accessor ? row[column.accessor] : '';
