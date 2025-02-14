@@ -15,7 +15,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, wi
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: width || '600px' }}>
         <button onClick={onClose} className="modal-close-button">X</button>
-        <div className="modal-body">{children}</div>
+        <div className="modal-body .credit-payments-container">{children}</div>
       </div>
       <style jsx>{`
         .modal-overlay {
