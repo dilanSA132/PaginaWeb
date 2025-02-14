@@ -84,7 +84,7 @@ const Login: React.FC = () => {
                   <p className="text-red-500">
                     Credenciales inválidas.{' '}
                     <a
-                      href="/recover-password"
+                      href="/recover"
                       className="underline hover:text-teal-600"
                     >
                       ¿Olvidaste tu contraseña?

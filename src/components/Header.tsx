@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaHome, FaStore, FaInfoCircle, FaUser, FaList, FaBox, FaCog } from 'react-icons/fa';
 import { signOut, useSession } from 'next-auth/react';
-import { getParameters } from '@/services/parametersService'; // Asegúrate de tener el servicio
+import { getParameters } from '@/services/parametersService'; 
 interface Parameter {
   info?: string;
   email?: string;
@@ -26,7 +26,7 @@ const Header: React.FC = () => {
     const fetchParameters = async () => {
       const data = await getParameters();
       setParameters(data[0]);
-      console.log(parameters?.logo); // Check if this is undefined or null
+      console.log(parameters?.logo); 
     };
 
     fetchParameters();

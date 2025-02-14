@@ -139,31 +139,31 @@ const MantenimientoProductos: React.FC = () => {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Catálogo de Productos');
-
+  
       worksheet.columns = [
         { header: 'ID', key: 'id', width: 10 },
         { header: 'Nombre', key: 'name', width: 30 },
         { header: 'Descripción', key: 'description', width: 50 },
         { header: 'PrecioCompra', key: 'purchasePrice', width: 20 },
         { header: 'PrecioVenta', key: 'salePrice', width: 20 },
-        { header: 'Cantidad', key: 'stock', width: 20 },    
+        { header: 'Cantidad', key: 'stock', width: 20 },
         { header: 'Categoría', key: 'category', width: 20 },
         { header: 'Imagen', key: 'image', width: 30 },
       ];
-
+  
       products.forEach(product => {
         worksheet.addRow({
           id: product.id,
           name: product.name,
           description: product.description || 'Sin descripción',
-          purchasePrice: product.purchasePrice, 
-          salePrice: product.salePrice, 
+          purchasePrice: product.purchasePrice,
+          salePrice: product.salePrice,
           stock: product.stock,
           category: getCategoryName(product.categoryId),
           image: product.image || 'Sin imagen',
         });
       });
-
+  
       worksheet.getRow(1).font = { bold: true };
       worksheet.getRow(1).eachCell(cell => {
         cell.fill = {
@@ -178,17 +178,23 @@ const MantenimientoProductos: React.FC = () => {
           right: { style: 'thin' },
         };
       });
-
+  
+      // Corregir segunda hoja: Análisis de Precios
       const analysisWorksheet = workbook.addWorksheet('Análisis de Precios');
       analysisWorksheet.columns = [
         { header: 'Producto', key: 'name', width: 30 },
-        { header: 'Precio', key: 'price', width: 15 }
+        { header: 'Precio Compra', key: 'purchasePrice', width: 15 },
+        { header: 'Precio Venta', key: 'salePrice', width: 15 },
       ];
-
+  
       products.forEach(product => {
-        analysisWorksheet.addRow({ name: product.name,purchasePrice: product.purchasePrice, salePrice: product.salePrice, stock: product.stock });  
+        analysisWorksheet.addRow({
+          name: product.name,
+          purchasePrice: product.purchasePrice,
+          salePrice: product.salePrice,
+        });
       });
-
+  
       analysisWorksheet.getRow(1).font = { bold: true };
       analysisWorksheet.getRow(1).eachCell(cell => {
         cell.fill = {
@@ -203,12 +209,13 @@ const MantenimientoProductos: React.FC = () => {
           right: { style: 'thin' },
         };
       });
-
+  
       const totalRow = analysisWorksheet.addRow([
         'Total Valor del Inventario',
-        { formula: `SUM(B2:B${products.length + 1})` }
+        { formula: `SUM(B2:B${products.length + 1})` },
+        { formula: `SUM(C2:C${products.length + 1})` },
       ]);
-
+  
       totalRow.font = { bold: true };
       totalRow.eachCell((cell, colNumber) => {
         if (colNumber === 1) {
@@ -226,15 +233,15 @@ const MantenimientoProductos: React.FC = () => {
           fgColor: { argb: 'E0E0E0' },
         };
       });
-
+  
       const buffer = await workbook.xlsx.writeBuffer();
       saveAs(new Blob([buffer]), 'catalogo_productos_con_datos.xlsx');
       toast.success('Catálogo de productos descargado con éxito!');
-
     } catch (error) {
       toast.error('Error al generar el archivo de Excel');
     }
   };
+  
 
 
 
@@ -284,48 +291,48 @@ const MantenimientoProductos: React.FC = () => {
 
   return (
     <div className="p-8 bg-gradient-to-b from-teal-100 to-green-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Productos</h1>
-      <div className="flex justify-between items-center mb-4">
+    <h1 className="text-3xl font-bold mb-6 text-teal-600">Mantenimiento de Productos</h1>
+    <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+      <button
+        onClick={openModalForNewProduct}
+        className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600 mb-4 sm:mb-0"
+      >
+        Nuevo Producto
+      </button>
+  
+      <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
         <button
-          onClick={openModalForNewProduct}
-          className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
+          onClick={handleDownloadExcel}
+          className="bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600"
         >
-          Nuevo Producto
+          Descargar Catálogo
         </button>
-
-        <div className="flex space-x-4">
-          <button
-            onClick={handleDownloadExcel}
-            className="bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600"
-          >
-            Descargar Catálogo
-          </button>
-
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleImportExcel}
-            className="text-black border border-gray-300 p-2 rounded-lg"
-          />
-        </div>
-      </div>
-
-
-      {error && <p className="text-red-500">{error}</p>}
-
-      {!loading ? (
-        <UniversalTable
-          columns={columns}
-          data={productsWithCategoryName}
-          onEdit={openModalForEditProduct}
-          onDelete={handleDelete}
+  
+        <input
+          type="file"
+          accept=".xlsx, .xls"
+          onChange={handleImportExcel}
+          className="text-black border border-gray-300 p-2 rounded-lg w-full sm:w-auto"
         />
-      ) : (
-        <p className="text-center text-gray-600">Cargando productos...</p>
-      )}
-
-      <CustomModal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4 text-black">{isEditing ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
+      </div>
+    </div>
+  
+    {error && <p className="text-red-500">{error}</p>}
+  
+    {!loading ? (
+      <UniversalTable
+        columns={columns}
+        data={productsWithCategoryName}
+        onEdit={openModalForEditProduct}
+        onDelete={handleDelete}
+      />
+    ) : (
+      <p className="text-center text-gray-600">Cargando productos...</p>
+    )}
+  
+    <CustomModal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+      <h2 className="text-2xl font-bold mb-4 text-black">{isEditing ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="name">Nombre</label>
           <input
@@ -358,8 +365,8 @@ const MantenimientoProductos: React.FC = () => {
             className="w-full p-4 border border-gray-300 rounded-lg text-black"
             placeholder="Ingresa el precio del producto"
           />
-        </div>   
-         <div className="mb-4">
+        </div>
+        <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="salePrice">Precio Venta</label>
           <input
             type="number"
@@ -406,14 +413,16 @@ const MantenimientoProductos: React.FC = () => {
             placeholder="Ingresa la URL de la imagen del producto"
           />
         </div>
-        <button
-          onClick={handleSaveProduct}
-          className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600"
-        >
-          {isEditing ? 'Actualizar Producto' : 'Guardar Producto'}
-        </button>
-      </CustomModal>
-    </div>
+      </div>
+      <button
+        onClick={handleSaveProduct}
+        className="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600 w-full sm:w-auto"
+      >
+        {isEditing ? 'Actualizar Producto' : 'Guardar Producto'}
+      </button>
+    </CustomModal>
+  </div>
+  
   );
 };
 

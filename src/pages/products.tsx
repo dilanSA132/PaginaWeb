@@ -14,6 +14,7 @@ import { getCategories } from '@/services/CategoriesService';
 import { signOut, useSession } from 'next-auth/react';
 
 import * as XLSX from 'xlsx';
+import { set } from 'date-fns';
 
 interface Product {
   id: number;
@@ -61,7 +62,8 @@ const Products: React.FC = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 120000 });
   const productsPerPage = 9;
   const [showFilters, setShowFilters] = useState(false);
-
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [totalItems, setTotalItems] = useState(100); // Este valor normalmente vendría de tu API o datos
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
@@ -75,6 +77,7 @@ const Products: React.FC = () => {
         }
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
+        setTotalItems(fetchedProducts.length);  
       } catch (err) {
         setError('Error al cargar los productos');
       } finally {
@@ -117,6 +120,7 @@ const Products: React.FC = () => {
       return matchesTerm && matchesCategory && matchesPriceRange;
     });
     setFilteredProducts(filtered);
+    setTotalItems(filtered.length);
     setCurrentPage(1);
   };
 
@@ -144,24 +148,31 @@ const Products: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setItemsPerPage(itemsPerPage);
+    setCurrentPage(1); 
+  };
+
+  const handleNext = () => {
+    if (currentPage < Math.ceil(totalItems / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const handlePreviousPage = () => {
+  const handlePrevious = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentPage(currentPage - 1);
     }
   };
 
-  const startIndex = (currentPage - 1) * productsPerPage;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  
   const currentProducts = filteredProducts.slice(
     startIndex,
-    startIndex + productsPerPage
+    startIndex + itemsPerPage
   );
 
   const handleQuantityChange = (productId: number, quantity: number) => {
@@ -277,7 +288,6 @@ const Products: React.FC = () => {
 
             {showFilters && (
               <div>
-                {/* Filtro por categoría */}
                 <div className="mb-4">
                   <label htmlFor="categoryFilter" className="block text-black font-semibold">Filtrar por Categoría</label>
                   <select
@@ -294,8 +304,6 @@ const Products: React.FC = () => {
                     ))}
                   </select>
                 </div>
-
-                {/* Filtro por rango de precios */}
                 <div className="mb-4">
                   <label className="block text-black font-semibold">Filtrar por Precio</label>
                   <div className="flex space-x-4">
@@ -327,31 +335,33 @@ const Products: React.FC = () => {
                 {currentProducts.map((product, index) => (
                   <div
                     key={product.id}
-                    className={`bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl 
-                    opacity-0 animate-fade-in-up`}
+                    className={`bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl opacity-0 animate-fade-in-up`}
                     style={{
                       animationDelay: `${index * 0.2}s`,
                       animationFillMode: "forwards",
                     }}
                   >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-64 w-full object-cover mb-4 rounded-lg"
-                    />
+                    <div className="relative w-full mb-4 rounded-lg overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-auto md:h-96 object-cover transition-all duration-300 transform hover:scale-105"
+                      />
+                    </div>
+
+
                     <h3 className="text-xl font-semibold mb-2 text-black">
-                      {product.name} ({product.description})
+                      {product?.name} ({product.description})
                     </h3>
                     <span className="block text-2xl font-bold mb-4 text-yellow-500">
-                      ₡{product.salePrice}
+                      ₡{product?.salePrice}
                     </span>
                     <span className="block text-2 font-bold mb-4 text-black-500">
-                      Stock: {product.stock}
+                      Stock: {product?.stock}
                     </span>
                     {product.stock === 0 ? (
                       <span className="block text-red-500 font-bold mb-4">Vendido</span>
                     ) : (
-
                       <button
                         onClick={() => addToCart({ ...product, quantity: 1 })}
                         className="bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-colors"
@@ -359,17 +369,18 @@ const Products: React.FC = () => {
                         Añadir al Carrito
                       </button>
                     )}
-
-
                   </div>
                 ))}
               </div>
             )}
             <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onNext={handleNextPage}
-              onPrevious={handlePreviousPage}
+             currentPage={currentPage}
+             totalItems={totalItems}
+             itemsPerPage={itemsPerPage}
+             onNext={handleNext}
+             onPrevious={handlePrevious}
+             onPageChange={handlePageChange}
+             onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
 

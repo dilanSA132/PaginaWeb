@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaEdit, FaTrashAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Column {
@@ -13,10 +13,11 @@ interface UniversalTableProps {
   onEdit?: (rowData: any) => void;
   onDelete?: (rowData: any) => void;
 }
+
 const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Estado para la cantidad de elementos por página
   const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
-  const itemsPerPage = 15;
 
   // Filtrar los datos en función del término de búsqueda
   const filteredData = Array.isArray(data) ? data.filter((row) =>
@@ -43,8 +44,13 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
     }
   };
 
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Resetear la página actual cuando se cambian los elementos por página
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full rounded-lg overflow-hidden shadow-xl">
       <div className="mb-4">
         <input
           type="text"
@@ -54,25 +60,25 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full text-black"
+          className="px-4 py-2 border border-gray-300 rounded-lg w-full text-black focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       <div className="overflow-x-auto">
-        <div className="shadow-lg rounded-lg">
-          <table className="min-w-full bg-white">
+        <div className="rounded-lg shadow-lg bg-white">
+          <table className="min-w-full">
             <thead className="bg-gradient-to-r from-teal-500 to-green-500 text-white">
               <tr>
                 {columns.map((column, index) => (
                   <th
                     key={index}
-                    className="py-3 px-6 text-left text-xs font-bold uppercase tracking-wider"
+                    className="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider"
                   >
                     {column.label}
                   </th>
                 ))}
                 {(onEdit || onDelete) && (
-                  <th className="py-3 px-6 text-left text-xs font-bold uppercase tracking-wider">
+                  <th className="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider">
                     Acciones
                   </th>
                 )}
@@ -83,12 +89,12 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
                 paginatedData.map((row, index) => (
                   <tr
                     key={index}
-                    className="border-b transition duration-300 ease-in-out hover:bg-gray-100"
+                    className="border-b transition duration-300 ease-in-out hover:bg-gray-50"
                   >
                     {columns.map((column, colIndex) => (
                       <td
                         key={colIndex}
-                        className="py-3 px-6 text-gray-700 whitespace-nowrap"
+                        className="py-3 px-6 text-gray-700 whitespace-normal text-sm break-words"
                       >
                         {column.render ? column.render(row) : row[column.accessor as keyof typeof row]}
                       </td>
@@ -98,7 +104,7 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
                         {onEdit && (
                           <button
                             onClick={() => onEdit(row)}
-                            className="text-blue-500 hover:text-blue-700"
+                            className="text-blue-500 hover:text-blue-700 text-xs rounded-full p-2 hover:bg-blue-100"
                           >
                             <FaEdit />
                           </button>
@@ -106,7 +112,7 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
                         {onDelete && (
                           <button
                             onClick={() => onDelete(row)}
-                            className="text-red-500 hover:text-red-700"
+                            className="text-red-500 hover:text-red-700 text-xs rounded-full p-2 hover:bg-red-100"
                           >
                             <FaTrashAlt />
                           </button>
@@ -127,26 +133,43 @@ const UniversalTable: React.FC<UniversalTableProps> = ({ columns, data = [], onE
         </div>
       </div>
 
-      <div className="flex justify-between items-center p-4 bg-gray-100 mt-4">
-        <button
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          className={`bg-teal-500 text-white py-2 px-4 rounded-full flex items-center justify-center ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-600'}`}
-        >
-          <FaChevronLeft />
-        </button>
+      <div className="flex justify-between items-center p-4 bg-gray-100 mt-4 rounded-lg">
+        <div className="flex items-center space-x-4">
+          <span className="text-gray-700">Mostrar</span>
+          <select
+            value={itemsPerPage}
+            onChange={handleItemsPerPageChange}
+            className="border border-gray-300 rounded-md p-2 text-gray-700"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+          <span className="text-gray-700">por página</span>
+        </div>
 
-        <span className="text-gray-700">
-          Página {currentPage} de {totalPages}
-        </span>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 1}
+            className={`bg-teal-500 text-white py-2 px-4 rounded-full flex items-center justify-center ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-600'}`}
+          >
+            <FaChevronLeft />
+          </button>
 
-        <button
-          onClick={nextPage}
-          disabled={currentPage === totalPages}
-          className={`bg-teal-500 text-white py-2 px-4 rounded-full flex items-center justify-center ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-600'}`}
-        >
-          <FaChevronRight />
-        </button>
+          <span className="text-gray-700 text-xs sm:text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+
+          <button
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+            className={`bg-teal-500 text-white py-2 px-4 rounded-full flex items-center justify-center ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-600'}`}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
       </div>
     </div>
   );

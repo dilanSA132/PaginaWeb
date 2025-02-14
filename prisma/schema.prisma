@@ -18,6 +18,8 @@ model User {
   name     String
   password String    // Contraseña, campo obligatorio
   role     Role      @relation(fields: [roleId], references: [id]) // Relación obligatoria
+  isRecovering Boolean @default(false) // Campo para recuperación de contraseña 
+  tempPassword String? 
   roleId   Int       // roleId ya no puede ser nulo
   credits  Credit[]  // Relación con créditos abiertos por el cliente
   orders   Order[]   // Relación con las órdenes del usuario

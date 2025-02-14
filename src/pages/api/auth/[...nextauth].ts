@@ -40,6 +40,7 @@ export default NextAuth({
         token.email = user.email;
         token.roleId = user.roleId;
       }
+      console.log('token:', token); 
       return token;
     },
     async session({ session, token }) {

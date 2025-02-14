@@ -58,27 +58,25 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, wi
         /* Responsive para móviles */
         @media (max-width: 768px) {
           .modal-overlay {
-            align-items: flex-end;
+            align-items: flex-start; /* Hace que se ajuste al principio para mejor visibilidad en dispositivos pequeños */
             padding: 0;
           }
           .modal-content {
-            border-radius: 12px 12px 0 0;
+            border-radius: 12px;
             width: 100%;
             max-width: 100%;
-            max-height: 80vh;
-            transform: translateY(100%);
-            animation: slide-up 0.3s ease-out forwards;
+            height: 100%; /* Ajuste completo al alto de la pantalla */
+            max-height: 100%; /* Evitar el desbordamiento */
+            transform: translateY(0); /* Remover el efecto de deslizamiento */
+            animation: none; /* Desactiva la animación en pantallas más pequeñas */
           }
-          @keyframes slide-up {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+          .modal-body {
+            padding-bottom: 20px; /* Espacio adicional al fondo en móviles */
           }
         }
       `}</style>
     </div>
   );
 };
-
-
 
 export default CustomModal;

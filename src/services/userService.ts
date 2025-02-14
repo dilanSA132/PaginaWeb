@@ -26,6 +26,37 @@ export const createUser = async (userData: any) => {
   return await response.json();
 };
 
+
+export const setRecoverMode = async (email: string) => {
+  const response = await fetch(`${baseUrl}/users/recUser/setPassTemp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Error al setear contraseña temporal al usuario');
+  }
+
+  return await response.json();
+};
+
+
+export const reActiveUser = async (email: string, tempPassword: string , newPassword: string) => {
+  const response = await fetch(`${baseUrl}/users/recUser/reActiveUser`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, tempPassword, newPassword }), 
+  });
+
+  if (!response.ok) {
+    throw new Error('Error al reactivar el usuario');
+  }
+
+  return await response.json();
+};
+
+
 export const deleteUser = async (id: number) => {
   const response = await fetch(`${baseUrl}/users/${id}`, {
     method: 'DELETE',
