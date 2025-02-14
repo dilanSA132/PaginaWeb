@@ -3,7 +3,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { sendEmail } from '@/services/emailService';
 import { getUsers } from '@/services/userService';
-import { updateEmail, deleteEmail, createEmail, getEmails } from '@/services/emailsServer'; // Asegúrate de tener estas funciones
+import { updateEmail, deleteEmail, createEmail, getEmails } from '@/services/emailsServer'; 
 interface User {
     id: number;
     email: string;
@@ -11,7 +11,7 @@ interface User {
 }
 
 interface EmailFormProps {
-    onSendSuccess: () => void; // Callback cuando el correo se envía con éxito
+    onSendSuccess: () => void;
 }
 
 const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
@@ -24,9 +24,9 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
     const [selectedTemplate, setSelectedTemplate] = useState<string>('marketing');
     const [htmlContent, setHtmlContent] = useState<string>('');
     const [users, setUsers] = useState<User[]>([]);
-    const [searchTerm, setSearchTerm] = useState<string>(''); // Término de búsqueda
-    const [selectAll, setSelectAll] = useState<boolean>(false); // Estado para "Seleccionar todos"
-    const [sentEmails, setSentEmails] = useState<any[]>([]); // Estado para los correos enviados
+    const [searchTerm, setSearchTerm] = useState<string>(''); 
+    const [selectAll, setSelectAll] = useState<boolean>(false); 
+    const [sentEmails, setSentEmails] = useState<any[]>([]); 
 
     const templates: Record<string, string> = {
         marketing: `
@@ -67,12 +67,11 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
         setHtmlContent(templates[selectedTemplate]);
     }, [selectedTemplate]);
 
-    // Cargar correos enviados desde la API
     useEffect(() => {
         const fetchEmails = async () => {
             try {
                 const emails = await getEmails();
-                setSentEmails(emails); // Establece los correos enviados en el estado
+                setSentEmails(emails); 
             } catch (err) {
                 console.error('Error obteniendo correos:', err);
                 setError('No se pudieron cargar los correos.');
@@ -125,33 +124,33 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
 
         try {
             await Promise.all(
-            selectedUsers.map(async (user) => {
-                const emailContent = htmlContent.replace('{{name}}', user.name);
+                selectedUsers.map(async (user) => {
+                    const emailContent = htmlContent.replace('{{name}}', user.name);
 
-                const emailData = {
-                    userName: user.name,
-                    email: user.email,
-                    subject,
-                    type: selectedTemplate,
-                    content: emailContent,
-                    createdAt: scheduleDate ? new Date(scheduleDate).toISOString() : new Date().toISOString(),
-                };
-                const today = new Date().toISOString().split('T')[0];
-                const emailDate = new Date(emailData.createdAt).toISOString().split('T')[0];
-            console.log("comparaciom ", emailDate, today)    
-            if (emailDate === today) {
-                await sendEmail(subject, emailContent, user.email);
-                await createEmail(emailData);
-                setSentEmails((prev) => [...prev, emailData]);
-                toast.success('Correos enviados exitosamente');
-            } else {
-                await createEmail(emailData);
-                setSentEmails((prev) => [...prev, emailData]);
-                toast.info('Se creo correctamente, se enviará la fecha correspondiente.');
-            }
-            })
+                    const emailData = {
+                        userName: user.name,
+                        email: user.email,
+                        subject,
+                        type: selectedTemplate,
+                        content: emailContent,
+                        createdAt: scheduleDate ? new Date(scheduleDate).toISOString() : new Date().toISOString(),
+                    };
+                    const today = new Date().toISOString().split('T')[0];
+                    const emailDate = new Date(emailData.createdAt).toISOString().split('T')[0];
+                    console.log("comparaciom ", emailDate, today)
+                    if (emailDate === today) {
+                        await sendEmail(subject, emailContent, user.email);
+                        await createEmail(emailData);
+                        setSentEmails((prev) => [...prev, emailData]);
+                        toast.success('Correos enviados exitosamente');
+                    } else {
+                        await createEmail(emailData);
+                        setSentEmails((prev) => [...prev, emailData]);
+                        toast.info('Se creo correctamente, se enviará la fecha correspondiente.');
+                    }
+                })
             );
-            
+
             onSendSuccess();
         } catch (error) {
             if (error instanceof Error) {
@@ -171,7 +170,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ onSendSuccess }) => {
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8 credit-payments-container">
             <div className="max-w-7xl mx-auto p-10 bg-white shadow-lg rounded-lg">
                 <h1 className="text-4xl font-semibold text-center text-gray-800 mb-8">
                     Enviar Correos Personalizados
