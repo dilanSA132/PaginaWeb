@@ -55,7 +55,7 @@ const Sales: React.FC = () => {
     CREDIT: 'Crédito',
     TRANSFER: 'Transferencia',
   };
-  
+
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -199,8 +199,8 @@ const Sales: React.FC = () => {
 
 
     const paymentMethodTable = Object.entries(salesByPaymentMethod).map(([method, total]) => [
-      paymentMethodTranslations[method as keyof typeof paymentMethodTranslations] || method, 
-      `${total.toFixed(2)} Col`, 
+      paymentMethodTranslations[method as keyof typeof paymentMethodTranslations] || method,
+      `${total.toFixed(2)} Col`,
     ]);
 
     autoTable(doc, {
@@ -214,7 +214,7 @@ const Sales: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='p-4 flex-grow overflow-y-auto'>
 
       <Grid container spacing={3} padding={3}>
         <Grid item xs={12}>
@@ -302,61 +302,61 @@ const Sales: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
-  <Card>
-    <CardContent>
-      <PieChart
-        width={500}
-        height={260}
-        series={[
-          {
-            id: 'payment-methods',
-            data: Object.entries(paymentMethods).map(([method, count]) => ({
-              id: method,
-              value: count,
-              label: paymentMethodTranslations[method as keyof typeof paymentMethodTranslations], // Traducción al español
-            })),
-            innerRadius: 30,
-            outerRadius: 100,
-            paddingAngle: 5,
-            cornerRadius: 5,
-            startAngle: -45,
-            endAngle: 225,
-            cx: 150,
-            cy: 150,
-            highlightScope: { fade: 'global', highlight: 'item' },
-            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-          },
-        ]}
-      />
-      <Typography variant="h6" align="center">Tipos de Pago</Typography>
-    </CardContent>
-  </Card>
-</Grid>
+          <Card>
+            <CardContent>
+              <PieChart
+                width={500}
+                height={260}
+                series={[
+                  {
+                    id: 'payment-methods',
+                    data: Object.entries(paymentMethods).map(([method, count]) => ({
+                      id: method,
+                      value: count,
+                      label: paymentMethodTranslations[method as keyof typeof paymentMethodTranslations], // Traducción al español
+                    })),
+                    innerRadius: 30,
+                    outerRadius: 100,
+                    paddingAngle: 5,
+                    cornerRadius: 5,
+                    startAngle: -45,
+                    endAngle: 225,
+                    cx: 150,
+                    cy: 150,
+                    highlightScope: { fade: 'global', highlight: 'item' },
+                    faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                  },
+                ]}
+              />
+              <Typography variant="h6" align="center">Tipos de Pago</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
           <Card>
             <CardContent>
               <Typography variant="h6">Ventas por Categoría</Typography>
               <BarChart
-          width={400}
-          height={260}
-          series={[{
-            id: 'category-sales',
-            data: Object.values(salesByCategory),
-          }]}
-          xAxis={[{
-            id: 'categories',
-            data: Object.keys(salesByCategory),
-            scaleType: 'band',
-            tickPlacement: 'middle',
-            tickLabelPlacement: 'middle',
-          }]}
-          yAxis={[{
-            id: 'quantity',
-            label: 'Cantidad',
-            scaleType: 'linear',
+                width={400}
+                height={260}
+                series={[{
+                  id: 'category-sales',
+                  data: Object.values(salesByCategory),
+                }]}
+                xAxis={[{
+                  id: 'categories',
+                  data: Object.keys(salesByCategory),
+                  scaleType: 'band',
+                  tickPlacement: 'middle',
+                  tickLabelPlacement: 'middle',
+                }]}
+                yAxis={[{
+                  id: 'quantity',
+                  label: 'Cantidad',
+                  scaleType: 'linear',
 
-          }]}
+                }]}
               />
             </CardContent>
           </Card>
@@ -366,12 +366,12 @@ const Sales: React.FC = () => {
           <Card style={{ height: '100%' }}>
             <CardContent style={{ backgroundColor: grey[300], display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
               <Grid container justifyContent="center">
-              <button
-                onClick={generatePDF}
-                className="bg-blue-500 text-white py-2 px-4 rounded-md mb-5"
-              >
-                Generar Informe de Ventas
-              </button>
+                <button
+                  onClick={generatePDF}
+                  className="bg-blue-500 text-white py-2 px-4 rounded-md mb-5 flex-grow overflow-x-auto"
+                >
+                  Generar Informe de Ventas
+                </button>
               </Grid>
             </CardContent>
           </Card>

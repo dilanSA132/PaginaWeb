@@ -4,7 +4,7 @@ interface CustomModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  width?: string; // Prop opcional para personalizar el ancho
+  width?: string; 
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, children, width }) => {
