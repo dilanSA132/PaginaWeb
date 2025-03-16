@@ -5,6 +5,8 @@
  import { createOrderDetail, deleteOrderDetail, updateOrderDetail } from '@/services/orderDetailService';
  import { getOrders, createOrder, deleteOrder, updateOrder } from '@/services/orderService';
  import { CreateOrderRequest, OrderDetails } from '@/services/types';
+ import { toast } from 'react-toastify';
+ import 'react-toastify/dist/ReactToastify.css';
 const [orders, setOrders] = useState<Order[]>([]);
 
 
@@ -58,7 +60,7 @@ const [orders, setOrders] = useState<Order[]>([]);
         )
       );
 
-      closeModal();
+     
       toast.success('Orden actualizada exitosamente.');
     } catch (error) {
       console.error('Error al actualizar la orden:', error);
